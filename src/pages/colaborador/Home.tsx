@@ -2,6 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { ShieldCheck, LifeBuoy } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tela } from "@/components/colaborador/Tela";
+import { LogoTIS } from "@/components/LogoTIS";
 import { useConfigPublica } from "@/hooks/dados";
 
 export default function Home() {
@@ -14,7 +15,7 @@ export default function Home() {
         <div className="text-2xl font-display font-semibold text-primary-dark">
           {config?.nome_canal ?? "Canal de Escuta"}
         </div>
-        <p className="text-sm text-muted-foreground mt-1">Empresa Demonstração</p>
+        <p className="text-sm text-muted-foreground mt-1">TIS — Terminal Intermodal Sul</p>
 
         <div className="mt-6 rounded-xl bg-primary-soft/70 p-4 text-sm text-foreground flex gap-3">
           <ShieldCheck className="w-5 h-5 text-primary-dark shrink-0 mt-0.5" />
@@ -42,10 +43,14 @@ export default function Home() {
         </Link>
       </div>
 
-      <div className="mt-auto pt-6 text-center">
+      <div className="mt-auto pt-6 flex flex-col items-center gap-3 text-center">
         <Link to="/equipe/entrar" className="text-xs text-muted-foreground hover:text-foreground">
           Acesso da equipe de escuta
         </Link>
+        <div className="flex items-center gap-2 text-[0.7rem] text-muted-foreground">
+          <LogoTIS height={22} />
+          <span>Canal disponibilizado pela TIS — Terminal Intermodal Sul</span>
+        </div>
       </div>
     </Tela>
   );

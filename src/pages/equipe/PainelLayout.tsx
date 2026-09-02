@@ -12,6 +12,7 @@ import {
 import { cn } from "@/lib/utils";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
+import { LogoTIS } from "@/components/LogoTIS";
 import { useAuth } from "@/contexts/AuthContext";
 import { useDadosPainel } from "@/hooks/dados";
 import { situacaoSla } from "@/dominio/sla";
@@ -31,8 +32,9 @@ function Navegacao({ atrasados, aoNavegar }: { atrasados: number; aoNavegar?: ()
     <div className="flex flex-col h-full">
       <div className="px-2 pb-4">
         <div className="font-display font-semibold text-primary-dark">Canal de Escuta</div>
-        <div className="text-[0.62rem] font-mono uppercase tracking-wide text-muted-foreground">
-          Painel · Empresa
+        <div className="mt-1.5 flex items-center gap-1.5 text-[0.62rem] font-mono uppercase tracking-wide text-muted-foreground">
+          <LogoTIS height={18} />
+          <span>TIS</span>
         </div>
       </div>
       <nav className="flex flex-col gap-0.5">

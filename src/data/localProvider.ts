@@ -89,7 +89,7 @@ function registrarNotificacao(banco: BancoLocal, caso: Caso) {
     caso_id: caso.id,
     protocolo: caso.protocolo,
     canal: "email",
-    destinatario: "equipe-escuta@empresa.com.br",
+    destinatario: "equipe-escuta@tis.com.br",
     assunto: `[Canal de Escuta] Novo caso ${meta.rotulo} — ${caso.protocolo}`,
     corpo:
       `Um novo relato entrou pelo canal.\n\n` +

@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth, USUARIOS_DEMO } from "@/contexts/AuthContext";
+import { LogoTIS } from "@/components/LogoTIS";
 import { MODO_DADOS } from "@/data";
 
 export default function Login() {
@@ -33,8 +34,9 @@ export default function Login() {
   return (
     <div className="min-h-[100dvh] grid place-items-center bg-background px-5">
       <div className="w-full max-w-sm">
+        <LogoTIS height={28} className="mb-4" />
         <div className="text-2xl font-display font-semibold text-primary-dark">Canal de Escuta</div>
-        <p className="text-sm text-muted-foreground mb-6">Painel da equipe de escuta</p>
+        <p className="text-sm text-muted-foreground mb-6">Painel da equipe de escuta · TIS</p>
 
         <form onSubmit={submeter} className="space-y-4">
           <div>

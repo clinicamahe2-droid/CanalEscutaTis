@@ -61,15 +61,15 @@ export function criarBancoInicial(): BancoLocal {
   n = 0;
   const empresa: Empresa = {
     id: EMPRESA_ID,
-    nome: "Empresa Demonstração",
-    dominio: "escuta.empresa.com.br",
+    nome: "TIS — Terminal Intermodal Sul",
+    dominio: "escuta.tis.com.br",
     criado_em: iso(240),
   };
 
   const config: ConfiguracoesCanal = {
     empresa_id: EMPRESA_ID,
     nome_canal: "Canal de Escuta",
-    dominio: "escuta.empresa.com.br",
+    dominio: "escuta.tis.com.br",
     mensagem_boas_vindas: MENSAGEM_BOAS_VINDAS,
     categorias_ativas: CATEGORIAS.map((c) => c.id),
     permitir_anexos: true,
@@ -290,7 +290,7 @@ export function criarBancoInicial(): BancoLocal {
       caso_id: caso.id,
       protocolo: caso.protocolo,
       canal: "email",
-      destinatario: "equipe-escuta@empresa.com.br",
+      destinatario: "equipe-escuta@tis.com.br",
       assunto: `[Canal de Escuta] Novo caso ${meta.rotulo} — ${caso.protocolo}`,
       corpo:
         `Um novo relato entrou e se enquadra na regra de aviso imediato.\n\n` +

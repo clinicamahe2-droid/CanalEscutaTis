@@ -28,13 +28,13 @@ export default function Categoria() {
         </Button>
       }
     >
-      <div className="grid grid-cols-2 gap-2.5">
+      <div className="stagger grid grid-cols-2 gap-2.5">
         {lista.map((c) => (
           <button
             key={c.id}
             onClick={() => setCategoria(c.id)}
             className={cn(
-              "rounded-xl border p-3 text-sm font-semibold leading-tight text-center transition-colors",
+              "rounded-xl border p-3 text-sm font-semibold leading-tight text-center transition-[color,background-color,border-color,transform] duration-200 ease-smooth active:scale-[0.98]",
               categoria === c.id
                 ? "border-primary bg-primary-soft text-primary-dark"
                 : "border-border bg-card text-foreground/80 hover:border-primary/40",

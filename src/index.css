@@ -148,6 +148,51 @@
   }
 }
 
+/*
+  Motion — contido de proposito. Sem blur, curvas suaves, duracoes curtas.
+  Nunca no fluxo critico de envio do relato (ver Tela `semAnimacao`).
+*/
+
+/* Cascata: os filhos diretos entram com um pequeno atraso incremental.
+   Teto no 6o item para listas longas (Caixa de Casos) nao parecerem lentas. */
+.stagger > * {
+  animation: fade-in 0.28s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+.stagger > *:nth-child(1) { animation-delay: 0ms; }
+.stagger > *:nth-child(2) { animation-delay: 40ms; }
+.stagger > *:nth-child(3) { animation-delay: 80ms; }
+.stagger > *:nth-child(4) { animation-delay: 120ms; }
+.stagger > *:nth-child(5) { animation-delay: 160ms; }
+.stagger > *:nth-child(n + 6) { animation-delay: 200ms; }
+
+/* Revela ao entrar na viewport — SOMENTE no painel (nunca em formulario). */
+.reveal {
+  opacity: 0;
+  transform: translateY(12px);
+  transition:
+    opacity 0.4s cubic-bezier(0.2, 0.8, 0.2, 1),
+    transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+  will-change: opacity, transform;
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+  .reveal {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
 /* Impressao: usado pelos relatorios (Ctrl+P -> salvar como PDF). */
 @media print {
   body {
@@ -163,6 +208,12 @@
     max-width: none !important;
     padding: 0 !important;
     box-shadow: none !important;
+  }
+  /* Se o observer nao disparar (fora da viewport na hora de imprimir),
+     o relatorio nao pode sair em branco. */
+  .reveal {
+    opacity: 1 !important;
+    transform: none !important;
   }
 }
 .print-only {

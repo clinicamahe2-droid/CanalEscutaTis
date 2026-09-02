@@ -11,9 +11,12 @@ interface TelaProps {
   /** Acao fixa no rodape (normalmente o botao primario). */
   rodape?: ReactNode;
   className?: string;
+  /** Desliga a animacao de entrada. Usar na tela de protocolo:
+      o codigo tem que aparecer instantaneo, sem fade. */
+  semAnimacao?: boolean;
 }
 
-export function Tela({ titulo, onVoltar, passo, children, rodape, className }: TelaProps) {
+export function Tela({ titulo, onVoltar, passo, children, rodape, className, semAnimacao }: TelaProps) {
   return (
     <div className="min-h-[100dvh] flex flex-col bg-background">
       <div className="mx-auto w-full max-w-md flex-1 flex flex-col px-5 safe-t">
@@ -45,7 +48,11 @@ export function Tela({ titulo, onVoltar, passo, children, rodape, className }: T
           </header>
         )}
 
-        <main className={cn("flex-1 flex flex-col py-2 animate-fade-in", className)}>{children}</main>
+        <main
+          className={cn("flex-1 flex flex-col py-2", !semAnimacao && "animate-fade-in", className)}
+        >
+          {children}
+        </main>
 
         {rodape && <div className="sticky bottom-0 bg-background pt-3 pb-4 safe-b space-y-2">{rodape}</div>}
       </div>

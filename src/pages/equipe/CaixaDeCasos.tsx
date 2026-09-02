@@ -97,7 +97,7 @@ export default function CaixaDeCasos() {
                 <th className="text-left px-4 py-2.5 whitespace-nowrap">Prazo</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="stagger">
               {lista.length === 0 && (
                 <tr>
                   <td colSpan={5} className="px-4 py-8 text-center text-muted-foreground">
@@ -111,7 +111,7 @@ export default function CaixaDeCasos() {
                   <tr
                     key={c.id}
                     onClick={() => nav(`/painel/casos/${c.id}`)}
-                    className="border-t border-border cursor-pointer hover:bg-primary-soft/50"
+                    className="border-t border-border cursor-pointer transition-colors duration-150 hover:bg-primary-soft/50"
                   >
                     <td className="px-4 py-3 font-mono text-xs whitespace-nowrap">{c.protocolo}</td>
                     <td className="px-4 py-3">{rotuloCategoria(c.categoria)}</td>

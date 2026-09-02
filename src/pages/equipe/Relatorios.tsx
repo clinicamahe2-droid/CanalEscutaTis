@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { Loader2, Printer } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Reveal } from "@/components/Reveal";
 import { useDadosPainel } from "@/hooks/dados";
 import { resumoMensal, tendenciaMensal } from "@/dominio/agregacoes";
 import { exportarComoPdf } from "@/lib/imprimir";
@@ -93,7 +94,7 @@ export default function Relatorios() {
         </div>
       </article>
 
-      <section className="mt-6 no-print">
+      <Reveal as="section" className="mt-6 no-print">
         <h2 className="text-sm font-display font-semibold mb-2">Histórico</h2>
         <div className="rounded-xl border border-border divide-y divide-border">
           {historico.map((h) => (
@@ -108,7 +109,7 @@ export default function Relatorios() {
         <p className="text-xs text-muted-foreground mt-2">
           Cada mês fechado gera um PDF arquivável. Data de referência: {formatarData(new Date().toISOString())}.
         </p>
-      </section>
+      </Reveal>
     </div>
   );
 }

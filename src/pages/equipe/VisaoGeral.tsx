@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import { Loader2 } from "lucide-react";
+import { Reveal } from "@/components/Reveal";
 import { useDadosPainel } from "@/hooks/dados";
 import {
   indicadoresGerais,
@@ -79,7 +80,7 @@ export default function VisaoGeral() {
       </div>
 
       <div className="grid lg:grid-cols-2 gap-5 mb-4">
-        <section className="rounded-xl border border-border p-5">
+        <Reveal as="section" className="rounded-xl border border-border p-5">
           <h2 className="text-sm font-display font-semibold mb-4">
             Mapa de risco por categoria <span className="font-body font-normal text-muted-foreground">(casos abertos)</span>
           </h2>
@@ -100,9 +101,9 @@ export default function VisaoGeral() {
               </div>
             ))}
           </div>
-        </section>
+        </Reveal>
 
-        <section className="rounded-xl border border-border p-5">
+        <Reveal as="section" delay={80} className="rounded-xl border border-border p-5">
           <h2 className="text-sm font-display font-semibold mb-4">Casos por mês</h2>
           <div className="flex items-end gap-2.5 h-32 pt-5">
             {tend.map((t, i) => (
@@ -120,7 +121,7 @@ export default function VisaoGeral() {
               </div>
             ))}
           </div>
-        </section>
+        </Reveal>
       </div>
 
       <p className="text-xs text-muted-foreground">

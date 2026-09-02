@@ -30,6 +30,7 @@ export default function Protocolo() {
 
   return (
     <Tela
+      semAnimacao
       className="justify-center text-center"
       rodape={
         <Button

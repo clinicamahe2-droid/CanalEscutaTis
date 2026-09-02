@@ -22,12 +22,12 @@ export default function ApoioImediato() {
       <p className="text-sm text-muted-foreground mb-4">
         Se você corre risco agora, ligue direto — não é preciso esperar o retorno pelo canal.
       </p>
-      <div className="space-y-3">
+      <div className="stagger space-y-3">
         {CONTATOS.map((c) => (
           <a
             key={c.numero}
             href={`tel:${c.numero}`}
-            className="block rounded-xl border border-border bg-card p-4 hover:border-primary/50"
+            className="block rounded-xl border border-border bg-card p-4 transition-colors duration-200 hover:border-primary/50"
           >
             <div className="font-semibold text-sm">{c.nome}</div>
             <div className="font-mono text-lg text-primary-dark">{c.numero}</div>

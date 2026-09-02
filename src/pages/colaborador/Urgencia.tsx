@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Tela } from "@/components/colaborador/Tela";
 import { cn } from "@/lib/utils";
@@ -28,7 +28,7 @@ export default function Urgencia() {
         <button
           onClick={() => setUrgencia("alta")}
           className={cn(
-            "w-full text-left rounded-xl border p-4 transition-colors",
+            "w-full text-left rounded-xl border p-4 transition-[color,background-color,border-color,transform] duration-200 ease-smooth active:scale-[0.98]",
             urgencia === "alta" ? "border-primary bg-primary-soft" : "border-border bg-card",
           )}
         >
@@ -40,7 +40,7 @@ export default function Urgencia() {
         <button
           onClick={() => setUrgencia("baixa")}
           className={cn(
-            "w-full text-left rounded-xl border p-4 transition-colors",
+            "w-full text-left rounded-xl border p-4 transition-[color,background-color,border-color,transform] duration-200 ease-smooth active:scale-[0.98]",
             urgencia === "baixa" ? "border-primary bg-primary-soft" : "border-border bg-card",
           )}
         >
@@ -49,15 +49,14 @@ export default function Urgencia() {
             Aconteceu, mas não há risco imediato
           </div>
         </button>
-
-        {urgencia === "alta" && (
-          <div className="rounded-xl bg-critical-soft text-critical p-4 text-sm animate-fade-in">
-            <b className="block mb-1">Se o risco é agora, não espere o canal responder.</b>
-            Ligue 188 (CVV) ou 100 (Direitos Humanos) enquanto isso. Você ainda pode continuar o
-            relato depois.
-          </div>
-        )}
       </div>
+
+      <p className="mt-4 text-xs text-muted-foreground">
+        Precisa falar com alguém agora?{" "}
+        <Link to="/apoio" className="underline underline-offset-2 hover:text-foreground">
+          Ver contatos de apoio
+        </Link>
+      </p>
     </Tela>
   );
 }

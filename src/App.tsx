@@ -9,7 +9,7 @@ import { RotaProtegida } from "@/components/RotaProtegida";
 
 import Home from "@/pages/colaborador/Home";
 import ApoioImediato from "@/pages/colaborador/ApoioImediato";
-import RelatarLayout from "@/pages/colaborador/RelatarLayout";
+import PublicoLayout from "@/pages/colaborador/PublicoLayout";
 import Categoria from "@/pages/colaborador/Categoria";
 import Urgencia from "@/pages/colaborador/Urgencia";
 import Relato from "@/pages/colaborador/Relato";
@@ -46,18 +46,20 @@ export default function App() {
             <AuthProvider>
               <DemoBanner />
               <Routes>
-                {/* canal público (anônimo) */}
-                <Route path="/" element={<Home />} />
-                <Route path="/apoio" element={<ApoioImediato />} />
-                <Route path="/relatar" element={<RelatarLayout />}>
-                  <Route index element={<Navigate to="/relatar/categoria" replace />} />
-                  <Route path="categoria" element={<Categoria />} />
-                  <Route path="urgencia" element={<Urgencia />} />
-                  <Route path="relato" element={<Relato />} />
-                  <Route path="revisao" element={<Revisao />} />
-                  <Route path="protocolo" element={<Protocolo />} />
+                {/* canal público (anônimo) — RelatoProvider cobre todo o grupo */}
+                <Route element={<PublicoLayout />}>
+                  <Route path="/" element={<Home />} />
+                  <Route path="/apoio" element={<ApoioImediato />} />
+                  <Route path="/relatar">
+                    <Route index element={<Navigate to="/relatar/categoria" replace />} />
+                    <Route path="categoria" element={<Categoria />} />
+                    <Route path="urgencia" element={<Urgencia />} />
+                    <Route path="relato" element={<Relato />} />
+                    <Route path="revisao" element={<Revisao />} />
+                    <Route path="protocolo" element={<Protocolo />} />
+                  </Route>
+                  <Route path="/consulta" element={<Consulta />} />
                 </Route>
-                <Route path="/consulta" element={<Consulta />} />
 
                 {/* equipe de escuta */}
                 <Route path="/equipe/entrar" element={<Login />} />

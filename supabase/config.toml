@@ -1,0 +1,18 @@
+# Referencia. O projeto NAO usa a CLI do Supabase para aplicar nada —
+# migrations e functions sao aplicadas manualmente pelo dono no Dashboard.
+project_id = "canal-escuta"
+
+[functions.criar-caso]
+verify_jwt = false
+
+[functions.consultar-caso]
+verify_jwt = false
+
+[functions.responder-caso]
+verify_jwt = false
+
+[functions.responder-pesquisa]
+verify_jwt = false
+
+[functions.enviar-alerta]
+verify_jwt = true

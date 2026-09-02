@@ -1,0 +1,733 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Canal de Escuta — Protótipo v2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Source+Sans+3:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F1F4F1; --surface:#FFFFFF; --surface-2:#E7EDE7;
+  --ink:#17231F; --ink-soft:#4B5850; --muted:#79857C; --border:#D7DED5;
+  --primary:#2C5F5A; --primary-dark:#1B3E3B; --primary-soft:#E3EDEB;
+  --warning:#B07A2C; --warning-soft:#F2E7D4;
+  --critical:#A3402F; --critical-soft:#F3E1DC;
+  --success:#3E7D5C; --success-soft:#DFEDE4;
+  --font-display:'Fraunces',Georgia,serif;
+  --font-body:'Source Sans 3',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  --font-mono:'IBM Plex Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+  --shadow: 0 1px 2px rgba(23,35,31,0.07), 0 10px 28px -14px rgba(23,35,31,0.18);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#111815; --surface:#1A2320; --surface-2:#223028;
+    --ink:#E8ECE8; --ink-soft:#B7C2BB; --muted:#8B968E; --border:#2B3733;
+    --primary:#74B6AB; --primary-dark:#9ED2C8; --primary-soft:#1E322E;
+    --warning:#D8A75A; --warning-soft:#302A1D;
+    --critical:#D3796C; --critical-soft:#332220;
+    --success:#74B08C; --success-soft:#1D2C24;
+    --shadow: 0 1px 2px rgba(0,0,0,0.35), 0 10px 28px -14px rgba(0,0,0,0.6);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#111815; --surface:#1A2320; --surface-2:#223028;
+  --ink:#E8ECE8; --ink-soft:#B7C2BB; --muted:#8B968E; --border:#2B3733;
+  --primary:#74B6AB; --primary-dark:#9ED2C8; --primary-soft:#1E322E;
+  --warning:#D8A75A; --warning-soft:#302A1D;
+  --critical:#D3796C; --critical-soft:#332220;
+  --success:#74B08C; --success-soft:#1D2C24;
+  --shadow: 0 1px 2px rgba(0,0,0,0.35), 0 10px 28px -14px rgba(0,0,0,0.6);
+}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font-body);line-height:1.5;}
+h1,h2,h3,h4{font-family:var(--font-display);color:var(--ink);margin:0;text-wrap:balance;}
+button{font-family:inherit;cursor:pointer;}
+.mono{font-family:var(--font-mono);}
+
+.page{max-width:1280px;margin:0 auto;padding:32px 20px 64px;}
+.page-head{max-width:74ch;margin-bottom:8px;}
+.eyebrow{font-family:var(--font-mono);font-size:0.7rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--primary-dark);background:var(--primary-soft);display:inline-block;padding:4px 10px;border-radius:3px;margin-bottom:12px;}
+.page-head h1{font-size:1.9rem;margin-bottom:8px;}
+.page-head p{color:var(--ink-soft);margin:0 0 6px;}
+.note{font-size:0.82rem;color:var(--muted);border-left:2px solid var(--border);padding-left:10px;margin-bottom:24px;}
+.whatsnew{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 18px;margin-bottom:24px;box-shadow:var(--shadow);}
+.whatsnew .label{font-family:var(--font-mono);font-size:0.68rem;text-transform:uppercase;letter-spacing:0.06em;color:var(--primary-dark);margin-bottom:8px;display:block;}
+.whatsnew ul{margin:0;padding-left:18px;font-size:0.86rem;color:var(--ink-soft);columns:2;column-gap:28px;}
+.whatsnew li{margin-bottom:4px;break-inside:avoid;}
+
+.tabs{display:inline-flex;background:var(--surface-2);border:1px solid var(--border);border-radius:99px;padding:3px;gap:2px;margin-bottom:28px;}
+.tabs button{border:none;background:transparent;padding:8px 18px;border-radius:99px;font-size:0.88rem;font-weight:600;color:var(--muted);}
+.tabs button.active{background:var(--primary);color:#fff;}
+
+.stage{display:none;}
+.stage.active{display:block;}
+
+/* ---------------- PHONE ---------------- */
+.phone-wrap{display:flex;gap:32px;align-items:flex-start;flex-wrap:wrap;}
+.phone{width:336px;height:664px;background:var(--surface);border:10px solid var(--ink);border-radius:38px;box-shadow:var(--shadow);position:relative;overflow:hidden;flex:0 0 auto;}
+.phone::before{content:"";position:absolute;top:0;left:50%;transform:translateX(-50%);width:120px;height:20px;background:var(--ink);border-radius:0 0 14px 14px;z-index:5;}
+.phone-screen{position:absolute;inset:0;padding:34px 18px 18px;overflow-y:auto;display:none;flex-direction:column;}
+.phone-screen.active{display:flex;}
+.screen-topbar{display:flex;align-items:center;gap:10px;margin-bottom:16px;min-height:28px;}
+.back-btn{border:none;background:var(--surface-2);width:28px;height:28px;border-radius:50%;color:var(--ink);font-size:0.9rem;display:flex;align-items:center;justify-content:center;flex:0 0 auto;}
+.screen-title{font-size:0.98rem;font-weight:700;color:var(--ink);font-family:var(--font-body);}
+.progress-dots{display:flex;gap:4px;margin-left:auto;}
+.progress-dots span{width:6px;height:6px;border-radius:50%;background:var(--border);}
+.progress-dots span.on{background:var(--primary);}
+
+.brandmark{font-family:var(--font-display);font-weight:700;font-size:1.3rem;color:var(--primary-dark);margin-bottom:2px;}
+.brandsub{font-size:0.78rem;color:var(--muted);margin-bottom:20px;}
+.reassure{background:var(--primary-soft);border-radius:10px;padding:14px;font-size:0.84rem;color:var(--ink);margin-bottom:20px;}
+.reassure b{color:var(--primary-dark);}
+.crisis{background:var(--critical-soft);border-radius:10px;padding:14px;font-size:0.82rem;color:var(--critical);margin-bottom:16px;}
+.crisis b{display:block;margin-bottom:4px;}
+
+.btn{display:block;width:100%;text-align:center;padding:13px;border-radius:10px;border:none;font-weight:700;font-size:0.92rem;margin-bottom:10px;}
+.btn-primary{background:var(--primary);color:#fff;}
+.btn-secondary{background:var(--surface-2);color:var(--ink);border:1px solid var(--border);}
+.btn-ghost{background:transparent;color:var(--primary-dark);font-weight:600;text-align:center;font-size:0.82rem;padding:6px;}
+.spacer-grow{flex:1;}
+
+.chip-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px;}
+.chip{border:1px solid var(--border);background:var(--surface);border-radius:9px;padding:12px 8px;font-size:0.79rem;text-align:center;font-weight:600;color:var(--ink-soft);line-height:1.25;}
+.chip.selected{border-color:var(--primary);background:var(--primary-soft);color:var(--primary-dark);}
+
+.option-card{border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:10px;}
+.option-card.selected{border-color:var(--primary);background:var(--primary-soft);}
+.option-card h4{font-size:0.9rem;margin-bottom:3px;}
+.option-card p{font-size:0.78rem;color:var(--muted);margin:0;}
+
+.field-label{font-size:0.75rem;text-transform:uppercase;letter-spacing:0.05em;color:var(--muted);font-family:var(--font-mono);margin-bottom:6px;display:block;}
+textarea.field{width:100%;min-height:120px;border:1px solid var(--border);border-radius:9px;padding:10px;font-family:inherit;font-size:0.86rem;resize:none;background:var(--surface);color:var(--ink);margin-bottom:12px;}
+input.field{width:100%;border:1px solid var(--border);border-radius:9px;padding:10px;font-family:var(--font-mono);font-size:0.9rem;background:var(--surface);color:var(--ink);margin-bottom:12px;}
+
+.pill-cat{display:inline-block;font-size:0.72rem;font-weight:600;padding:4px 10px;border-radius:99px;background:var(--primary-soft);color:var(--primary-dark);margin-bottom:14px;}
+.attach-row{display:flex;align-items:center;gap:8px;font-size:0.82rem;color:var(--ink-soft);border:1px dashed var(--border);border-radius:9px;padding:10px;margin-bottom:16px;}
+.attach-row.on{border-color:var(--success);color:var(--success);border-style:solid;background:var(--success-soft);}
+
+.toggle-row{display:flex;justify-content:space-between;align-items:center;border:1px solid var(--border);border-radius:9px;padding:10px 12px;margin-bottom:16px;}
+.toggle-row span{font-size:0.84rem;color:var(--ink);}
+.toggle{width:38px;height:22px;border-radius:99px;background:var(--border);position:relative;flex:0 0 auto;}
+.toggle.on{background:var(--primary);}
+.toggle::after{content:"";position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:#fff;transition:left .15s;}
+.toggle.on::after{left:18px;}
+
+.review-card{border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:14px;background:var(--surface-2);}
+.review-card .k{font-family:var(--font-mono);font-size:0.68rem;text-transform:uppercase;color:var(--muted);}
+.review-card .v{font-size:0.86rem;color:var(--ink);margin-top:2px;}
+
+.confirm-icon{width:52px;height:52px;border-radius:50%;background:var(--success-soft);color:var(--success);display:flex;align-items:center;justify-content:center;font-size:1.6rem;margin:6px auto 16px;}
+.protocol-box{text-align:center;border:1px solid var(--border);border-radius:10px;padding:16px;background:var(--surface-2);margin-bottom:14px;}
+.protocol-code{font-family:var(--font-mono);font-size:1.35rem;font-weight:600;letter-spacing:0.03em;color:var(--primary-dark);}
+.warn-box{background:var(--warning-soft);color:var(--warning);border-radius:9px;padding:10px 12px;font-size:0.8rem;margin-bottom:18px;}
+
+.timeline-mini{display:flex;justify-content:space-between;margin:6px 0 18px;position:relative;}
+.timeline-mini::before{content:"";position:absolute;top:9px;left:14px;right:14px;height:2px;background:var(--border);}
+.tstep{display:flex;flex-direction:column;align-items:center;gap:6px;flex:1;position:relative;z-index:1;}
+.tdot{width:18px;height:18px;border-radius:50%;background:var(--surface);border:2px solid var(--border);}
+.tdot.done{background:var(--success);border-color:var(--success);}
+.tdot.now{background:var(--primary);border-color:var(--primary);}
+.tstep span{font-size:0.62rem;color:var(--muted);text-align:center;max-width:64px;}
+
+.msg{border-radius:10px;padding:10px 12px;font-size:0.82rem;margin-bottom:8px;max-width:88%;}
+.msg.staff{background:var(--surface-2);color:var(--ink);}
+.msg.me{background:var(--primary-soft);color:var(--primary-dark);margin-left:auto;}
+.msg .who{font-family:var(--font-mono);font-size:0.6rem;text-transform:uppercase;color:var(--muted);margin-bottom:3px;}
+
+.emoji-row{display:flex;gap:8px;margin-bottom:14px;}
+.emoji-opt{flex:1;border:1px solid var(--border);border-radius:10px;padding:12px 6px;text-align:center;font-size:1.3rem;}
+.emoji-opt.selected{border-color:var(--primary);background:var(--primary-soft);}
+.emoji-opt .lbl{display:block;font-size:0.68rem;margin-top:4px;color:var(--muted);}
+
+.contact-card{border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:10px;}
+.contact-card .name{font-weight:700;font-size:0.88rem;}
+.contact-card .num{font-family:var(--font-mono);font-size:1rem;color:var(--primary-dark);}
+.contact-card .desc{font-size:0.76rem;color:var(--muted);}
+
+/* ---------------- ADMIN ---------------- */
+.admin-shell{display:grid;grid-template-columns:212px 1fr;gap:0;background:var(--surface);border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow);overflow:hidden;min-height:640px;}
+.admin-side{background:var(--surface-2);border-right:1px solid var(--border);padding:20px 14px;display:flex;flex-direction:column;}
+.admin-brand{font-family:var(--font-display);font-weight:700;font-size:1.05rem;color:var(--primary-dark);padding:0 8px 18px;}
+.admin-brand span{display:block;font-family:var(--font-mono);font-size:0.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;font-weight:400;margin-top:2px;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;font-size:0.86rem;font-weight:600;color:var(--ink-soft);border:none;background:transparent;text-align:left;width:100%;margin-bottom:2px;}
+.nav-item .ic{width:18px;text-align:center;}
+.nav-item.active{background:var(--primary);color:#fff;}
+.nav-item .badge{margin-left:auto;background:var(--critical);color:#fff;font-size:0.64rem;font-family:var(--font-mono);padding:1px 6px;border-radius:99px;}
+.nav-item.active .badge{background:rgba(255,255,255,0.25);}
+.admin-user{margin-top:auto;padding:10px 12px;font-size:0.78rem;color:var(--muted);border-top:1px solid var(--border);padding-top:14px;}
+.admin-user b{color:var(--ink);}
+
+.admin-main{padding:24px 28px;overflow-x:auto;}
+.view{display:none;}
+.view.active{display:block;}
+.view-head{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:10px;margin-bottom:20px;}
+.view-head h3{font-size:1.25rem;}
+.view-head .sub{font-size:0.8rem;color:var(--muted);}
+
+.stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:24px;}
+.stat{background:var(--surface);padding:14px 18px;}
+.stat .n{font-family:var(--font-mono);font-size:1.4rem;font-weight:600;font-variant-numeric:tabular-nums;}
+.stat .l{font-size:0.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.03em;font-family:var(--font-mono);margin-top:2px;}
+.stat.warn .n{color:var(--warning);}
+.stat.crit .n{color:var(--critical);}
+.stat.ok .n{color:var(--success);}
+
+.panel-grid{display:grid;grid-template-columns:1.2fr 1fr;gap:20px;margin-bottom:24px;}
+@media (max-width:900px){.panel-grid{grid-template-columns:1fr;}}
+.panel{border:1px solid var(--border);border-radius:10px;padding:18px;}
+.panel h4{font-size:0.95rem;margin-bottom:14px;}
+.risk-row{display:grid;grid-template-columns:150px 1fr 34px;gap:10px;align-items:center;margin-bottom:9px;font-size:0.8rem;}
+.risk-row .label{color:var(--ink-soft);}
+.risk-bar-track{background:var(--surface-2);border-radius:99px;height:8px;overflow:hidden;}
+.risk-bar-fill{height:100%;background:var(--primary);border-radius:99px;}
+.risk-row .val{font-family:var(--font-mono);text-align:right;color:var(--muted);}
+
+.trend{display:flex;align-items:flex-end;gap:10px;height:110px;padding-top:10px;}
+.trend-col{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;}
+.trend-bar{width:100%;background:var(--primary-soft);border-radius:4px 4px 0 0;position:relative;}
+.trend-bar span{position:absolute;top:-18px;left:0;right:0;text-align:center;font-family:var(--font-mono);font-size:0.65rem;color:var(--muted);}
+.trend-col.last .trend-bar{background:var(--primary);}
+.trend-col .m{font-size:0.65rem;color:var(--muted);margin-top:6px;font-family:var(--font-mono);}
+
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;}
+.filters select{border:1px solid var(--border);border-radius:8px;padding:7px 10px;font-size:0.8rem;background:var(--surface);color:var(--ink);font-family:inherit;}
+
+table{width:100%;border-collapse:collapse;font-size:0.86rem;}
+th{text-align:left;font-family:var(--font-mono);font-size:0.64rem;text-transform:uppercase;letter-spacing:0.05em;color:var(--muted);background:var(--surface-2);padding:9px 14px;}
+td{padding:12px 14px;border-top:1px solid var(--border);color:var(--ink-soft);}
+tr.caserow{cursor:pointer;}
+tr.caserow:hover td{background:var(--primary-soft);}
+.tbl-wrap{border:1px solid var(--border);border-radius:10px;overflow:hidden;}
+.pill{display:inline-block;padding:3px 10px;border-radius:99px;font-size:0.7rem;font-weight:600;font-family:var(--font-mono);white-space:nowrap;}
+.pill.crit{background:var(--critical-soft);color:var(--critical);}
+.pill.warn{background:var(--warning-soft);color:var(--warning);}
+.pill.ok{background:var(--success-soft);color:var(--success);}
+.pill.neutral{background:var(--surface-2);color:var(--ink-soft);border:1px solid var(--border);}
+
+.detail{padding:0;}
+.detail-head{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:14px;margin-bottom:18px;}
+.detail-head .protocolo{font-family:var(--font-mono);font-size:1.1rem;font-weight:600;color:var(--primary-dark);}
+.linkback{border:none;background:none;color:var(--primary-dark);font-weight:600;font-size:0.85rem;margin-bottom:16px;padding:0;}
+.detail-grid{display:grid;grid-template-columns:1.5fr 1fr;gap:24px;align-items:start;}
+@media (max-width: 900px){.detail-grid{grid-template-columns:1fr;}}
+.relato-box{background:var(--surface-2);border-radius:10px;padding:16px;font-size:0.9rem;color:var(--ink);margin-bottom:16px;}
+.note-box{background:var(--warning-soft);border-radius:10px;padding:14px;font-size:0.85rem;color:var(--ink);margin-bottom:16px;}
+.note-box .lbl{font-family:var(--font-mono);font-size:0.65rem;text-transform:uppercase;color:var(--warning);display:block;margin-bottom:6px;}
+.thread{border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:12px;max-height:200px;overflow-y:auto;}
+.thread-input{display:flex;gap:8px;margin-bottom:16px;}
+.thread-input textarea{flex:1;border:1px solid var(--border);border-radius:8px;padding:8px 10px;font-family:inherit;font-size:0.84rem;resize:none;min-height:40px;background:var(--surface);color:var(--ink);}
+.action-btn{width:100%;padding:11px;border-radius:8px;font-weight:600;font-size:0.85rem;margin-bottom:8px;border:1px solid var(--border);background:var(--surface);color:var(--ink);}
+.action-btn.primary{background:var(--success);color:#fff;border-color:var(--success);}
+.action-btn.secondary{background:var(--warning-soft);color:var(--warning);border-color:transparent;}
+.action-btn:disabled{opacity:0.5;cursor:default;}
+.side-card{border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:14px;}
+.side-card h4{font-size:0.9rem;margin-bottom:10px;}
+.kv{display:flex;justify-content:space-between;font-size:0.82rem;padding:5px 0;border-bottom:1px dashed var(--border);}
+.kv:last-child{border-bottom:none;}
+.kv .k{color:var(--muted);}
+.kv .v{color:var(--ink);font-weight:600;}
+.tag-encaminhado{display:inline-block;margin-top:8px;background:var(--warning-soft);color:var(--warning);font-size:0.72rem;font-weight:700;padding:3px 9px;border-radius:99px;}
+
+.rules-explain{font-size:0.9rem;color:var(--ink-soft);margin-bottom:18px;max-width:70ch;}
+.report-card{border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:16px;}
+.report-card h4{font-size:1.05rem;margin-bottom:6px;}
+.report-card .sub{font-size:0.78rem;color:var(--muted);margin-bottom:14px;}
+.report-card ul{margin:0 0 16px;padding-left:18px;font-size:0.86rem;color:var(--ink-soft);}
+.report-card li{margin-bottom:5px;}
+.report-hist{font-size:0.83rem;}
+.report-hist .row{display:flex;justify-content:space-between;padding:9px 0;border-top:1px solid var(--border);color:var(--ink-soft);}
+.report-hist .row:first-child{border-top:none;}
+
+.settings-field{margin-bottom:18px;max-width:520px;}
+.settings-field label{font-size:0.78rem;font-family:var(--font-mono);text-transform:uppercase;letter-spacing:0.04em;color:var(--muted);display:block;margin-bottom:6px;}
+.settings-field input, .settings-field textarea{width:100%;border:1px solid var(--border);border-radius:8px;padding:9px 11px;font-family:inherit;font-size:0.88rem;background:var(--surface);color:var(--ink);}
+.settings-field textarea{min-height:70px;resize:vertical;}
+.settings-chiprow{display:flex;flex-wrap:wrap;gap:6px;}
+.settings-chip{background:var(--surface-2);border:1px solid var(--border);border-radius:99px;padding:5px 12px;font-size:0.78rem;color:var(--ink-soft);}
+.settings-toggle{display:flex;justify-content:space-between;align-items:center;max-width:520px;border:1px solid var(--border);border-radius:8px;padding:11px 14px;margin-bottom:12px;}
+.settings-toggle span{font-size:0.86rem;}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="page-head">
+    <span class="eyebrow">Protótipo v2 — refinado</span>
+    <h1>Canal de Escuta, com a área administrativa completa</h1>
+    <p>Segunda versão a partir do primeiro rascunho: o app de quem relata ganhou triagem de urgência e apoio imediato, e o painel virou uma ferramenta de trabalho de verdade — não só uma lista de casos.</p>
+  </div>
+  <p class="note">Prévia ilustrativa com dados de exemplo — sem conexão com nenhum backend real.</p>
+
+  <div class="whatsnew">
+    <span class="label">O que mudou desde a v1</span>
+    <ul>
+      <li>App: pergunta de urgência logo após a categoria</li>
+      <li>App: contatos de apoio imediato (CVV, Disque 100) quando há risco</li>
+      <li>App: escolha de "quero retorno" ou "só quero registrar"</li>
+      <li>App: pesquisa anônima de encerramento ao final do caso</li>
+      <li>Painel: visão geral com mapa de risco e tendência mensal</li>
+      <li>Painel: caixa de casos com filtros e nota interna (separada da conversa)</li>
+      <li>Painel: regras de alerta — como a equipe é avisada de cada tipo de caso</li>
+      <li>Painel: relatórios periódicos e configurações do canal</li>
+    </ul>
+  </div>
+
+  <div class="tabs">
+    <button id="tab-emp" class="active">App de quem relata</button>
+    <button id="tab-admin">Painel da equipe clínica</button>
+  </div>
+
+  <!-- ================= EMPLOYEE STAGE ================= -->
+  <div class="stage active" id="stage-emp">
+    <div class="phone-wrap">
+      <div class="phone">
+
+        <div class="phone-screen active" data-screen="home">
+          <div class="spacer-grow"></div>
+          <div class="brandmark">Canal de Escuta</div>
+          <div class="brandsub">[Nome da Empresa]</div>
+          <div class="reassure"><b>Você pode relatar sem se identificar.</b> Não registramos seu nome, seu IP ou o aparelho que você está usando — só o que você quiser contar.</div>
+          <button class="btn btn-primary" data-go="categoria">Fazer um relato</button>
+          <button class="btn btn-secondary" data-go="consulta-input">Já enviei — consultar status</button>
+          <div class="spacer-grow"></div>
+          <button class="btn-ghost" data-go="emergencia">Está em risco agora? Ver contatos de apoio imediato</button>
+        </div>
+
+        <div class="phone-screen" data-screen="emergencia">
+          <div class="screen-topbar"><button class="back-btn" data-go="home">←</button><span class="screen-title">Apoio imediato</span></div>
+          <p style="font-size:0.84rem;color:var(--ink-soft);margin-bottom:16px;">Se você corre risco agora, ligue direto — não é preciso esperar o retorno pelo canal.</p>
+          <div class="contact-card"><div class="name">CVV — Centro de Valorização da Vida</div><div class="num">188</div><div class="desc">Apoio emocional, 24h, gratuito e sigiloso</div></div>
+          <div class="contact-card"><div class="name">Disque Direitos Humanos</div><div class="num">100</div><div class="desc">Violência, assédio e discriminação</div></div>
+          <div class="contact-card"><div class="name">SAMU</div><div class="num">192</div><div class="desc">Emergência médica</div></div>
+        </div>
+
+        <div class="phone-screen" data-screen="categoria">
+          <div class="screen-topbar"><button class="back-btn" data-go="home">←</button><span class="screen-title">Sobre o que você quer falar?</span><div class="progress-dots"><span class="on"></span><span></span><span></span><span></span></div></div>
+          <div class="chip-grid" id="chipGrid">
+            <div class="chip" data-cat="Assédio moral">Assédio moral</div>
+            <div class="chip" data-cat="Assédio sexual">Assédio sexual</div>
+            <div class="chip" data-cat="Discriminação">Discriminação</div>
+            <div class="chip" data-cat="Sobrecarga / jornada">Sobrecarga / jornada</div>
+            <div class="chip" data-cat="Conflito com colega">Conflito com colega</div>
+            <div class="chip" data-cat="Falta de reconhecimento">Falta de reconhecimento</div>
+            <div class="chip" data-cat="Segurança no trabalho">Segurança no trabalho</div>
+            <div class="chip" data-cat="Sugestão de melhoria">Sugestão de melhoria</div>
+          </div>
+          <div class="spacer-grow"></div>
+          <button class="btn btn-primary" id="btnCatContinuar" data-go="urgencia" disabled>Continuar</button>
+        </div>
+
+        <div class="phone-screen" data-screen="urgencia">
+          <div class="screen-topbar"><button class="back-btn" data-go="categoria">←</button><span class="screen-title">Isso está acontecendo agora?</span><div class="progress-dots"><span class="on"></span><span class="on"></span><span></span><span></span></div></div>
+          <div class="option-card" data-urg="alta"><h4>É urgente, risco imediato</h4><p>Algo está acontecendo agora ou pode se repetir hoje</p></div>
+          <div class="option-card" data-urg="baixa"><h4>Não é urgente, mas quero registrar</h4><p>Aconteceu, mas não há risco imediato</p></div>
+          <div id="crisisBox" class="crisis" style="display:none;"><b>Se o risco é agora, não espere o canal responder.</b>Ligue 188 (CVV) ou 100 (Direitos Humanos) enquanto isso. Você ainda pode continuar o relato depois.</div>
+          <div class="spacer-grow"></div>
+          <button class="btn btn-primary" data-go="relato">Continuar</button>
+        </div>
+
+        <div class="phone-screen" data-screen="relato">
+          <div class="screen-topbar"><button class="back-btn" data-go="urgencia">←</button><span class="screen-title">Conte o que aconteceu</span><div class="progress-dots"><span class="on"></span><span class="on"></span><span class="on"></span><span></span></div></div>
+          <div class="pill-cat" id="pillCatRelato">Categoria</div>
+          <span class="field-label">Descrição</span>
+          <textarea class="field" id="relatoText" placeholder="Descreva com o máximo de detalhes que puder: quando, onde, quem esteve envolvido..."></textarea>
+          <div class="attach-row" id="attachRow"><span id="attachIcon">📎</span><span id="attachLabel">Anexar print ou foto (opcional)</span></div>
+          <div class="spacer-grow"></div>
+          <button class="btn btn-primary" data-go="revisao">Revisar</button>
+        </div>
+
+        <div class="phone-screen" data-screen="revisao">
+          <div class="screen-topbar"><button class="back-btn" data-go="relato">←</button><span class="screen-title">Revisar antes de enviar</span><div class="progress-dots"><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span></div></div>
+          <div class="review-card"><div class="k">Categoria</div><div class="v" id="revCat">—</div></div>
+          <div class="review-card"><div class="k">Seu relato</div><div class="v" id="revTexto">—</div></div>
+          <div class="toggle-row"><span>Quero receber retorno pelo protocolo</span><div class="toggle on" id="toggleRetorno"></div></div>
+          <div class="reassure">Nenhum dado que identifique você será salvo junto com este relato.</div>
+          <div class="spacer-grow"></div>
+          <button class="btn btn-primary" id="btnEnviar">Enviar relato</button>
+        </div>
+
+        <div class="phone-screen" data-screen="protocolo">
+          <div class="spacer-grow"></div>
+          <div class="confirm-icon">✓</div>
+          <h3 style="text-align:center;margin-bottom:18px;font-size:1.1rem;">Relato enviado</h3>
+          <div class="protocol-box"><div class="field-label" style="margin-bottom:8px;">Seu protocolo</div><div class="protocol-code" id="protoCode">CE-2026-0000</div></div>
+          <div class="warn-box">Guarde este código agora. É a única forma de acompanhar seu caso — não pedimos e-mail nem login.</div>
+          <div class="spacer-grow"></div>
+          <button class="btn btn-secondary" data-go="home">Voltar ao início</button>
+        </div>
+
+        <div class="phone-screen" data-screen="consulta-input">
+          <div class="screen-topbar"><button class="back-btn" data-go="home">←</button><span class="screen-title">Consultar meu relato</span></div>
+          <span class="field-label">Código do protocolo</span>
+          <input class="field" id="consultaInput" placeholder="CE-2026-7F3K" value="CE-2026-7F3K">
+          <div class="spacer-grow"></div>
+          <button class="btn btn-primary" data-go="consulta-status">Consultar</button>
+        </div>
+
+        <div class="phone-screen" data-screen="consulta-status">
+          <div class="screen-topbar"><button class="back-btn" data-go="home">←</button><span class="screen-title">Protocolo CE-2026-7F3K</span></div>
+          <div class="timeline-mini">
+            <div class="tstep"><div class="tdot done"></div><span>Recebido</span></div>
+            <div class="tstep"><div class="tdot done"></div><span>Triagem</span></div>
+            <div class="tstep"><div class="tdot now"></div><span>Em andamento</span></div>
+            <div class="tstep"><div class="tdot"></div><span>Concluído</span></div>
+          </div>
+          <span class="field-label">Conversa com a equipe</span>
+          <div class="msg staff"><div class="who">Equipe de Escuta</div>Obrigada por relatar. Você poderia dizer aproximadamente quando essa situação aconteceu pela última vez?</div>
+          <div class="msg me"><div class="who">Você</div>Foi na semana passada, numa reunião com mais pessoas.</div>
+          <div class="spacer-grow"></div>
+          <button class="btn-ghost" data-go="consulta-concluido">Ver como fica um caso encerrado →</button>
+        </div>
+
+        <div class="phone-screen" data-screen="consulta-concluido">
+          <div class="screen-topbar"><button class="back-btn" data-go="consulta-status">←</button><span class="screen-title">Protocolo CE-2026-X22R</span></div>
+          <div class="timeline-mini">
+            <div class="tstep"><div class="tdot done"></div><span>Recebido</span></div>
+            <div class="tstep"><div class="tdot done"></div><span>Triagem</span></div>
+            <div class="tstep"><div class="tdot done"></div><span>Em andamento</span></div>
+            <div class="tstep"><div class="tdot done"></div><span>Concluído</span></div>
+          </div>
+          <div class="msg staff"><div class="who">Equipe de Escuta</div>Seu caso foi encaminhado ao RH/jurídico da empresa e encerrado do nosso lado. Obrigada por confiar no canal.</div>
+          <span class="field-label" style="margin-top:12px;">Antes de sair — como foi essa experiência?</span>
+          <div class="emoji-row">
+            <div class="emoji-opt" data-fb="ruim">🙁<span class="lbl">Não fui ouvido</span></div>
+            <div class="emoji-opt" data-fb="ok">😐<span class="lbl">Em parte</span></div>
+            <div class="emoji-opt" data-fb="bom">🙂<span class="lbl">Fui levado a sério</span></div>
+          </div>
+          <textarea class="field" placeholder="Quer deixar um comentário final? (opcional, também anônimo)" style="min-height:70px;"></textarea>
+          <button class="btn btn-primary" id="btnFeedback">Enviar avaliação</button>
+        </div>
+
+      </div>
+      <div style="max-width:340px;padding-top:8px;">
+        <h3 style="font-size:1.05rem;margin-bottom:10px;">Por que a triagem de urgência importa</h3>
+        <p style="color:var(--ink-soft);font-size:0.92rem;margin-bottom:16px;">Separar "urgente" de "posso esperar" já na entrada evita que um caso de risco fique parado na fila até alguém abrir o painel — e conecta a pessoa a ajuda imediata mesmo antes de qualquer resposta da equipe.</p>
+        <h3 style="font-size:1.05rem;margin-bottom:10px;">Por que perguntar no encerramento</h3>
+        <p style="color:var(--ink-soft);font-size:0.92rem;">A pesquisa anônima de encerramento vira evidência de que o canal funciona — dado concreto para o relatório do PGR, não só volume de casos.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= ADMIN STAGE ================= -->
+  <div class="stage" id="stage-admin">
+    <div class="admin-shell">
+      <div class="admin-side">
+        <div class="admin-brand">Canal de Escuta<span>Painel · [Empresa]</span></div>
+        <button class="nav-item active" data-view="geral"><span class="ic">◔</span> Visão Geral</button>
+        <button class="nav-item" data-view="casos"><span class="ic">▤</span> Caixa de Casos <span class="badge">2</span></button>
+        <button class="nav-item" data-view="relatorios"><span class="ic">▦</span> Relatórios</button>
+        <button class="nav-item" data-view="alertas"><span class="ic">◈</span> Alertas</button>
+        <button class="nav-item" data-view="config"><span class="ic">⚙</span> Configurações</button>
+        <div class="admin-user"><b>Márcia Bússolo</b><br>CRP 02959 · Equipe de Escuta</div>
+      </div>
+
+      <div class="admin-main">
+
+        <div class="view active" data-view="geral">
+          <div class="view-head"><h3>Visão Geral</h3><div class="sub">Dados de exemplo · setembro de 2026</div></div>
+          <div class="stat-row">
+            <div class="stat"><div class="n">7</div><div class="l">Casos abertos</div></div>
+            <div class="stat ok"><div class="n">2,1 dias</div><div class="l">Tempo médio até 1ª resposta</div></div>
+            <div class="stat crit"><div class="n">2</div><div class="l">Fora do prazo</div></div>
+            <div class="stat"><div class="n">86%</div><div class="l">Sentiram-se ouvidos*</div></div>
+          </div>
+          <div class="panel-grid">
+            <div class="panel">
+              <h4>Mapa de risco por categoria</h4>
+              <div class="risk-row"><span class="label">Assédio moral</span><div class="risk-bar-track"><div class="risk-bar-fill" style="width:78%"></div></div><span class="val">7</span></div>
+              <div class="risk-row"><span class="label">Sugestão de melhoria</span><div class="risk-bar-track"><div class="risk-bar-fill" style="width:67%"></div></div><span class="val">6</span></div>
+              <div class="risk-row"><span class="label">Sobrecarga / jornada</span><div class="risk-bar-track"><div class="risk-bar-fill" style="width:56%"></div></div><span class="val">5</span></div>
+              <div class="risk-row"><span class="label">Conflito com colega</span><div class="risk-bar-track"><div class="risk-bar-fill" style="width:44%"></div></div><span class="val">4</span></div>
+              <div class="risk-row"><span class="label">Falta de reconhecimento</span><div class="risk-bar-track"><div class="risk-bar-fill" style="width:33%"></div></div><span class="val">3</span></div>
+              <div class="risk-row"><span class="label">Discriminação</span><div class="risk-bar-track"><div class="risk-bar-fill" style="width:22%"></div></div><span class="val">2</span></div>
+              <div class="risk-row"><span class="label">Assédio sexual</span><div class="risk-bar-track"><div class="risk-bar-fill" style="width:11%"></div></div><span class="val">1</span></div>
+            </div>
+            <div class="panel">
+              <h4>Casos por mês</h4>
+              <div class="trend">
+                <div class="trend-col"><div class="trend-bar" style="height:38%"><span>4</span></div><div class="m">abr</div></div>
+                <div class="trend-col"><div class="trend-bar" style="height:52%"><span>6</span></div><div class="m">mai</div></div>
+                <div class="trend-col"><div class="trend-bar" style="height:45%"><span>5</span></div><div class="m">jun</div></div>
+                <div class="trend-col"><div class="trend-bar" style="height:68%"><span>8</span></div><div class="m">jul</div></div>
+                <div class="trend-col"><div class="trend-bar" style="height:60%"><span>7</span></div><div class="m">ago</div></div>
+                <div class="trend-col last"><div class="trend-bar" style="height:80%"><span>9</span></div><div class="m">set</div></div>
+              </div>
+            </div>
+          </div>
+          <p style="font-size:0.76rem;color:var(--muted);">*Com base nas pesquisas de encerramento respondidas — ver seção Relatórios.</p>
+        </div>
+
+        <div class="view" data-view="casos">
+          <div class="view-head"><h3>Caixa de Casos</h3><div class="sub">7 abertos</div></div>
+          <div class="filters">
+            <select><option>Status: todos</option><option>Em andamento</option><option>Em atraso</option><option>Encaminhado</option></select>
+            <select><option>Categoria: todas</option><option>Assédio moral</option><option>Assédio sexual</option><option>Discriminação</option></select>
+            <select><option>Gravidade: todas</option><option>Crítica</option><option>Média</option><option>Baixa</option></select>
+            <select><option>Setor: todos</option><option>Operacional</option><option>Comercial</option><option>Administrativo</option></select>
+          </div>
+          <div id="adminList">
+            <div class="tbl-wrap">
+              <table>
+                <thead><tr><th>Protocolo</th><th>Categoria</th><th>Gravidade</th><th>Status</th><th>Prazo</th></tr></thead>
+                <tbody id="caseTbody"></tbody>
+              </table>
+            </div>
+          </div>
+          <div id="adminDetail" style="display:none;"></div>
+        </div>
+
+        <div class="view" data-view="relatorios">
+          <div class="view-head"><h3>Relatórios</h3><div class="sub">Alimentam o PGR / plano de ação de riscos psicossociais</div></div>
+          <div class="report-card">
+            <h4>Relatório de Riscos Psicossociais — Setembro 2026</h4>
+            <div class="sub">Gerado automaticamente a partir dos casos encerrados e em andamento no mês</div>
+            <ul>
+              <li>9 relatos recebidos, 7 em aberto, 2 em atraso de SLA</li>
+              <li>Categoria mais recorrente: assédio moral (7 casos), concentrado no setor Operacional</li>
+              <li>86% dos respondentes da pesquisa de encerramento sentiram-se ouvidos</li>
+              <li>1 caso encaminhado a RH/jurídico por discriminação</li>
+              <li>Recomendação preliminar: revisar conduta de liderança no setor Operacional (cruza com o tópico T01 do DRPS)</li>
+            </ul>
+            <button class="btn btn-primary" style="width:auto;padding:10px 18px;margin:0;">Baixar PDF</button>
+          </div>
+          <div class="panel">
+            <h4>Histórico</h4>
+            <div class="report-hist">
+              <div class="row"><span>Agosto 2026</span><span class="mono">7 casos · PDF</span></div>
+              <div class="row"><span>Julho 2026</span><span class="mono">8 casos · PDF</span></div>
+              <div class="row"><span>Junho 2026</span><span class="mono">5 casos · PDF</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="view" data-view="alertas">
+          <div class="view-head"><h3>Alertas</h3><div class="sub">Como a equipe recebe o feedback</div></div>
+          <p class="rules-explain">Um caso crítico não pode esperar alguém abrir o painel. Cada gravidade dispara um canal de aviso diferente para a equipe — o painel continua sendo o lugar de trabalho, mas não é o único jeito de saber que algo chegou.</p>
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr><th>Tipo de caso</th><th>Canal de aviso</th><th>Destinatário</th><th>Prazo de resposta</th></tr></thead>
+              <tbody>
+                <tr><td class="strong">Assédio sexual / violência</td><td><span class="pill crit">WhatsApp + e-mail, imediato</span></td><td>Márcia Bússolo</td><td class="mono">24h</td></tr>
+                <tr><td class="strong">Discriminação / ilegalidade</td><td><span class="pill warn">E-mail, imediato</span></td><td>Equipe de escuta</td><td class="mono">72h</td></tr>
+                <tr><td class="strong">Assédio moral / conflito</td><td><span class="pill neutral">Resumo diário por e-mail</span></td><td>Equipe de escuta</td><td class="mono">5 dias úteis</td></tr>
+                <tr><td class="strong">Sobrecarga / sugestão</td><td><span class="pill neutral">Resumo semanal</span></td><td>Equipe de escuta</td><td class="mono">10 dias úteis</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="view" data-view="config">
+          <div class="view-head"><h3>Configurações do canal</h3><div class="sub">Ajustes de nome, categorias e regras</div></div>
+          <div class="settings-field"><label>Nome público do canal</label><input value="Canal de Escuta"></div>
+          <div class="settings-field"><label>Domínio de acesso</label><input value="escuta.[empresa].com.br"></div>
+          <div class="settings-field"><label>Mensagem de boas-vindas (tela inicial)</label><textarea>Você pode relatar sem se identificar. Não registramos seu nome, seu IP ou o aparelho que você está usando.</textarea></div>
+          <div class="settings-field"><label>Categorias ativas</label>
+            <div class="settings-chiprow">
+              <span class="settings-chip">Assédio moral</span><span class="settings-chip">Assédio sexual</span><span class="settings-chip">Discriminação</span>
+              <span class="settings-chip">Sobrecarga / jornada</span><span class="settings-chip">Conflito com colega</span><span class="settings-chip">Falta de reconhecimento</span>
+              <span class="settings-chip">Segurança no trabalho</span><span class="settings-chip">Sugestão de melhoria</span><span class="settings-chip">+ Adicionar categoria</span>
+            </div>
+          </div>
+          <div class="settings-toggle"><span>Permitir anexos (foto/print)</span><div class="toggle on"></div></div>
+          <div class="settings-toggle"><span>Permitir mensagens após o caso encerrado</span><div class="toggle"></div></div>
+          <div class="settings-toggle"><span>Pesquisa de encerramento ativada</span><div class="toggle on"></div></div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ---------- Tabs ----------
+var tabEmp = document.getElementById('tab-emp'), tabAdmin = document.getElementById('tab-admin');
+var stageEmp = document.getElementById('stage-emp'), stageAdmin = document.getElementById('stage-admin');
+tabEmp.onclick = function(){ tabEmp.classList.add('active'); tabAdmin.classList.remove('active'); stageEmp.classList.add('active'); stageAdmin.classList.remove('active'); };
+tabAdmin.onclick = function(){ tabAdmin.classList.add('active'); tabEmp.classList.remove('active'); stageAdmin.classList.add('active'); stageEmp.classList.remove('active'); };
+
+// ---------- Admin sidebar nav ----------
+document.querySelectorAll('.nav-item').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    document.querySelectorAll('.nav-item').forEach(function(b){ b.classList.remove('active'); });
+    btn.classList.add('active');
+    var v = btn.getAttribute('data-view');
+    document.querySelectorAll('.view').forEach(function(el){ el.classList.toggle('active', el.getAttribute('data-view') === v); });
+  });
+});
+
+// ---------- Employee phone flow ----------
+var screens = document.querySelectorAll('.phone-screen');
+function goScreen(name){
+  screens.forEach(function(s){ s.classList.toggle('active', s.getAttribute('data-screen') === name); });
+  var phone = document.querySelector('.phone'); if(phone) phone.scrollTop = 0;
+}
+document.querySelectorAll('[data-go]').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    if(btn.id === 'btnCatContinuar' && btn.disabled) return;
+    goScreen(btn.getAttribute('data-go'));
+  });
+});
+
+var selectedCat = null;
+document.querySelectorAll('.chip').forEach(function(chip){
+  chip.addEventListener('click', function(){
+    document.querySelectorAll('.chip').forEach(function(c){ c.classList.remove('selected'); });
+    chip.classList.add('selected');
+    selectedCat = chip.getAttribute('data-cat');
+    document.getElementById('btnCatContinuar').disabled = false;
+    document.getElementById('pillCatRelato').textContent = selectedCat;
+  });
+});
+
+document.querySelectorAll('.option-card[data-urg]').forEach(function(card){
+  card.addEventListener('click', function(){
+    document.querySelectorAll('.option-card[data-urg]').forEach(function(c){ c.classList.remove('selected'); });
+    card.classList.add('selected');
+    document.getElementById('crisisBox').style.display = card.getAttribute('data-urg') === 'alta' ? 'block' : 'none';
+  });
+});
+
+var attached = false;
+document.getElementById('attachRow').addEventListener('click', function(){
+  attached = !attached;
+  this.classList.toggle('on', attached);
+  document.getElementById('attachIcon').textContent = attached ? '✅' : '📎';
+  document.getElementById('attachLabel').textContent = attached ? '1 anexo adicionado' : 'Anexar print ou foto (opcional)';
+});
+
+var retornoOn = true;
+document.getElementById('toggleRetorno').addEventListener('click', function(){
+  retornoOn = !retornoOn; this.classList.toggle('on', retornoOn);
+});
+
+document.querySelector('[data-go="revisao"]').addEventListener('click', function(){
+  document.getElementById('revCat').textContent = selectedCat || '—';
+  var txt = document.getElementById('relatoText').value.trim();
+  document.getElementById('revTexto').textContent = txt || '(nenhum texto digitado nesta prévia)';
+});
+
+document.getElementById('btnEnviar').addEventListener('click', function(){
+  var code = 'CE-2026-' + Math.random().toString(36).slice(2,6).toUpperCase();
+  document.getElementById('protoCode').textContent = code;
+  goScreen('protocolo');
+});
+
+document.querySelectorAll('.emoji-opt').forEach(function(e){
+  e.addEventListener('click', function(){
+    document.querySelectorAll('.emoji-opt').forEach(function(x){ x.classList.remove('selected'); });
+    e.classList.add('selected');
+  });
+});
+document.getElementById('btnFeedback').addEventListener('click', function(){
+  this.textContent = 'Avaliação enviada — obrigada';
+  this.disabled = true;
+});
+
+// ---------- Admin: seed example cases ----------
+var cases = [
+  {id:1, protocolo:'CE-2026-7F3K', categoria:'Assédio moral', gravidade:'warn', gravidadeLabel:'Média', status:'ok', statusLabel:'Em andamento', prazo:'3 dias úteis restantes',
+    relato:'Relato descreve comentários públicos e recorrentes de um gestor sobre desempenho de um subordinado durante reuniões de equipe, gerando constrangimento na frente dos colegas.',
+    setor:'Operacional', encaminhado:false,
+    thread:[{de:'staff', texto:'Obrigada por relatar. Você poderia dizer aproximadamente quando essa situação aconteceu pela última vez?'},{de:'anon', texto:'Foi na semana passada, numa reunião com mais pessoas.'}]},
+  {id:2, protocolo:'CE-2026-A91Z', categoria:'Assédio sexual', gravidade:'crit', gravidadeLabel:'Crítica', status:'crit', statusLabel:'Em atraso', prazo:'Vencido há 1 dia',
+    relato:'Relato de comentários de conotação sexual reiterados por um colega de setor, mesmo após pedido explícito para que parassem.',
+    setor:'Comercial', encaminhado:false,
+    thread:[]},
+  {id:3, protocolo:'CE-2026-3M0P', categoria:'Sugestão de melhoria', gravidade:'ok', gravidadeLabel:'Baixa', status:'ok', statusLabel:'Recebido', prazo:'9 dias úteis restantes',
+    relato:'Sugestão de revisão da escala de plantões aos sábados, apontada como fonte recorrente de desgaste pela equipe do turno da tarde.',
+    setor:'Administrativo', encaminhado:false,
+    thread:[]},
+  {id:4, protocolo:'CE-2026-Q7LD', categoria:'Sobrecarga / jornada', gravidade:'warn', gravidadeLabel:'Média', status:'ok', statusLabel:'Em triagem', prazo:'6 dias úteis restantes',
+    relato:'Relato sobre acúmulo de funções após desligamento de um colega sem reposição, com jornada estendida sem compensação combinada previamente.',
+    setor:'Operacional', encaminhado:false,
+    thread:[]},
+  {id:5, protocolo:'CE-2026-X22R', categoria:'Discriminação', gravidade:'crit', gravidadeLabel:'Crítica', status:'warn', statusLabel:'Encaminhado', prazo:'1 dia útil restante',
+    relato:'Relato de comentários discriminatórios recorrentes associados a origem regional durante o horário de trabalho.',
+    setor:'Comercial', encaminhado:true,
+    thread:[{de:'staff', texto:'Caso encaminhado ao RH/jurídico da empresa em 01/09, mantendo acompanhamento psicológico à pessoa que relatou.'}]}
+];
+
+function pillClass(k){ return k === 'crit' ? 'crit' : (k === 'warn' ? 'warn' : 'ok'); }
+
+function renderList(){
+  var tbody = document.getElementById('caseTbody');
+  tbody.innerHTML = '';
+  cases.forEach(function(c){
+    var tr = document.createElement('tr');
+    tr.className = 'caserow';
+    tr.innerHTML = '<td class="mono">'+c.protocolo+'</td>'+
+      '<td>'+c.categoria+'</td>'+
+      '<td><span class="pill '+pillClass(c.gravidade)+'">'+c.gravidadeLabel+'</span></td>'+
+      '<td><span class="pill '+pillClass(c.status)+'">'+c.statusLabel+'</span></td>'+
+      '<td class="mono">'+c.prazo+'</td>';
+    tr.addEventListener('click', function(){ openDetail(c.id); });
+    tbody.appendChild(tr);
+  });
+}
+
+function openDetail(id){
+  var c = cases.find(function(x){ return x.id === id; });
+  document.getElementById('adminList').style.display = 'none';
+  var d = document.getElementById('adminDetail');
+  d.style.display = 'block';
+  d.innerHTML =
+    '<div class="detail">'+
+      '<button class="linkback" id="backToList">← Voltar à caixa de casos</button>'+
+      '<div class="detail-head"><div><div class="protocolo">'+c.protocolo+'</div><div style="color:var(--muted);font-size:0.82rem;">'+c.categoria+' · Setor '+c.setor+'</div>'+(c.encaminhado ? '<span class="tag-encaminhado">Encaminhado ao RH/jurídico</span>' : '')+'</div>'+
+      '<div><span class="pill '+pillClass(c.gravidade)+'">'+c.gravidadeLabel+'</span> <span class="pill '+pillClass(c.status)+'">'+c.statusLabel+'</span></div></div>'+
+      '<div class="detail-grid">'+
+        '<div>'+
+          '<span class="field-label">Relato</span>'+
+          '<div class="relato-box">'+c.relato+'</div>'+
+          '<div class="note-box"><span class="lbl">Nota interna — só a equipe vê</span>Confirmar com o gestor do setor se há outros relatos recentes envolvendo a mesma dupla antes de avançar.</div>'+
+          '<span class="field-label">Conversa (por protocolo, sem identidade)</span>'+
+          '<div class="thread" id="threadBox">'+ threadHtml(c.thread) +'</div>'+
+          '<div class="thread-input"><textarea id="msgInput" placeholder="Pedir mais informações, sem revelar quem está perguntando do outro lado..."></textarea>'+
+          '<button class="btn btn-primary" style="width:auto;margin:0;padding:10px 16px;" id="sendMsg">Enviar</button></div>'+
+        '</div>'+
+        '<div>'+
+          '<div class="side-card"><h4>Reclassificar</h4>'+
+            '<div class="kv"><span class="k">Categoria</span><span class="v">'+c.categoria+'</span></div>'+
+            '<div class="kv"><span class="k">Gravidade</span><span class="v">'+c.gravidadeLabel+'</span></div>'+
+            '<div class="kv"><span class="k">Recebido em</span><span class="v">01/09/2026</span></div>'+
+          '</div>'+
+          '<button class="action-btn secondary" id="btnEncaminhar" '+(c.encaminhado ? 'disabled' : '')+'>'+(c.encaminhado ? 'Já encaminhado ao RH/jurídico' : 'Encaminhar ao RH/jurídico')+'</button>'+
+          '<button class="action-btn primary" id="btnEncerrar">Encerrar caso</button>'+
+        '</div>'+
+      '</div>'+
+    '</div>';
+
+  document.getElementById('backToList').addEventListener('click', function(){
+    d.style.display = 'none';
+    document.getElementById('adminList').style.display = 'block';
+  });
+  document.getElementById('sendMsg').addEventListener('click', function(){
+    var val = document.getElementById('msgInput').value.trim();
+    if(!val) return;
+    c.thread.push({de:'staff', texto: val});
+    document.getElementById('threadBox').innerHTML = threadHtml(c.thread);
+    document.getElementById('msgInput').value = '';
+  });
+  var encBtn = document.getElementById('btnEncaminhar');
+  if(encBtn) encBtn.addEventListener('click', function(){
+    c.encaminhado = true; c.statusLabel = 'Encaminhado'; c.status = 'warn';
+    openDetail(id); renderList();
+  });
+  document.getElementById('btnEncerrar').addEventListener('click', function(){
+    c.statusLabel = 'Concluído'; c.status = 'ok';
+    openDetail(id); renderList();
+  });
+}
+
+function threadHtml(thread){
+  if(!thread.length) return '<div style="color:var(--muted);font-size:0.82rem;">Nenhuma mensagem trocada ainda.</div>';
+  return thread.map(function(m){
+    return '<div class="msg '+(m.de === 'staff' ? 'staff' : 'me')+'"><div class="who">'+(m.de === 'staff' ? 'Equipe de Escuta' : 'Anônimo')+'</div>'+m.texto+'</div>';
+  }).join('');
+}
+
+renderList();
+</script>
+</body>
+</html>

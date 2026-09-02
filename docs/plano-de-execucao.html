@@ -1,0 +1,263 @@
+<title>Plano de Execução</title>
+<meta name="description" content="Backlog acionável por fase para construir o Canal de Escuta: o que já está decidido, o que falta decidir, e as tarefas concretas de cada etapa.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Source+Sans+3:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --bg:#F1F4F1; --surface:#FFFFFF; --surface-2:#E7EDE7;
+  --ink:#17231F; --ink-soft:#4B5850; --muted:#79857C; --border:#D7DED5;
+  --primary:#2C5F5A; --primary-dark:#1B3E3B; --primary-soft:#E3EDEB;
+  --warning:#B07A2C; --warning-soft:#F2E7D4;
+  --critical:#A3402F; --critical-soft:#F3E1DC;
+  --success:#3E7D5C; --success-soft:#DFEDE4;
+  --font-display:'Fraunces',Georgia,serif;
+  --font-body:'Source Sans 3',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  --font-mono:'IBM Plex Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+  --shadow: 0 1px 2px rgba(23,35,31,0.06), 0 8px 24px -12px rgba(23,35,31,0.12);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#111815; --surface:#1A2320; --surface-2:#223028;
+    --ink:#E8ECE8; --ink-soft:#B7C2BB; --muted:#8B968E; --border:#2B3733;
+    --primary:#74B6AB; --primary-dark:#9ED2C8; --primary-soft:#1E322E;
+    --warning:#D8A75A; --warning-soft:#302A1D;
+    --critical:#D3796C; --critical-soft:#332220;
+    --success:#74B08C; --success-soft:#1D2C24;
+    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px -12px rgba(0,0,0,0.5);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#111815; --surface:#1A2320; --surface-2:#223028;
+  --ink:#E8ECE8; --ink-soft:#B7C2BB; --muted:#8B968E; --border:#2B3733;
+  --primary:#74B6AB; --primary-dark:#9ED2C8; --primary-soft:#1E322E;
+  --warning:#D8A75A; --warning-soft:#302A1D;
+  --critical:#D3796C; --critical-soft:#332220;
+  --success:#74B08C; --success-soft:#1D2C24;
+  --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px -12px rgba(0,0,0,0.5);
+}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font-body);line-height:1.6;}
+h1,h2,h3{font-family:var(--font-display);color:var(--ink);text-wrap:balance;font-weight:600;margin:0;}
+p{margin:0 0 1em;color:var(--ink-soft);max-width:66ch;}
+code,.mono{font-family:var(--font-mono);}
+
+.shell{display:grid;grid-template-columns:240px minmax(0,780px);gap:56px;max-width:1100px;margin:0 auto;padding:48px 24px 96px;justify-content:center;}
+.toc{position:sticky;top:32px;align-self:start;font-size:0.86rem;}
+.toc .kicker{font-family:var(--font-mono);text-transform:uppercase;letter-spacing:0.08em;font-size:0.7rem;color:var(--muted);margin-bottom:14px;display:block;}
+.toc nav{display:flex;flex-direction:column;gap:2px;border-left:1px solid var(--border);}
+.toc a{display:block;color:var(--muted);text-decoration:none;padding:6px 0 6px 14px;border-left:2px solid transparent;margin-left:-1px;}
+.toc a:hover{color:var(--ink);}
+
+header.doc-head{margin-bottom:8px;}
+.eyebrow{font-family:var(--font-mono);font-size:0.72rem;text-transform:uppercase;letter-spacing:0.09em;color:var(--primary-dark);background:var(--primary-soft);display:inline-block;padding:4px 10px;border-radius:3px;margin-bottom:16px;}
+h1.title{font-size:2.5rem;line-height:1.08;margin-bottom:10px;}
+.subtitle{font-size:1.1rem;color:var(--ink-soft);max-width:58ch;margin-bottom:20px;}
+.meta-row{display:flex;gap:24px;flex-wrap:wrap;font-size:0.82rem;color:var(--muted);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:14px 0;margin-bottom:8px;}
+.meta-row strong{color:var(--ink-soft);font-weight:600;}
+
+section{padding-top:52px;scroll-margin-top:24px;}
+section>.eyebrow-sm{font-family:var(--font-mono);font-size:0.72rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);margin-bottom:8px;display:block;}
+h2.h-section{font-size:1.55rem;margin-bottom:18px;padding-bottom:14px;border-bottom:1px solid var(--border);}
+h3.h-sub{font-size:1.05rem;margin:22px 0 10px;color:var(--ink);}
+
+.lede{font-size:1.05rem;color:var(--ink-soft);}
+
+.decisions{display:flex;flex-direction:column;border:1px solid var(--border);border-radius:8px;overflow:hidden;background:var(--surface);box-shadow:var(--shadow);margin-bottom:8px;}
+.decision{display:grid;grid-template-columns:28px 1fr;gap:12px;padding:14px 18px;border-bottom:1px solid var(--border);}
+.decision:last-child{border-bottom:none;}
+.decision .check{width:20px;height:20px;border-radius:50%;background:var(--success-soft);color:var(--success);display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:700;margin-top:2px;}
+.decision .a{font-weight:600;color:var(--ink);font-size:0.92rem;}
+.decision .a span{font-weight:400;color:var(--ink-soft);}
+
+.pend{list-style:none;margin:16px 0 0;padding:0;display:flex;flex-direction:column;gap:10px;}
+.pend li{display:flex;gap:10px;align-items:flex-start;background:var(--surface);border:1px solid var(--warning);border-left-width:3px;border-radius:6px;padding:12px 14px;font-size:0.9rem;color:var(--ink-soft);}
+.pend li::before{content:"⚑";color:var(--warning);flex:0 0 auto;line-height:1.4;}
+
+/* phase blocks */
+.phase-block{border:1px solid var(--border);border-radius:10px;margin-bottom:22px;background:var(--surface);box-shadow:var(--shadow);overflow:hidden;}
+.phase-head{display:flex;align-items:baseline;gap:14px;padding:16px 20px;background:var(--surface-2);border-bottom:1px solid var(--border);}
+.phase-head .num{font-family:var(--font-display);font-size:1.5rem;color:var(--primary);font-weight:600;}
+.phase-head h4{font-size:1.05rem;color:var(--ink);}
+.phase-head .tag{margin-left:auto;font-family:var(--font-mono);font-size:0.68rem;text-transform:uppercase;color:var(--muted);}
+.phase-body{padding:18px 20px;}
+.tasklist{list-style:none;margin:0 0 14px;padding:0;display:flex;flex-direction:column;gap:8px;}
+.tasklist li{display:flex;gap:10px;align-items:flex-start;font-size:0.9rem;color:var(--ink);}
+.tasklist li::before{content:"☐";color:var(--primary);font-family:var(--font-mono);flex:0 0 auto;}
+.dod{background:var(--primary-soft);border-radius:8px;padding:12px 14px;font-size:0.85rem;color:var(--ink);}
+.dod b{color:var(--primary-dark);font-family:var(--font-mono);font-size:0.68rem;text-transform:uppercase;letter-spacing:0.05em;display:block;margin-bottom:4px;}
+
+.roles{border:1px solid var(--border);border-radius:8px;overflow:hidden;background:var(--surface);box-shadow:var(--shadow);}
+.role-row{display:grid;grid-template-columns:170px 1fr;gap:14px;padding:14px 18px;border-bottom:1px solid var(--border);font-size:0.88rem;}
+.role-row:last-child{border-bottom:none;}
+.role-row .who{font-weight:700;color:var(--ink);}
+.role-row .what{color:var(--ink-soft);}
+
+@media (max-width:860px){
+  .shell{grid-template-columns:1fr;padding:28px 18px 72px;}
+  .toc{position:static;border-bottom:1px solid var(--border);padding-bottom:20px;margin-bottom:8px;}
+  .toc nav{flex-direction:row;flex-wrap:wrap;border-left:none;gap:8px;}
+  .toc a{border:1px solid var(--border);border-radius:99px;padding:4px 12px;}
+  h1.title{font-size:2rem;}
+}
+</style>
+
+<div class="shell">
+  <aside class="toc">
+    <span class="kicker">Sumário</span>
+    <nav>
+      <a href="#fechadas">Já está decidido</a>
+      <a href="#pendencias">Falta decidir</a>
+      <a href="#fase0">Fase 0 — Preparação</a>
+      <a href="#fase1">Fase 1 — MVP</a>
+      <a href="#fase2">Fase 2 — Operação</a>
+      <a href="#fase3">Fase 3 — Inteligência</a>
+      <a href="#fase4">Fase 4 — Expansão</a>
+      <a href="#papeis">Papéis</a>
+    </nav>
+  </aside>
+
+  <main>
+    <header class="doc-head">
+      <span class="eyebrow">Plano de execução</span>
+      <h1 class="title">Canal de Escuta — do protótipo à construção</h1>
+      <p class="subtitle">O protótipo v2 validou o que o produto faz. Este documento organiza o que falta decidir e o backlog concreto, fase por fase, para sair do clicável e ir para código real.</p>
+      <div class="meta-row">
+        <div><strong>Para</strong> Felipe Leal &amp; Márcia Bússolo</div>
+        <div><strong>Base</strong> Blueprint técnico + protótipo v2</div>
+        <div><strong>Formato</strong> Backlog por fase</div>
+        <div><strong>Data</strong> Setembro de 2026</div>
+      </div>
+    </header>
+
+    <section id="fechadas">
+      <span class="eyebrow-sm">01</span>
+      <h2 class="h-section">Já está decidido</h2>
+      <div class="decisions">
+        <div class="decision"><div class="check">✓</div><div class="a">Empresa única específica <span>— não é multi-tenant por ora.</span></div></div>
+        <div class="decision"><div class="check">✓</div><div class="a">Projeto e banco de dados novos <span>— independentes do DRPS.</span></div></div>
+        <div class="decision"><div class="check">✓</div><div class="a">PWA de acesso anônimo <span>— sem WhatsApp/voz na primeira fase.</span></div></div>
+        <div class="decision"><div class="check">✓</div><div class="a">Fluxo do colaborador com triagem de urgência <span>— categoria → urgência → relato → revisão, com contatos de apoio imediato (CVV 188, Direitos Humanos 100) quando há risco.</span></div></div>
+        <div class="decision"><div class="check">✓</div><div class="a">Painel com 5 áreas <span>— Visão Geral, Caixa de Casos, Relatórios, Alertas, Configurações.</span></div></div>
+        <div class="decision"><div class="check">✓</div><div class="a">Regra de aviso à equipe definida <span>— crítico dispara WhatsApp + e-mail imediato; o resto vai em resumo diário/semanal por e-mail.</span></div></div>
+        <div class="decision"><div class="check">✓</div><div class="a">Nota interna separada da conversa com quem relata <span>— visível só para a equipe clínica.</span></div></div>
+        <div class="decision"><div class="check">✓</div><div class="a">Pesquisa anônima de encerramento <span>— vira indicador do relatório periódico ("% que se sentiu ouvido").</span></div></div>
+      </div>
+    </section>
+
+    <section id="pendencias">
+      <span class="eyebrow-sm">02</span>
+      <h2 class="h-section">Falta decidir antes de começar a construir</h2>
+      <p>Nenhum destes bloqueia o protótipo — mas bloqueiam a Fase 0. Sem eles, dá pra desenhar telas, não pra lançar com uma empresa de verdade.</p>
+      <ul class="pend">
+        <li>Qual é a empresa-cliente e qual o seu porte — confirma o prazo legal exato (ver blueprint técnico) e o tamanho do time que vai usar o painel.</li>
+        <li>Quem, do lado da empresa, recebe os casos encaminhados (RH? comitê de ética? sócio-diretor?) — sem isso, o botão "Encaminhar ao RH/jurídico" não tem para onde ir de verdade.</li>
+        <li>Quem assina o contrato de operação de dados (DPA) entre a empresa-cliente e a Clínica Mahé.</li>
+        <li>Canal técnico do alerta imediato: WhatsApp Business API (mais robusto, exige aprovação Meta) ou WhatsApp pessoal da Márcia via automação simples (mais rápido de lançar, menos formal).</li>
+        <li>Nome final do canal e domínio (ex.: escuta.[empresa].com.br) — depende do nome da empresa-cliente.</li>
+        <li>Política de retenção: por quanto tempo um caso encerrado fica no banco antes de anonimizado/expurgado.</li>
+      </ul>
+    </section>
+
+    <section id="fase0">
+      <span class="eyebrow-sm">03 — Backlog</span>
+      <h2 class="h-section">Fases de construção</h2>
+
+      <div class="phase-block">
+        <div class="phase-head"><span class="num">00</span><h4>Preparação</h4><span class="tag">Não-técnica</span></div>
+        <div class="phase-body">
+          <ul class="tasklist">
+            <li>Fechar as 6 pendências da seção acima com a empresa-cliente</li>
+            <li>Redigir a política pública do canal (o que é sigilo, quando ele tem exceção, o que a empresa se compromete a não fazer — retaliação)</li>
+            <li>Redigir e assinar o DPA (operação de dados) entre empresa-cliente e Clínica Mahé</li>
+            <li>Validar política e DPA com advogado trabalhista/LGPD</li>
+            <li>Definir nome do canal, domínio e identidade visual mínima</li>
+            <li>Registrar o Supabase do novo projeto (separado do DRPS) e o repositório de código</li>
+          </ul>
+          <div class="dod"><b>Critério de pronto</b>Política aprovada pela empresa-cliente e pelo advogado, DPA assinado, domínio reservado. Sem isso, a Fase 1 não deve ir para produção — só ambiente de teste.</div>
+        </div>
+      </div>
+
+      <div class="phase-block" id="fase1">
+        <div class="phase-head"><span class="num">01</span><h4>MVP técnico</h4><span class="tag">Colaborador + painel básico</span></div>
+        <div class="phase-body">
+          <h3 class="h-sub">App do colaborador</h3>
+          <ul class="tasklist">
+            <li>PWA React/Vite com manifest e service worker (instalável, ícone na tela inicial)</li>
+            <li>Telas: início, contatos de apoio imediato, categoria, urgência, relato, revisão, confirmação de protocolo</li>
+            <li>Telas: consulta por protocolo, status com linha do tempo, conversa por protocolo</li>
+            <li>Geração de protocolo no backend (Edge Function), nunca no cliente</li>
+            <li>Upload de anexo com remoção de EXIF antes de armazenar</li>
+          </ul>
+          <h3 class="h-sub">Backend e dados</h3>
+          <ul class="tasklist">
+            <li>Schema: casos, mensagens_caso, anexos, historico_status (com <code>empresa_id</code> desde já)</li>
+            <li>RLS: INSERT público em casos/mensagens, SELECT restrito a papel "equipe clínica"</li>
+            <li>Zero coleta de IP/user-agent/analytics de terceiros neste projeto</li>
+          </ul>
+          <h3 class="h-sub">Painel — versão básica</h3>
+          <ul class="tasklist">
+            <li>Autenticação real (Supabase Auth) só para a equipe clínica</li>
+            <li>Visão Geral: estatísticas simples (abertos, em atraso) — sem mapa de risco ainda</li>
+            <li>Caixa de Casos: lista + detalhe + mensagens + reclassificar + encaminhar + encerrar</li>
+          </ul>
+          <div class="dod"><b>Critério de pronto</b>Uma pessoa consegue relatar de um celular real, receber um protocolo, e a Márcia consegue ver o caso, conversar e encerrar — tudo em produção, com uma empresa piloto.</div>
+        </div>
+      </div>
+
+      <div class="phase-block" id="fase2">
+        <div class="phase-head"><span class="num">02</span><h4>Operação</h4><span class="tag">Alertas + qualidade do atendimento</span></div>
+        <div class="phase-body">
+          <ul class="tasklist">
+            <li>Regras de alerta configuráveis (tabela da área Alertas do protótipo) com envio automático</li>
+            <li>Integração de notificação: e-mail transacional (ex.: Resend) para todos os níveis; WhatsApp para nível crítico, no canal técnico já decidido na Fase 0</li>
+            <li>Nota interna no caso, separada da conversa com quem relatou</li>
+            <li>SLA automatizado por gravidade, com indicador visual de atraso</li>
+            <li>Pesquisa anônima de encerramento (2 perguntas) disparada quando o caso é concluído</li>
+            <li>Área Configurações: nome do canal, categorias, mensagem de boas-vindas, toggles de anexo/mensagem pós-encerramento</li>
+          </ul>
+          <div class="dod"><b>Critério de pronto</b>Um caso crítico gera aviso fora do painel em minutos, não em horas. A Márcia nunca mais precisa "lembrar de checar" — o sistema avisa.</div>
+        </div>
+      </div>
+
+      <div class="phase-block" id="fase3">
+        <div class="phase-head"><span class="num">03</span><h4>Inteligência</h4><span class="tag">Relatório e plano de ação</span></div>
+        <div class="phase-body">
+          <ul class="tasklist">
+            <li>Área Relatórios: geração periódica (mensal) agregando casos por categoria/setor/gravidade</li>
+            <li>Exportação em PDF do relatório, pronta para anexar ao PGR</li>
+            <li>Sumarização por IA dos relatos em texto livre, agrupando padrões recorrentes — mesma lógica já validada no DRPS</li>
+            <li>Indicador "% que se sentiu ouvido" a partir da pesquisa de encerramento</li>
+            <li>Ponto de cruzamento com os tópicos de risco do DRPS (ex.: relatos de assédio aqui reforçam o tópico T01 lá), mesmo os bancos sendo separados — via relatório comparativo manual nesta fase</li>
+          </ul>
+          <div class="dod"><b>Critério de pronto</b>No fechamento do mês, o relatório em PDF sai pronto para a reunião com a empresa-cliente, sem trabalho manual de compilar planilha.</div>
+        </div>
+      </div>
+
+      <div class="phase-block" id="fase4">
+        <div class="phase-head"><span class="num">04</span><h4>Expansão</h4><span class="tag">Futuro, sob demanda comercial</span></div>
+        <div class="phase-body">
+          <ul class="tasklist">
+            <li>Novo canal de entrada: QR code físico afixado na empresa</li>
+            <li>Avaliar WhatsApp como canal de entrada (não só de alerta), se a adesão ao PWA for baixa</li>
+            <li>Generalização para multi-tenant, aproveitando o <code>empresa_id</code> já presente desde a Fase 1</li>
+            <li>Integração real (não manual) entre os dados deste canal e o dashboard do DRPS</li>
+          </ul>
+          <div class="dod"><b>Critério de pronto</b>Só entra em backlog se e quando houver uma segunda empresa-cliente confirmada — não é trabalho especulativo.</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="papeis">
+      <span class="eyebrow-sm">04</span>
+      <h2 class="h-section">Quem faz o quê</h2>
+      <div class="roles">
+        <div class="role-row"><div class="who">Felipe</div><div class="what">Arquitetura técnica, construção do PWA e do painel, integração de alertas, infraestrutura Supabase.</div></div>
+        <div class="role-row"><div class="who">Márcia</div><div class="what">Política do canal, categorias e critérios de gravidade, triagem real dos casos, conteúdo da mensagem de boas-vindas e do encerramento.</div></div>
+        <div class="role-row"><div class="who">Empresa-cliente</div><div class="what">Define quem recebe os casos encaminhados, aprova a política pública, assina o DPA, divulga o canal internamente.</div></div>
+        <div class="role-row"><div class="who">Advogado (a contratar)</div><div class="what">Valida política, DPA e enquadramento legal antes do lançamento — fora do escopo técnico deste plano.</div></div>
+      </div>
+    </section>
+  </main>
+</div>

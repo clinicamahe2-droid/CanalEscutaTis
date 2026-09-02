@@ -1,0 +1,170 @@
+@import "@fontsource/fraunces/400.css";
+@import "@fontsource/fraunces/500.css";
+@import "@fontsource/fraunces/600.css";
+@import "@fontsource/fraunces/700.css";
+@import "@fontsource/source-sans-3/400.css";
+@import "@fontsource/source-sans-3/500.css";
+@import "@fontsource/source-sans-3/600.css";
+@import "@fontsource/source-sans-3/700.css";
+@import "@fontsource/ibm-plex-mono/400.css";
+@import "@fontsource/ibm-plex-mono/500.css";
+@import "@fontsource/ibm-plex-mono/600.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+  Canal de Escuta — sistema visual.
+  Paleta verde-petroleo sobre fundo claro neutro, herdada do prototipo v2.
+  Todas as cores vivem aqui como CSS vars em HSL. Nao espalhe hex nos componentes.
+*/
+
+@layer base {
+  :root {
+    --background: 140 13% 95%;
+    --foreground: 160 22% 11%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 160 22% 11%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 160 22% 11%;
+
+    --primary: 174 37% 27%;
+    --primary-foreground: 0 0% 100%;
+    --primary-dark: 176 39% 18%;
+    --primary-soft: 170 20% 91%;
+
+    --secondary: 140 10% 92%;
+    --secondary-foreground: 160 20% 15%;
+
+    --muted: 140 10% 92%;
+    --muted-foreground: 145 6% 46%;
+
+    --accent: 170 20% 91%;
+    --accent-foreground: 176 39% 18%;
+
+    --destructive: 9 55% 41%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 130 10% 85%;
+    --input: 130 10% 84%;
+    --ring: 174 37% 32%;
+
+    --surface-2: 140 10% 92%;
+
+    --warning: 35 58% 40%;
+    --warning-soft: 37 55% 89%;
+    --critical: 9 55% 41%;
+    --critical-soft: 14 55% 91%;
+    --success: 149 34% 34%;
+    --success-soft: 150 25% 90%;
+
+    --radius: 0.625rem;
+  }
+
+  .dark {
+    --background: 156 12% 8%;
+    --foreground: 140 8% 91%;
+
+    --card: 156 14% 12%;
+    --card-foreground: 140 8% 91%;
+
+    --popover: 156 14% 12%;
+    --popover-foreground: 140 8% 91%;
+
+    --primary: 170 42% 58%;
+    --primary-foreground: 156 20% 10%;
+    --primary-dark: 168 40% 72%;
+    --primary-soft: 162 26% 16%;
+
+    --secondary: 150 16% 15%;
+    --secondary-foreground: 140 8% 91%;
+
+    --muted: 150 16% 15%;
+    --muted-foreground: 150 5% 60%;
+
+    --accent: 162 26% 16%;
+    --accent-foreground: 168 40% 80%;
+
+    --destructive: 9 54% 55%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 156 14% 19%;
+    --input: 156 14% 20%;
+    --ring: 170 42% 50%;
+
+    --surface-2: 150 16% 15%;
+
+    --warning: 35 60% 60%;
+    --warning-soft: 37 25% 15%;
+    --critical: 9 54% 63%;
+    --critical-soft: 14 24% 16%;
+    --success: 147 30% 57%;
+    --success-soft: 150 22% 14%;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-background text-foreground font-body antialiased;
+    font-feature-settings: "kern";
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-display;
+    text-wrap: balance;
+  }
+
+  /* Alvos de toque nunca menores que ~44px em telas de dedo. */
+  @media (pointer: coarse) {
+    button,
+    [role="button"],
+    a {
+      min-height: 44px;
+    }
+  }
+}
+
+@layer utilities {
+  .mono {
+    @apply font-mono;
+  }
+  .safe-b {
+    padding-bottom: max(1rem, env(safe-area-inset-bottom));
+  }
+  .safe-t {
+    padding-top: max(0.75rem, env(safe-area-inset-top));
+  }
+}
+
+/* Impressao: usado pelos relatorios (Ctrl+P -> salvar como PDF). */
+@media print {
+  body {
+    background: #fff;
+  }
+  .no-print {
+    display: none !important;
+  }
+  .print-only {
+    display: block !important;
+  }
+  .print-container {
+    max-width: none !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+  }
+}
+.print-only {
+  display: none;
+}

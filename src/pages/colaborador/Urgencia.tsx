@@ -25,15 +25,20 @@ export default function Urgencia() {
       }
     >
       <div className="space-y-3">
+        {/* Selecionar "urgente" e o unico outro ponto (alem do link abaixo) onde
+            `signal` aparece nesta tela — e o momento em que a pessoa declara
+            risco real, nao uma caixa de alarme separada (ver DECISOES.md). */}
         <button
           onClick={() => setUrgencia("alta")}
           className={cn(
             "w-full text-left rounded-xl border p-4 transition-[color,background-color,border-color,transform] duration-200 ease-smooth active:scale-[0.98]",
-            urgencia === "alta" ? "border-primary bg-primary-soft" : "border-border bg-card",
+            urgencia === "alta"
+              ? "border-signal bg-signal-tint"
+              : "border-line-2 bg-card hover:border-seal-line",
           )}
         >
-          <div className="font-semibold text-sm">É urgente, risco imediato</div>
-          <div className="text-xs text-muted-foreground mt-0.5">
+          <div className="font-semibold text-sm text-ink">É urgente, risco imediato</div>
+          <div className="text-xs text-ink-2 mt-0.5">
             Algo está acontecendo agora ou pode se repetir hoje
           </div>
         </button>
@@ -41,19 +46,21 @@ export default function Urgencia() {
           onClick={() => setUrgencia("baixa")}
           className={cn(
             "w-full text-left rounded-xl border p-4 transition-[color,background-color,border-color,transform] duration-200 ease-smooth active:scale-[0.98]",
-            urgencia === "baixa" ? "border-primary bg-primary-soft" : "border-border bg-card",
+            urgencia === "baixa"
+              ? "border-seal bg-seal-tint"
+              : "border-line-2 bg-card hover:border-seal-line",
           )}
         >
-          <div className="font-semibold text-sm">Não é urgente, mas quero registrar</div>
-          <div className="text-xs text-muted-foreground mt-0.5">
+          <div className="font-semibold text-sm text-ink">Não é urgente, mas quero registrar</div>
+          <div className="text-xs text-ink-2 mt-0.5">
             Aconteceu, mas não há risco imediato
           </div>
         </button>
       </div>
 
-      <p className="mt-4 text-xs text-muted-foreground">
+      <p className="mt-4 text-xs text-ink-2">
         Precisa falar com alguém agora?{" "}
-        <Link to="/apoio" className="underline underline-offset-2 hover:text-foreground">
+        <Link to="/apoio" className="text-signal font-semibold underline underline-offset-2">
           Ver contatos de apoio
         </Link>
       </p>

@@ -36,8 +36,8 @@ export default function Categoria() {
             className={cn(
               "rounded-xl border p-3 text-sm font-semibold leading-tight text-center transition-[color,background-color,border-color,transform] duration-200 ease-smooth active:scale-[0.98]",
               categoria === c.id
-                ? "border-primary bg-primary-soft text-primary-dark"
-                : "border-border bg-card text-foreground/80 hover:border-primary/40",
+                ? "border-seal bg-seal-tint text-seal"
+                : "border-line-2 bg-card text-ink-2 hover:border-seal-line",
             )}
           >
             {c.rotulo}

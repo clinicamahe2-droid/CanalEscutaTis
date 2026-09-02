@@ -36,12 +36,11 @@ function Timeline({ status }: { status: StatusCaso }) {
           <div
             className={cn(
               "w-4 h-4 rounded-full border-2",
-              i < atual && "bg-success border-success",
-              i === atual && "bg-primary border-primary",
-              i > atual && "bg-card border-border",
+              i <= atual && "bg-seal border-seal",
+              i > atual && "bg-card border-line-2",
             )}
           />
-          <span className="text-[0.6rem] text-muted-foreground text-center leading-tight">{rot}</span>
+          <span className="text-[0.6rem] text-ink-2 text-center leading-tight">{rot}</span>
         </div>
       ))}
     </div>
@@ -102,7 +101,7 @@ export default function Consulta() {
           </Button>
         }
       >
-        <label className="text-xs uppercase tracking-wide text-muted-foreground font-mono mb-1.5 block">
+        <label className="text-xs uppercase tracking-wide text-record font-mono mb-1.5 block">
           Código do protocolo
         </label>
         <input
@@ -113,9 +112,9 @@ export default function Consulta() {
           autoCapitalize="characters"
           autoCorrect="off"
           spellCheck={false}
-          className="w-full rounded-xl border border-input bg-card p-3 font-mono text-base focus:outline-none focus:ring-2 focus:ring-ring"
+          className="w-full rounded border border-input bg-card p-3 font-mono text-base text-ink focus:outline-none focus:ring-2 focus:ring-ring"
         />
-        <p className="text-xs text-muted-foreground mt-2">
+        <p className="text-xs text-ink-2 mt-2">
           O código foi mostrado uma única vez, ao final do relato.
         </p>
       </Tela>
@@ -132,12 +131,12 @@ export default function Consulta() {
     >
       {consulta.isLoading && (
         <div className="grid place-items-center py-16">
-          <Loader2 className="w-6 h-6 animate-spin text-primary" />
+          <Loader2 className="w-6 h-6 animate-spin text-seal" />
         </div>
       )}
 
       {!consulta.isLoading && !consulta.data && (
-        <div className="rounded-xl border border-border bg-card p-5 text-sm text-muted-foreground">
+        <div className="rounded-xl border border-line-2 bg-card p-5 text-sm text-ink-2">
           Protocolo não encontrado. Verifique se digitou exatamente como recebeu — maiúsculas,
           números e hífens. Por segurança, não informamos se um código existe ou não.
         </div>
@@ -185,13 +184,13 @@ function ConsultaStatus({
     <>
       <Timeline status={dados.status} />
 
-      <span className="text-xs uppercase tracking-wide text-muted-foreground font-mono">
+      <span className="text-xs uppercase tracking-wide text-record font-mono">
         Conversa com a equipe
       </span>
       <div className="mt-2 space-y-2">
         {dados.mensagens.length === 0 && (
-          <p className="text-sm text-muted-foreground">
-            Ainda não há mensagens. Se você marcou “quero retorno”, a equipe responde por aqui.
+          <p className="text-sm text-ink-2">
+            Ainda não há mensagens. Se você marcou "quero retorno", a equipe responde por aqui.
           </p>
         )}
         {dados.mensagens.map((m, i) => (
@@ -199,12 +198,10 @@ function ConsultaStatus({
             key={i}
             className={cn(
               "rounded-xl p-3 text-sm max-w-[88%]",
-              m.remetente === "equipe"
-                ? "bg-surface2 text-foreground"
-                : "bg-primary-soft text-primary-dark ml-auto",
+              m.remetente === "equipe" ? "bg-paper-2 text-ink" : "bg-seal-tint text-ink ml-auto",
             )}
           >
-            <div className="text-[0.6rem] font-mono uppercase text-muted-foreground mb-1">
+            <div className="text-[0.6rem] font-mono uppercase text-record mb-1">
               {m.remetente === "equipe" ? "Equipe de Escuta" : "Você"} · {formatarDataHora(m.criado_em)}
             </div>
             {m.conteudo}
@@ -218,27 +215,27 @@ function ConsultaStatus({
             value={msg}
             onChange={(e) => setMsg(e.target.value)}
             placeholder="Escrever uma resposta…"
-            className="flex-1 min-h-[44px] rounded-xl border border-input bg-card p-2.5 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-ring"
+            className="flex-1 min-h-[44px] rounded-xl border border-input bg-card p-2.5 text-sm text-ink resize-none focus:outline-none focus:ring-2 focus:ring-ring"
           />
           <Button size="icon" onClick={enviarMsg} disabled={enviar.isPending || !msg.trim()}>
             {enviar.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
           </Button>
         </div>
       ) : (
-        <p className="text-xs text-muted-foreground mt-3">
+        <p className="text-xs text-ink-2 mt-3">
           Este caso está encerrado e não aceita novas mensagens.
         </p>
       )}
 
       {dados.pesquisaRespondida && (
-        <div className="mt-5 rounded-xl bg-success-soft text-success p-3 text-sm">
+        <div className="mt-5 border-l-2 border-seal pl-4 py-1 text-sm text-ink-2">
           Obrigada — sua avaliação sobre este caso já foi registrada.
         </div>
       )}
 
       {dados.pesquisaLiberada && !dados.pesquisaRespondida && (
-        <div className="mt-6 border-t border-border pt-4">
-          <span className="text-xs uppercase tracking-wide text-muted-foreground font-mono">
+        <div className="mt-6 border-t border-line pt-4">
+          <span className="text-xs uppercase tracking-wide text-record font-mono">
             Antes de sair — como foi essa experiência?
           </span>
           <div className="flex gap-2 mt-3">
@@ -247,12 +244,12 @@ function ConsultaStatus({
                 key={o.v}
                 onClick={() => setAvaliacao(o.v)}
                 className={cn(
-                  "flex-1 rounded-xl border p-3 text-center transition-colors",
-                  avaliacao === o.v ? "border-primary bg-primary-soft" : "border-border bg-card",
+                  "flex-1 rounded-xl border p-3 text-center transition-[color,background-color,border-color,transform] duration-200 ease-smooth active:scale-[0.98]",
+                  avaliacao === o.v ? "border-seal bg-seal-tint" : "border-line-2 bg-card",
                 )}
               >
                 <div className="text-xl">{o.emoji}</div>
-                <div className="text-[0.62rem] mt-1 text-muted-foreground leading-tight">{o.rot}</div>
+                <div className="text-[0.62rem] mt-1 text-ink-2 leading-tight">{o.rot}</div>
               </button>
             ))}
           </div>
@@ -260,7 +257,7 @@ function ConsultaStatus({
             value={comentario}
             onChange={(e) => setComentario(e.target.value)}
             placeholder="Quer deixar um comentário final? (opcional, também anônimo)"
-            className="w-full min-h-[64px] mt-3 rounded-xl border border-input bg-card p-2.5 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-ring"
+            className="w-full min-h-[64px] mt-3 rounded-xl border border-input bg-card p-2.5 text-sm text-ink resize-none focus:outline-none focus:ring-2 focus:ring-ring"
           />
           <Button
             className="w-full mt-3"

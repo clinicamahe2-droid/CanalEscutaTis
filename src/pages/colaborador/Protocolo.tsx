@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Check, Copy, AlertTriangle } from "lucide-react";
+import { Check, Copy } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tela } from "@/components/colaborador/Tela";
+import { Selo } from "@/components/Selo";
 import { useRelato } from "@/fluxo/RelatoContext";
 import { toast } from "sonner";
 
@@ -45,14 +46,17 @@ export default function Protocolo() {
         </Button>
       }
     >
-      <div className="grid place-items-center w-14 h-14 rounded-full bg-success-soft text-success mx-auto mb-4">
-        <Check className="w-7 h-7" />
-      </div>
-      <h1 className="text-lg font-display font-semibold mb-4">Relato enviado</h1>
+      {/* Mesmo selo da Home — reforca "recebido e tratado com cuidado formal"
+          (Bloco 2-b), nao um icone novo por tela. */}
+      <Selo size={64} className="mx-auto mb-4" />
+      <span className="font-mono text-[0.68rem] tracking-wide text-record uppercase">
+        Relato recebido
+      </span>
+      <h1 className="text-2xl font-display font-medium text-ink mt-1.5 mb-5">Protocolo emitido</h1>
 
-      <div className="rounded-xl border border-border bg-surface2 p-4">
-        <div className="text-xs font-mono uppercase text-muted-foreground mb-2">Seu protocolo</div>
-        <div className="font-mono text-2xl font-semibold tracking-wide text-primary-dark break-all">
+      <div className="rounded-xl border border-line-2 bg-paper-2 p-4">
+        <div className="text-xs font-mono uppercase text-record mb-2">Seu protocolo</div>
+        <div className="font-mono text-2xl font-semibold tracking-wide text-ink break-all">
           {protocoloGerado}
         </div>
         <Button variant="outline" size="sm" className="mt-3" onClick={copiar}>
@@ -61,12 +65,11 @@ export default function Protocolo() {
         </Button>
       </div>
 
-      <div className="mt-4 rounded-xl bg-warning-soft text-warning p-3 text-sm flex gap-2 text-left">
-        <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
-        <p>
-          Guarde este código agora. É a única forma de acompanhar seu caso — não pedimos e-mail nem
-          login, e não há como recuperá-lo depois.
-        </p>
+      {/* Instrucao importante, nao um alarme de risco — sem `signal`
+          (ver DECISOES.md Bloco 4-d). Callout no mesmo estilo da Home/Revisao. */}
+      <div className="mt-4 border-l-2 border-seal pl-4 py-1 text-sm text-ink-2 text-left">
+        <b className="text-ink">Guarde este código agora.</b> É a única forma de acompanhar seu
+        caso — não pedimos e-mail nem login, e não há como recuperá-lo depois.
       </div>
     </Tela>
   );

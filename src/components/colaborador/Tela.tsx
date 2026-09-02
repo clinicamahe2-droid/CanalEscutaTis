@@ -26,24 +26,16 @@ export function Tela({ titulo, onVoltar, passo, children, rodape, className, sem
               <button
                 onClick={onVoltar}
                 aria-label="Voltar"
-                className="shrink-0 grid place-items-center w-9 h-9 rounded-full bg-surface2 text-foreground hover:bg-secondary"
+                className="shrink-0 grid place-items-center w-9 h-9 rounded-full bg-paper-2 text-ink transition-colors duration-150 hover:bg-seal-tint"
               >
                 <ArrowLeft className="w-4 h-4" />
               </button>
             )}
-            {titulo && <h1 className="text-base font-semibold font-body">{titulo}</h1>}
+            {titulo && <h1 className="text-base font-semibold font-body text-ink">{titulo}</h1>}
             {passo && (
-              <div className="ml-auto flex gap-1.5">
-                {[1, 2, 3, 4].map((p) => (
-                  <span
-                    key={p}
-                    className={cn(
-                      "w-1.5 h-1.5 rounded-full",
-                      p <= passo ? "bg-primary" : "bg-border",
-                    )}
-                  />
-                ))}
-              </div>
+              <span className="ml-auto font-mono text-[0.65rem] tracking-wide text-record uppercase whitespace-nowrap">
+                Passo 0{passo} de 04
+              </span>
             )}
           </header>
         )}

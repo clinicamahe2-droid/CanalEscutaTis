@@ -59,22 +59,25 @@ export default function Relato() {
       }
     >
       {categoria && (
-        <span className="inline-block self-start rounded-full bg-primary-soft text-primary-dark text-xs font-semibold px-3 py-1 mb-3">
-          {rotuloCategoria(categoria)}
-        </span>
+        <div className="mb-4">
+          <span className="font-mono text-[0.65rem] uppercase tracking-wide text-record">
+            Categoria
+          </span>
+          <div className="text-sm font-semibold text-ink mt-0.5">{rotuloCategoria(categoria)}</div>
+        </div>
       )}
 
-      <label className="text-xs uppercase tracking-wide text-muted-foreground font-mono mb-1.5 block">
+      <label className="text-xs uppercase tracking-wide text-record font-mono mb-1.5 block">
         Descrição
       </label>
       <textarea
         value={relato}
         onChange={(e) => setRelato(e.target.value)}
         placeholder="Descreva com o máximo de detalhes que puder: quando, onde, quem esteve envolvido…"
-        className="w-full min-h-[160px] rounded-xl border border-input bg-card p-3 text-sm resize-y focus:outline-none focus:ring-2 focus:ring-ring"
+        className="w-full min-h-[160px] rounded-xl border border-input bg-card p-3 text-sm text-ink resize-y focus:outline-none focus:ring-2 focus:ring-ring"
       />
-      <p className="text-xs text-muted-foreground mt-1">
-        {curto ? `Escreva ao menos ${MIN_RELATO} caracteres.` : " "}
+      <p className="text-xs text-ink-2 mt-1">
+        {curto ? `Escreva ao menos ${MIN_RELATO} caracteres.` : " "}
       </p>
 
       {config?.permitir_anexos !== false && (
@@ -87,8 +90,8 @@ export default function Relato() {
             onChange={aoEscolherArquivo}
           />
           {anexo ? (
-            <div className="flex items-center gap-2 rounded-xl border border-success bg-success-soft text-success p-3 text-sm">
-              <Check className="w-4 h-4 shrink-0" />
+            <div className="flex items-center gap-2 rounded-xl border border-line-2 bg-paper-2 text-ink p-3 text-sm">
+              <Check className="w-4 h-4 shrink-0 text-seal" />
               <span className="flex-1">1 imagem anexada ({Math.round(anexo.tamanho / 1024)} KB)</span>
               <button aria-label="Remover anexo" onClick={() => setAnexo(null)}>
                 <X className="w-4 h-4" />
@@ -98,7 +101,7 @@ export default function Relato() {
             <button
               onClick={() => inputRef.current?.click()}
               disabled={processando}
-              className="flex w-full items-center gap-2 rounded-xl border border-dashed border-border p-3 text-sm text-muted-foreground hover:border-primary/50"
+              className="flex w-full items-center gap-2 rounded-xl border border-dashed border-line-2 p-3 text-sm text-ink-2 transition-colors duration-200 hover:border-seal-line"
             >
               {processando ? (
                 <Loader2 className="w-4 h-4 animate-spin" />
@@ -109,7 +112,9 @@ export default function Relato() {
             </button>
           )}
           {anexo && (
-            <p className="mt-2 flex gap-1.5 text-xs text-warning">
+            // Aviso de privacidade — nunca `signal` aqui (reservado a Urgencia +
+            // link de apoio, ver DECISOES.md Bloco 4-d). A enfase e tipografica.
+            <p className="mt-2 flex gap-1.5 text-xs text-ink-2">
               <AlertTriangle className="w-3.5 h-3.5 shrink-0 mt-0.5" />
               Revise a imagem antes de enviar — crachás, nomes e rostos podem identificar você.
             </p>

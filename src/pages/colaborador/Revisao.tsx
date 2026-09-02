@@ -41,21 +41,21 @@ export default function Revisao() {
         </Button>
       }
     >
-      <div className="rounded-xl border border-border bg-surface2 p-4 mb-3">
-        <div className="text-[0.68rem] font-mono uppercase text-muted-foreground">Categoria</div>
-        <div className="text-sm mt-0.5">{categoria ? rotuloCategoria(categoria) : "—"}</div>
+      <div className="rounded-xl border border-line-2 bg-paper-2 p-4 mb-3">
+        <div className="text-[0.68rem] font-mono uppercase text-record">Categoria</div>
+        <div className="text-sm text-ink mt-0.5">{categoria ? rotuloCategoria(categoria) : "—"}</div>
       </div>
-      <div className="rounded-xl border border-border bg-surface2 p-4 mb-3">
-        <div className="text-[0.68rem] font-mono uppercase text-muted-foreground">Seu relato</div>
-        <div className="text-sm mt-0.5 whitespace-pre-wrap">{relato.trim()}</div>
+      <div className="rounded-xl border border-line-2 bg-paper-2 p-4 mb-3">
+        <div className="text-[0.68rem] font-mono uppercase text-record">Seu relato</div>
+        <div className="text-sm text-ink mt-0.5 whitespace-pre-wrap">{relato.trim()}</div>
       </div>
 
-      <div className="flex items-center justify-between rounded-xl border border-border p-3 mb-3">
-        <span className="text-sm">Quero receber retorno pelo protocolo</span>
+      <div className="flex items-center justify-between rounded-xl border border-line-2 p-3 mb-3">
+        <span className="text-sm text-ink">Quero receber retorno pelo protocolo</span>
         <Switch checked={quer_retorno} onCheckedChange={setQuerRetorno} />
       </div>
 
-      <div className="rounded-xl bg-primary-soft/70 p-4 text-sm">
+      <div className="border-l-2 border-seal pl-4 py-1 text-sm text-ink-2">
         Nenhum dado que identifique você será salvo junto com este relato.
       </div>
     </Tela>

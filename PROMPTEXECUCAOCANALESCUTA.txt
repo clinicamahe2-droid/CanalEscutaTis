@@ -1,0 +1,157 @@
+Canal de Escuta (TIS) — Sistema de design novo, aplicado ao fluxo inteiro
+================================================================================
+Contexto: a home já tinha sido ajustada uma vez (tom da tela de urgência
+corrigido, texto de anonimato mantido) mas a direção visual geral — serifada
+decorativa + creme + verde + card arredondado — é hoje um template genérico
+de "app premium", usado em qualquer produto de bem-estar. Foi substituída por
+um sistema pensado pro que esse produto realmente é: um canal de registro
+confidencial, não um app de bem-estar. "Documento, não spa."
+
+Referência obrigatória: design-system-escuta.html, já enviado nesta mesma
+conversa antes deste prompt — contém a escala tipográfica, os papéis de cor
+(cada um com função única, não decoração), as duas regras de raio, a regra de
+ícone, o selo de verificação (marca própria do produto) e a home inteira já
+aplicada dentro desse sistema. Abra o arquivo antes de escrever qualquer
+código — ele é a fonte da verdade, não este texto.
+
+Só a home foi mockada visualmente até aqui. Categoria, Urgência, Relato e
+qualquer outra tela do fluxo (confirmação/código de acompanhamento, consulta
+de status, contatos de apoio) precisam reaplicar as MESMAS regras — não
+inventar um padrão novo por tela. Se uma regra do sistema não cobrir algum
+caso que aparecer, pare e registre a decisão em DECISOES.md em vez de
+resolver no improviso.
+
+REGRA DE EXECUÇÃO — gates com evidência real, nunca supostos. Qualquer
+ambiguidade: pare, registre em DECISOES.md, não prossiga adivinhando contra
+produção.
+
+--------------------------------------------------------------------------
+BLOCO 0 — Diagnóstico (leitura, sem alterar nada)
+--------------------------------------------------------------------------
+a) Levante TODAS as telas do fluxo hoje, não só as 4 já vistas — inclua a
+   tela de revisão/confirmação depois de "Revisar" (a que mostra o código de
+   acompanhamento gerado), a consulta de status ("Já enviei"), e a tela de
+   contatos de apoio. Capture print de cada uma. Nenhuma delas foi desenhada
+   ainda dentro do novo sistema — vão precisar da mesma aplicação de regras
+   do Bloco 3 em diante.
+b) Confirme onde hoje ficam definidos os tokens de cor/tipografia atuais (CSS
+   global, arquivo de tema, styled-components, tailwind config — o que for) e
+   se dá pra centralizar os novos tokens num único lugar em vez de espalhados
+   por componente.
+c) Confirme se o app precisa funcionar sem chamada externa de fonte (offline,
+   ou ambiente sem acesso à internet). Isso decide se usamos Source Serif 4 /
+   IBM Plex Sans via Google Fonts (como no mockup) ou o par equivalente de
+   fontes de sistema. Não escolha sozinho — essa decisão ainda está pendente
+   desde a proposta anterior.
+d) Escreva o levantamento completo em DECISOES.md antes de tocar em qualquer
+   arquivo.
+
+GATE 0 (bloqueante): DECISOES.md com o inventário real de todas as telas do
+fluxo (com print de cada uma), a resposta sobre fonte externa, e onde os
+tokens antigos vivem hoje. Sem isso, não dá pra saber o tamanho real do
+trabalho — pode ter mais tela do que as 4 já vistas.
+
+--------------------------------------------------------------------------
+BLOCO 1 — Fundamentos do sistema (tokens globais)
+--------------------------------------------------------------------------
+a) Centralize os tokens em um único lugar (variáveis CSS ou equivalente do
+   stack real do projeto):
+   ink #1A1D1B · ink-2 #565F5A · record #7C8580 · paper #F3F0E8 ·
+   paper-raised #FFFFFF · paper-2 #EAE5D8 · line rgba(26,29,27,.11) ·
+   line-2 rgba(26,29,27,.18) · seal #234B3E · seal-tint rgba(35,75,62,.07) ·
+   signal #9C4A32 · signal-tint rgba(156,74,50,.09) · stamp #A6842E ·
+   stamp-tint rgba(166,132,46,.10).
+b) Cada cor tem UMA função, documentada no próprio arquivo de tokens como
+   comentário: <code>seal</code> só em ação primária e no selo; <code>signal</code>
+   só nos dois pontos que são sobre risco real (nunca decorando o resto da
+   tela); <code>record</code> só em metadado (código, data, rótulo técnico).
+c) Raio: só dois valores em todo o app — 4px pra elemento pequeno (botão,
+   chip, input), 12px pra contêiner (card, moldura). Se algum componente hoje
+   usa outro valor, ele muda pra um desses dois — não fica um terceiro valor
+   novo.
+d) Ícone: traço único 1.5–1.6px, sem preenchimento, exceto dentro do próprio
+   selo. Troque os ícones atuais das categorias e demais telas por essa
+   regra.
+e) Fontes: conforme a decisão do Bloco 0-c — Source Serif 4 (títulos) + IBM
+   Plex Sans (interface) + JetBrains Mono (metadado/código), ou o par de
+   sistema equivalente.
+
+GATE 1: rode o app com os tokens novos aplicados só na home (Bloco 3) e
+confirme visualmente, por print, que os valores batem com
+design-system-escuta.html — cor por cor, não "parecido".
+
+--------------------------------------------------------------------------
+BLOCO 2 — O selo (componente reutilizável)
+--------------------------------------------------------------------------
+a) Implemente o selo de verificação como componente único e reutilizável —
+   não recriado tela por tela. Estrutura: anel externo sólido (raio ~19 de
+   um viewBox 48), anel interno pontilhado em <code>stamp</code>, confirmação
+   central em <code>seal</code>. Ver o SVG exato na seção 4 do
+   design-system-escuta.html.
+b) Ele aparece na home (já mockado) e deve reaparecer na tela de
+   confirmação/código de acompanhamento (Bloco 0-a) — é exatamente o momento
+   em que "isso foi recebido e está sendo tratado" precisa ser reforçado.
+
+--------------------------------------------------------------------------
+BLOCO 3 — Home
+--------------------------------------------------------------------------
+Aplique exatamente o que está em design-system-escuta.html, seção 5:
+faixa de cabeçalho (nome da organização + "sigilo garantido" em mono),
+selo, título em serif, linha de acolhimento, botões primário/secundário,
+as 3 cláusulas numeradas (substituindo os selos de confiança em formato de
+chip da versão anterior), a linha de procedimento com código de 3 passos
+(substituindo os círculos numerados genéricos), link de risco e rodapé.
+Nenhum texto de anonimato, botão ou lógica de navegação muda — só a camada
+visual.
+
+GATE 3: print da home renderizada de verdade, lado a lado com o mockup —
+confirme tipografia, cor e raio batendo, não só "no espírito".
+
+--------------------------------------------------------------------------
+BLOCO 4 — Categoria, Urgência, Relato e telas restantes
+--------------------------------------------------------------------------
+Nenhuma dessas telas foi mockada em detalhe — aplique as regras do sistema
+com o mesmo critério usado na home, sem inventar um padrão visual novo:
+
+a) Categoria: título em serif; indicador de progresso trocado de bolinhas
+   genéricas para o mesmo idioma mono da linha de procedimento da home (ex.:
+   "PASSO 02 DE 04" em vez de pontos); os 8 botões de categoria com ícone de
+   traço único (regra do Bloco 1-d) em vez de preenchido; raio 12px no botão
+   (é um contêiner de opção, não um elemento pequeno — se preferir tratá-lo
+   como pequeno e usar 4px, registre a decisão em DECISOES.md e aplique o
+   mesmo raio em todos os botões de opção do fluxo, sem misturar).
+b) Urgência: a lógica e o tom (linha discreta em vez de caixa de alarme) já
+   estão corretos e não mudam — só aplique tokens de cor/tipografia/raio.
+c) Relato: textarea tratada como contêiner (12px); o chip da categoria
+   selecionada usa o mesmo estilo mono/numerado das cláusulas da home, não
+   um chip solto colorido.
+d) Confirmação / código de acompanhamento, consulta de status, contatos de
+   apoio (telas levantadas no Bloco 0-a): mesmo tratamento — cabeçalho,
+   tokens, raio, ícone. Na tela de confirmação, reaplique o selo (Bloco 2-b).
+
+GATE 4 (bloqueante): print de CADA tela do fluxo completo depois da
+implementação. Confirme, tela por tela: só os dois valores de raio aparecem
+em todo o app; <code>signal</code> aparece só nos pontos de risco real (no
+máximo 2 na tela de urgência e no link de apoio — se aparecer em mais
+lugares, é regressão pro problema antigo); todo ícone é traço único sem
+preenchimento, exceto o selo. Esse é o gate mais fácil de falhar — é comum
+uma tela "esquecer" a regra depois da primeira.
+
+--------------------------------------------------------------------------
+BLOCO 5 — Aviso final, não pule
+--------------------------------------------------------------------------
+Escreva em DECISOES.md um pedido direto ao usuário:
+  1. Confirmar se a dependência de fonte externa (Google Fonts) ficou
+     resolvida do jeito certo, ou se precisou trocar pra fonte de sistema.
+  2. Listar qualquer tela do fluxo que apareceu no levantamento do Bloco 0-a
+     e não estava prevista neste prompt — pra confirmar se ficou faltando
+     alguma decisão de design não coberta aqui.
+  3. Confirmar que nenhum texto de anonimato, nenhuma pergunta e nenhuma
+     lógica de navegação foi alterada — só a camada visual, do início ao fim.
+
+================================================================================
+FIM. O risco real aqui não é a home — ela já foi validada. O risco é a
+disciplina não sobreviver até a quinta tela: um ícone preenchido voltando,
+um raio de 8px aparecendo "só dessa vez", a cor de risco decorando um botão
+qualquer. O sistema só vale a pena se for aplicado com o mesmo rigor em toda
+tela, não só na que foi mostrada primeiro.

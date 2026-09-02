@@ -12,11 +12,41 @@ export default {
     },
     extend: {
       fontFamily: {
-        display: ['"Fraunces"', "Georgia", "serif"],
-        body: ['"Source Sans 3"', "system-ui", "-apple-system", "sans-serif"],
-        mono: ['"IBM Plex Mono"', "ui-monospace", "SFMono-Regular", "monospace"],
+        // Sistema "documento, nao spa" — ver designsystemescuta.html.
+        display: ['"Source Serif 4"', "Georgia", "serif"],
+        body: ['"IBM Plex Sans"', "system-ui", "-apple-system", "sans-serif"],
+        mono: ['"JetBrains Mono"', "ui-monospace", "SFMono-Regular", "monospace"],
       },
       colors: {
+        // --- tokens do sistema novo (fonte da verdade: designsystemescuta.html) ---
+        ink: {
+          DEFAULT: "hsl(var(--ink))",
+          2: "hsl(var(--ink-2))",
+        },
+        record: "hsl(var(--record))",
+        paper: {
+          DEFAULT: "hsl(var(--paper))",
+          raised: "hsl(var(--paper-raised))",
+          2: "hsl(var(--paper-2))",
+        },
+        seal: {
+          DEFAULT: "hsl(var(--seal))",
+          foreground: "hsl(var(--seal-foreground))",
+          tint: "var(--seal-tint)",
+          line: "var(--seal-line)",
+        },
+        signal: {
+          DEFAULT: "hsl(var(--signal))",
+          tint: "var(--signal-tint)",
+        },
+        stamp: {
+          DEFAULT: "hsl(var(--stamp))",
+          tint: "var(--stamp-tint)",
+        },
+        line: "var(--line)",
+        "line-2": "var(--line-2)",
+
+        // --- aliases semanticos (compat shadcn / painel, fora de escopo deste redesign) ---
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
@@ -53,6 +83,8 @@ export default {
           foreground: "hsl(var(--card-foreground))",
         },
         surface2: "hsl(var(--surface-2))",
+        // Fora de escopo (Bloco 0-a): usados so pelo painel (severidade/status),
+        // valores antigos, sem equivalente no sistema novo — ver DECISOES.md.
         warning: {
           DEFAULT: "hsl(var(--warning))",
           soft: "hsl(var(--warning-soft))",

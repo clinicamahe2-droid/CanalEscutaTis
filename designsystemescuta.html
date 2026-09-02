@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Canal de Escuta — sistema de design</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600&family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
+<style>
+  :root{
+    --ink:#1A1D1B; --ink-2:#565F5A; --record:#7C8580;
+    --paper:#F3F0E8; --paper-raised:#FFFFFF; --paper-2:#EAE5D8;
+    --line:rgba(26,29,27,.11); --line-2:rgba(26,29,27,.18);
+    --seal:#234B3E; --seal-tint:rgba(35,75,62,.07); --seal-line:rgba(35,75,62,.28);
+    --signal:#9C4A32; --signal-tint:rgba(156,74,50,.09);
+    --stamp:#A6842E; --stamp-tint:rgba(166,132,46,.10);
+    --sans:'IBM Plex Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+    --serif:'Source Serif 4',Georgia,serif;
+    --mono:'JetBrains Mono','SF Mono',Menlo,Consolas,monospace;
+    --r-sm:4px; --r-lg:12px;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 26px}
+  h1{font-family:var(--serif);font-weight:500;font-size:clamp(28px,4.2vw,38px);line-height:1.2;letter-spacing:-.005em;margin:0 0 16px;text-wrap:balance;color:var(--ink)}
+  h1 em{font-style:italic;color:var(--seal)}
+  h2{font-family:var(--serif);font-weight:500;font-size:22px;line-height:1.2;margin:0 0 10px;color:var(--ink)}
+  h3{margin:0 0 6px;font-size:14px;font-family:var(--sans);font-weight:600;color:var(--ink)}
+  p{margin:0 0 14px;max-width:70ch;color:var(--ink-2)}
+  p.lead{font-size:16.5px;color:var(--ink-2);max-width:66ch}
+  strong{color:var(--ink);font-weight:600}
+  code{font-family:var(--mono);font-size:.85em;color:var(--seal);background:var(--paper-2);padding:1px 5px;border-radius:var(--r-sm)}
+  section{padding:44px 0;border-bottom:1px solid var(--line)}
+  header.hero{padding:52px 0 32px;border-bottom:1px solid var(--line-2)}
+  .eyebrow{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--seal);
+    margin:0 0 14px;display:flex;align-items:center;gap:10px}
+  .eyebrow::after{content:"";flex:1;height:1px;background:var(--line-2);max-width:110px}
+  .callout{border-left:2px solid var(--seal);padding:3px 0 3px 19px;margin:18px 0}
+  .callout p{margin:0;color:var(--ink)}
+  .callout.stamp{border-color:var(--stamp)}
+
+  /* escala tipográfica */
+  .scalerow{display:flex;align-items:baseline;gap:18px;padding:12px 0;border-bottom:1px solid var(--line)}
+  .scalerow:last-child{border:0}
+  .scalerow .sz{font-family:var(--mono);font-size:10.5px;color:var(--record);width:110px;flex-shrink:0}
+  .scalerow .ex{font-family:var(--serif);color:var(--ink)}
+  .scalerow.sans .ex{font-family:var(--sans);font-weight:500}
+  .scalerow.mono .ex{font-family:var(--mono);color:var(--record)}
+
+  /* papéis de cor */
+  .rolegrid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line-2);border:1px solid var(--line-2);
+    border-radius:var(--r-lg);overflow:hidden;margin-top:18px}
+  .roleitem{background:var(--paper-raised);padding:0}
+  .roleitem .sw{height:52px}
+  .roleitem .info{padding:12px 14px}
+  .roleitem .name{font-family:var(--sans);font-size:12.5px;font-weight:600;color:var(--ink)}
+  .roleitem .use{font-family:var(--mono);font-size:9.5px;color:var(--muted, var(--record));margin-top:2px;display:block}
+  .roleitem .use2{font-size:11px;color:var(--ink-2);margin-top:6px;line-height:1.5}
+
+  /* regras */
+  .rulegrid{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--line-2);border:1px solid var(--line-2);
+    border-radius:var(--r-lg);overflow:hidden;margin-top:18px}
+  .ruleitem{background:var(--paper-raised);padding:18px 20px}
+  .ruleitem .k{font-family:var(--mono);font-size:10px;color:var(--seal);letter-spacing:.04em;margin-bottom:8px;text-transform:uppercase}
+  .ruleitem p{font-size:12.5px;margin-bottom:0}
+  .swatchpair{display:flex;gap:10px;margin-top:10px}
+  .swrad{background:var(--paper-2);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:9px;color:var(--record)}
+
+  /* selo */
+  .sealshow{display:flex;align-items:center;gap:30px;margin:24px 0}
+  .sealbig{width:96px;height:96px;flex-shrink:0}
+  .sealshow p{margin:0;font-size:13.5px}
+
+  /* app frame */
+  .appframe{background:#E4E0D2;border:1px solid var(--line-2);border-radius:14px;overflow:hidden;
+    box-shadow:0 26px 50px -30px rgba(26,29,27,.32);max-width:400px;margin:26px auto 0}
+  .af-bar{background:#DAD5C4;padding:8px 14px;display:flex;align-items:center;gap:7px}
+  .af-dot{width:7px;height:7px;border-radius:50%;background:#C3BCA8}
+  .af-url{font-family:var(--mono);font-size:9.5px;color:var(--record);background:var(--paper-raised);border-radius:5px;padding:3px 9px;margin-left:5px}
+
+  .letterhead{background:var(--paper-raised);padding:10px 22px;display:flex;align-items:center;justify-content:space-between;
+    border-bottom:1px solid var(--line)}
+  .letterhead .org{font-family:var(--mono);font-size:8.5px;letter-spacing:.08em;color:var(--record);text-transform:uppercase}
+  .letterhead .promise{font-family:var(--mono);font-size:8px;letter-spacing:.04em;color:var(--seal);text-transform:uppercase}
+
+  .af-body{padding:28px 26px 24px;background:var(--paper)}
+  .sealwrap{display:flex;justify-content:center;margin-bottom:14px}
+  .esc-eyebrow{font-family:var(--mono);font-size:9px;letter-spacing:.1em;color:var(--record);text-transform:uppercase;text-align:center}
+  .esc-title{font-family:var(--serif);font-weight:500;font-size:28px;color:var(--ink);margin:6px 0 8px;text-align:center}
+  .esc-welcome{font-size:12.5px;color:var(--ink-2);text-align:center;max-width:270px;margin:0 auto 22px;line-height:1.55}
+
+  .esc-btn{font-family:var(--sans);font-size:13.5px;font-weight:600;border-radius:var(--r-sm);padding:14px 18px;display:flex;
+    align-items:center;justify-content:center;gap:8px;margin-bottom:9px;border:1px solid transparent}
+  .esc-btn.primary{background:var(--seal);color:#F3F0E8}
+  .esc-btn.secondary{background:transparent;color:var(--ink);border-color:var(--line-2)}
+
+  .clauses{margin:22px 0 4px;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .clause{display:flex;gap:12px;padding:11px 2px;border-bottom:1px solid var(--line)}
+  .clause:last-child{border:0}
+  .clause .num{font-family:var(--mono);font-size:10px;color:var(--seal);flex-shrink:0;padding-top:1px}
+  .clause .body b{display:block;font-size:12px;font-weight:600;color:var(--ink)}
+  .clause .body span{font-size:11px;color:var(--ink-2)}
+
+  .procline{display:flex;align-items:center;margin:20px 0 2px}
+  .procstep{display:flex;flex-direction:column;align-items:center;gap:5px;flex:1}
+  .procstep .pn{font-family:var(--mono);font-size:9.5px;color:var(--seal)}
+  .procstep p{font-size:8.5px;color:var(--record);margin:0;text-align:center;line-height:1.3}
+  .procrule{flex:1;height:1px;background:var(--line-2);margin-top:-16px}
+
+  .esc-link{font-size:11px;color:var(--signal);display:flex;align-items:center;gap:6px;justify-content:center;margin-top:18px;font-weight:600}
+  .esc-link svg{width:12px;height:12px}
+  .esc-foot{margin-top:14px;text-align:center;font-family:var(--mono);font-size:8px;color:var(--record);letter-spacing:.03em}
+
+  footer{padding:36px 0 52px}
+  footer p{font-size:13px;color:var(--ink-2)}
+</style>
+</head>
+<body>
+<header class="hero">
+  <div class="wrap">
+    <p class="eyebrow">Sistema de design · Canal de Escuta</p>
+    <h1>Você está certo — e a resposta curta é <em>sim</em>.</h1>
+    <p class="lead">Serifada + creme + verde-floresta + card arredondado é, hoje, o template padrão de "premium" — todo site de bem-estar, todo SaaS boutique usa essa combinação. Eu apliquei bem, mas apliquei um estilo emprestado, não um sistema pensado pra esse produto específico. A correção não é trocar a cor de novo — é parar de decorar uma tela por vez e definir, uma vez, o que esse produto <em>é</em>: não um app de bem-estar, um canal de registro confidencial. Documento, não spa.</p>
+  </div>
+</header>
+
+<section>
+  <h2>1. Escala tipográfica</h2>
+  <p>Serifada trocada de Lora (decorativa, editorial-boutique) pra Source Serif 4 — desenhada pra relatório e leitura longa, menos "revista de lifestyle", mais "documento oficial". Sans trocada de Inter pra IBM Plex Sans — mais técnica, combina com o contexto industrial da TIS. Mono continua JetBrains, agora com papel funcional real (códigos de caso, não só rótulo bonito).</p>
+  <div class="scalerow"><span class="sz">38 / serif / 500</span><span class="ex">Canal de Escuta</span></div>
+  <div class="scalerow"><span class="sz">22 / serif / 500</span><span class="ex">Um espaço para relatar</span></div>
+  <div class="scalerow sans"><span class="sz">14 / sans / 600</span><span class="ex">Fazer um relato</span></div>
+  <div class="scalerow sans"><span class="sz">12.5 / sans / 400</span><span class="ex">Você pode relatar sem se identificar.</span></div>
+  <div class="scalerow mono"><span class="sz">10 / mono / 500</span><span class="ex">CASO #TIS-2026-0847</span></div>
+</section>
+
+<section>
+  <h2>2. Papéis de cor, não só amostras</h2>
+  <p>Cada cor tem uma função e só essa função — é essa disciplina que faltava, não uma paleta nova. <code>seal</code> só aparece em ação primária e no selo. <code>signal</code> só aparece nos dois pontos que são sobre risco real. Fora disso, tudo é tinta neutra.</p>
+  <div class="rolegrid">
+    <div class="roleitem"><div class="sw" style="background:var(--paper)"></div><div class="info"><span class="name">paper</span><span class="use">#F3F0E8 · fundo</span><p class="use2">Cor de base — como papel, não branco de formulário.</p></div></div>
+    <div class="roleitem"><div class="sw" style="background:var(--ink)"></div><div class="info"><span class="name">ink</span><span class="use">#1A1D1B · texto</span><p class="use2">Texto primário e títulos — nunca preto puro.</p></div></div>
+    <div class="roleitem"><div class="sw" style="background:var(--seal)"></div><div class="info"><span class="name">seal</span><span class="use">#234B3E · ação</span><p class="use2">Só botão primário e o selo. Em nenhum outro lugar decorando.</p></div></div>
+    <div class="roleitem"><div class="sw" style="background:var(--record)"></div><div class="info"><span class="name">record</span><span class="use">#7C8580 · metadado</span><p class="use2">Códigos, datas, rótulos técnicos — a "letra miúda" do sistema.</p></div></div>
+    <div class="roleitem"><div class="sw" style="background:var(--signal)"></div><div class="info"><span class="name">signal</span><span class="use">#9C4A32 · risco real</span><p class="use2">Reservada. Se aparecer em mais de 2 lugares na tela, está errado.</p></div></div>
+    <div class="roleitem"><div class="sw" style="background:var(--stamp)"></div><div class="info"><span class="name">stamp</span><span class="use">#A6842E · selo</span><p class="use2">Só no anel do selo de confidencialidade. Um único uso, de propósito.</p></div></div>
+  </div>
+</section>
+
+<section>
+  <h2>3. Duas regras, não onze valores soltos</h2>
+  <div class="rulegrid">
+    <div class="ruleitem">
+      <div class="k">Raio — só 2 valores</div>
+      <p>4px pra elemento pequeno (botão, chip, input). 12px pra contêiner (card, moldura). As versões anteriores usavam 8, 10, 12, 13, 14, 16, 20, 26 — essa variação aleatória é parte do porquê parecia "feito rápido".</p>
+      <div class="swatchpair">
+        <div class="swrad" style="width:60px;height:32px;border-radius:4px;border:1px solid var(--line-2)">4px</div>
+        <div class="swrad" style="width:60px;height:32px;border-radius:12px;border:1px solid var(--line-2)">12px</div>
+      </div>
+    </div>
+    <div class="ruleitem">
+      <div class="k">Ícone — um traço só</div>
+      <p>1.5–1.6px de espessura, sem preenchimento exceto no selo. Nada de ícone "fofo" com preenchimento colorido — a linha fina é o que lê como redigido com cuidado, não gerado em massa.</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>4. O selo — a marca do produto</h2>
+  <p>Troquei o balão-com-coração (gentil, mas genérico — qualquer app de terapia usa esse motivo) por um selo de verificação: duas argolas concêntricas e uma confirmação, no espírito de carimbo/protocolo. Ele não diz "alguém te ama", diz "isso foi recebido e está sendo tratado com cuidado formal" — mais verdadeiro pro que o produto realmente promete, e mais difícil de confundir com qualquer outro app.</p>
+  <div class="sealshow">
+    <svg class="sealbig" viewBox="0 0 48 48" fill="none">
+      <circle cx="24" cy="24" r="19" stroke="#234B3E" stroke-width="1.3"/>
+      <circle cx="24" cy="24" r="14" fill="rgba(35,75,62,.06)" stroke="#A6842E" stroke-width="1" stroke-dasharray="1.5 3.2"/>
+      <path d="M17.5 24.2l4.3 4.3 8.7-9.4" stroke="#234B3E" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <p>Anel externo sólido (o produto), anel interno pontilhado (o rito de proteção — mesma linguagem de selo fiscal ou carimbo notarial), confirmação central (o relato foi recebido). Reaparece igual em toda tela que precisa reforçar sigilo — nunca reinventado.</p>
+  </div>
+</section>
+
+<section>
+  <h2>5. A home, dentro do sistema</h2>
+  <p>Mesma tela, mesma informação — agora como aplicação do sistema, não decoração isolada. Duas trocas estruturais: os selos de confiança viraram <strong>cláusulas numeradas</strong> (linguagem de política/norma, não crachá de e-commerce), e os "3 passos" viraram uma <strong>linha de procedimento</strong> com códigos, não círculos com ícone.</p>
+  <div class="appframe">
+    <div class="af-bar"><span class="af-dot"></span><span class="af-dot"></span><span class="af-dot"></span><span class="af-url">canaldeescuta.tis.com.br</span></div>
+    <div class="letterhead">
+      <span class="org">TIS · Terminal Intermodal Sul</span>
+      <span class="promise">Sigilo garantido</span>
+    </div>
+    <div class="af-body">
+      <div class="sealwrap">
+        <svg width="52" height="52" viewBox="0 0 48 48" fill="none">
+          <circle cx="24" cy="24" r="19" stroke="#234B3E" stroke-width="1.3"/>
+          <circle cx="24" cy="24" r="14" fill="rgba(35,75,62,.06)" stroke="#A6842E" stroke-width="1" stroke-dasharray="1.5 3.2"/>
+          <path d="M17.5 24.2l4.3 4.3 8.7-9.4" stroke="#234B3E" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="esc-eyebrow">Canal confidencial</div>
+      <div class="esc-title">Canal de Escuta</div>
+      <div class="esc-welcome">Um espaço formal para registrar o que aconteceu — tratado com sigilo, do início ao fim.</div>
+
+      <div class="esc-btn primary">Fazer um relato</div>
+      <div class="esc-btn secondary">Já enviei — consultar status</div>
+
+      <div class="clauses">
+        <div class="clause"><span class="num">01</span><div class="body"><b>Anonimato garantido</b><span>Nome, IP e aparelho nunca são registrados.</span></div></div>
+        <div class="clause"><span class="num">02</span><div class="body"><b>Sem retaliação</b><span>Sua identidade não é exigida em nenhuma etapa.</span></div></div>
+        <div class="clause"><span class="num">03</span><div class="body"><b>Equipe dedicada</b><span>Cada relato é lido por alguém responsável por isso.</span></div></div>
+      </div>
+
+      <div class="procline">
+        <div class="procstep"><span class="pn">01 · RELATO</span><p>Você conta<br>o que houver</p></div>
+        <div class="procrule"></div>
+        <div class="procstep"><span class="pn">02 · CÓDIGO</span><p>Recebe um código<br>de acompanhamento</p></div>
+        <div class="procrule"></div>
+        <div class="procstep"><span class="pn">03 · RETORNO</span><p>Equipe analisa<br>e responde</p></div>
+      </div>
+
+      <div class="esc-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>Está em risco agora? Ver contatos de apoio</div>
+      <div class="esc-foot">ACESSO DA EQUIPE DE ESCUTA</div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p>Isso é o começo de um sistema, não só mais uma tela — as próximas (categoria, urgência, relato) reaplicam exatamente essas regras, sem inventar nada novo por tela. Se essa direção fizer sentido, sigo redesenhando o restante do fluxo dentro dela e escrevo o prompt de execução completo de uma vez, não tela por tela.</p>
+  </div>
+</footer>
+</body>
+</html>

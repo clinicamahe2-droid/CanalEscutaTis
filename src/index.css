@@ -1,59 +1,101 @@
-@import "@fontsource/fraunces/400.css";
-@import "@fontsource/fraunces/500.css";
-@import "@fontsource/fraunces/600.css";
-@import "@fontsource/fraunces/700.css";
-@import "@fontsource/source-sans-3/400.css";
-@import "@fontsource/source-sans-3/500.css";
-@import "@fontsource/source-sans-3/600.css";
-@import "@fontsource/source-sans-3/700.css";
-@import "@fontsource/ibm-plex-mono/400.css";
-@import "@fontsource/ibm-plex-mono/500.css";
-@import "@fontsource/ibm-plex-mono/600.css";
+@import "@fontsource/source-serif-4/400.css";
+@import "@fontsource/source-serif-4/500.css";
+@import "@fontsource/source-serif-4/600.css";
+@import "@fontsource/ibm-plex-sans/400.css";
+@import "@fontsource/ibm-plex-sans/500.css";
+@import "@fontsource/ibm-plex-sans/600.css";
+@import "@fontsource/ibm-plex-sans/700.css";
+@import "@fontsource/jetbrains-mono/400.css";
+@import "@fontsource/jetbrains-mono/500.css";
+@import "@fontsource/jetbrains-mono/600.css";
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 /*
-  Canal de Escuta — sistema visual.
-  Paleta verde-petroleo sobre fundo claro neutro, herdada do prototipo v2.
-  Todas as cores vivem aqui como CSS vars em HSL. Nao espalhe hex nos componentes.
+  Canal de Escuta — sistema de design "documento, nao spa".
+  Fonte da verdade: designsystemescuta.html (raiz do projeto) + DECISOES.md.
+
+  Cada cor tem UMA funcao:
+    seal    -> so acao primaria e o selo
+    signal  -> so risco real (Urgencia + link de apoio — no maximo 2 lugares)
+    stamp   -> so o anel pontilhado do selo
+    record  -> so metadado (codigo, data, rotulo tecnico), sempre com font-mono
+  Todas as cores vivem aqui como CSS vars. Nao espalhe hex nos componentes.
+
+  Raio: so 2 valores no fluxo do colaborador e nos primitivos compartilhados
+  (Button/Input/Textarea) — `rounded` (4px, elemento pequeno) e `rounded-xl`
+  (12px, conteiner). Ambos ja sao os valores padrao do Tailwind, por isso nao
+  ha um terceiro `borderRadius` customizado pra eles.
+
+  O painel da equipe (fora de escopo deste sistema — ver DECISOES.md) herda
+  as cores novas automaticamente (mesmos tokens semanticos), mas mantem seus
+  proprios raios/componentes sem alteracao.
 */
 
 @layer base {
   :root {
-    --background: 140 13% 95%;
-    --foreground: 160 22% 11%;
+    /* ---- tokens do sistema novo ---- */
+    --ink: 140 5.5% 10.8%;
+    --ink-2: 146.7 5% 35.5%;
+    --record: 146.7 3.6% 50.4%;
+    --paper: 43.6 31.4% 93.1%;
+    --paper-raised: 0 0% 100%;
+    --paper-2: 43.3 30% 88.2%;
+    --seal: 160.5 36.4% 21.6%;
+    --seal-foreground: 43.6 31.4% 93.1%; /* = paper, igual ao mockup */
+    --signal: 13.6 51.5% 40.4%;
+    --stamp: 43 56.6% 41.6%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 160 22% 11%;
+    /* tintas translucidas — valores fixos (nao usar modificador /NN do Tailwind neles) */
+    --line: rgba(26, 29, 27, 0.11);
+    --line-2: rgba(26, 29, 27, 0.18);
+    --seal-tint: rgba(35, 75, 62, 0.07);
+    --seal-line: rgba(35, 75, 62, 0.28);
+    --signal-tint: rgba(156, 74, 50, 0.09);
+    --stamp-tint: rgba(166, 132, 46, 0.1);
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 160 22% 11%;
+    --r-sm: 4px;
+    --r-lg: 12px;
 
-    --primary: 174 37% 27%;
-    --primary-foreground: 0 0% 100%;
-    --primary-dark: 176 39% 18%;
-    --primary-soft: 170 20% 91%;
+    /* ---- aliases semanticos (compat shadcn / painel) ----
+       HSL triplet de propósito: varios lugares usam modificador de opacidade
+       do Tailwind (ex.: text-foreground/80) que só funciona nesse formato. */
+    --background: var(--paper);
+    --foreground: var(--ink);
 
-    --secondary: 140 10% 92%;
-    --secondary-foreground: 160 20% 15%;
+    --card: var(--paper-raised);
+    --card-foreground: var(--ink);
 
-    --muted: 140 10% 92%;
-    --muted-foreground: 145 6% 46%;
+    --popover: var(--paper-raised);
+    --popover-foreground: var(--ink);
 
-    --accent: 170 20% 91%;
-    --accent-foreground: 176 39% 18%;
+    --primary: var(--seal);
+    --primary-foreground: var(--seal-foreground);
+    --primary-dark: var(--seal);
+    --primary-soft: 60 12.9% 87.8%; /* seal-tint composto sobre paper */
 
-    --destructive: 9 55% 41%;
-    --destructive-foreground: 0 0% 100%;
+    --secondary: var(--paper-2);
+    --secondary-foreground: var(--ink);
 
-    --border: 130 10% 85%;
-    --input: 130 10% 84%;
-    --ring: 174 37% 32%;
+    --muted: var(--paper-2);
+    --muted-foreground: var(--ink-2);
 
-    --surface-2: 140 10% 92%;
+    --accent: 150 7.1% 94.5%; /* seal-tint composto sobre paper-raised (hover em card) */
+    --accent-foreground: var(--seal);
 
+    --destructive: var(--signal);
+    --destructive-foreground: var(--seal-foreground);
+
+    --border: 48 12.2% 83.9%; /* line composto sobre paper */
+    --input: 46.7 8.1% 78.2%; /* line-2 composto sobre paper */
+    --ring: var(--seal);
+
+    --surface-2: var(--paper-2);
+
+    /* Fora de escopo (ver DECISOES.md, Bloco 0-a): so o painel usa —
+       sem equivalente no sistema novo, valores antigos preservados. */
     --warning: 35 58% 40%;
     --warning-soft: 37 55% 89%;
     --critical: 9 55% 41%;
@@ -62,47 +104,6 @@
     --success-soft: 150 25% 90%;
 
     --radius: 0.625rem;
-  }
-
-  .dark {
-    --background: 156 12% 8%;
-    --foreground: 140 8% 91%;
-
-    --card: 156 14% 12%;
-    --card-foreground: 140 8% 91%;
-
-    --popover: 156 14% 12%;
-    --popover-foreground: 140 8% 91%;
-
-    --primary: 170 42% 58%;
-    --primary-foreground: 156 20% 10%;
-    --primary-dark: 168 40% 72%;
-    --primary-soft: 162 26% 16%;
-
-    --secondary: 150 16% 15%;
-    --secondary-foreground: 140 8% 91%;
-
-    --muted: 150 16% 15%;
-    --muted-foreground: 150 5% 60%;
-
-    --accent: 162 26% 16%;
-    --accent-foreground: 168 40% 80%;
-
-    --destructive: 9 54% 55%;
-    --destructive-foreground: 0 0% 100%;
-
-    --border: 156 14% 19%;
-    --input: 156 14% 20%;
-    --ring: 170 42% 50%;
-
-    --surface-2: 150 16% 15%;
-
-    --warning: 35 60% 60%;
-    --warning-soft: 37 25% 15%;
-    --critical: 9 54% 63%;
-    --critical-soft: 14 24% 16%;
-    --success: 147 30% 57%;
-    --success-soft: 150 22% 14%;
   }
 
   * {
@@ -123,6 +124,7 @@
   h3,
   h4 {
     @apply font-display;
+    font-weight: 500;
     text-wrap: balance;
   }
 

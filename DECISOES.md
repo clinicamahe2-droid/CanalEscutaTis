@@ -6,6 +6,190 @@ cronológica, mais recente no topo.
 
 ---
 
+## 2026-09-03 — Repele: pele "Matcha" sobre o sistema "documento, não spa"
+
+Pedido direto do dono no chat (sem prompt formal), com duas referências
+externas (arquivos do dono, fora do repo, não versionadas):
+- `Matcha.html` — landing page de marketing para chá matcha cerimonial
+  ("ASAGIRI"): paleta jade/bone/ouro, serifada + grotesk, GSAP/ScrollTrigger,
+  scroll pinado horizontal, parallax, loader. **"Matcha é a proposta."**
+- `design-system.html` (glass-effect2, "Liquid Glass") — tema escuro com
+  painéis de vidro/blur. **Pedido explícito: só os botões, os efeitos** — não
+  a paleta escura nem o blur.
+
+**Decisão: troca de paleta/tipografia, mantendo a estrutura e disciplina do
+sistema anterior — não é um redesign de layout, é reskin de tokens.** Os
+nomes de token (`ink`, `paper`, `seal`, `signal`, `stamp`, `record`) e a regra
+"cada cor uma função" continuam; só os valores mudam. Não trago o aparato de
+landing page do Matcha (GSAP, Lenis, scroll pinado, parallax, loader, cursor
+customizado) — o app é um fluxo de formulário curto de 8 telas, não uma
+página de marketing; usar scrollytelling ali seria a mesma incoerência que o
+prompt anterior evitou ao rejeitar "spa".
+
+**Mapeamento de cor (mesmo papel, valor novo):**
+
+| Token | Antes (verde-floresta) | Agora (Matcha) |
+|---|---|---|
+| `ink` / `ink-2` | `#23271b`-ish | `#23271f` / `#41463a` (ink do Matcha) |
+| `record` | cinza esverdeado | `#a9997d` (stone-d do Matcha) |
+| `paper` / `paper-2` | creme | `#f4f0e6` / `#ece6d7` (bone/bone-2) |
+| `paper-raised` | branco puro | `#fbf9f2` (card do Matcha, mais quente que branco) |
+| `seal` | `#234b3e` | `#3a4a31` (jade-d do Matcha) |
+| `stamp` | `#a6842e` | `#b89b5e` (gold do Matcha) |
+| `signal` | `#9c4a32` | **inalterado** — o Matcha não tem cor de alarme; o
+  terracota antigo já combina com jade/bone/ouro, não inventei uma nova. |
+
+Todos os valores derivados (tints, `border`, `input`, `accent`,
+`primary-soft`) foram recalculados a partir desses hex — não são chute, são
+composição matemática da cor translúcida sobre o fundo correspondente (mesma
+técnica já documentada no bloco anterior).
+
+**Tipografia:** `Source Serif 4` → `Instrument Serif` (display), `IBM Plex
+Sans` → `Hanken Grotesk` (body) — as duas fontes web do Matcha. `JetBrains
+Mono` continua igual: o Matcha não tem mono, e código de protocolo/timestamp
+precisa de um. Self-hosted via `@fontsource` (`^5.3.0` ambos, confirmado no
+npm antes de trocar) — mesma arquitetura zero-request-externo do bloco
+anterior, não abro exceção para o `<link rel=preconnect>` do Google Fonts que
+o `Matcha.html` usa.
+
+**Raio do botão — testado como pílula, revertido.** Primeira versão copiava
+o botão do Matcha (`border-radius:100px`). O dono viu renderizado e apontou:
+"está muito com cara de IA" — botão-pílula full-width empilhado é o clichê
+nº1 de landing page/produto gerado por IA. Corrigido no mesmo dia: `Button`
+volta para `rounded` (4px, igual ao resto do app). O raio NÃO é o que
+distingue a pele Matcha — é a cor/tipografia; a pílula era só reincidência de
+um padrão genérico, não uma decisão calculada, então saiu sem dó.
+
+**Botões — efeito emprestado do glass-effect2 (só isso, nada de blur):**
+- `default` (ação primária, fundo `seal` sólido): hover levanta 2px
+  (`-translate-y-0.5`) e ganha sombra — o mesmo "lift" que tanto o Matcha
+  (`.btn.solid:hover{transform:translateY(-2px)}`) quanto o glass DS usam
+  para hover de botão sólido.
+- `secondary`/`outline`: hover inverte para preenchimento `seal` sólido com
+  texto `paper` — o padrão "invert on hover" que aparece **nos dois** DS de
+  referência de forma independente (`.nbtn:hover` no Matcha, "Secondary
+  Button" no glass DS), então é uma escolha bem sustentada, não um palpite.
+- Não trouxe: cursor customizado, glassmorphism/blur, parallax, shimmer de
+  scroll — nada disso se aplica a botões de formulário num app anônimo leve.
+
+**Escopo:** as mesmas 8 telas do fluxo do colaborador (Home + Apoio +
+Categoria + Urgência + Relato + Revisão + Protocolo + Consulta), porque os
+tokens são globais (`index.css`/`tailwind.config.ts`) — qualquer tela que
+consome os tokens semânticos herda a pele nova automaticamente, inclusive o
+painel da equipe (mesmo efeito colateral já documentado e aceito no bloco
+anterior: raio de botão mais arredondado no painel também, sem tocar seus
+componentes).
+
+**Verificado:** as 8 telas do fluxo renderizadas no navegador (`localhost`,
+mobile 375px-equivalente), incluindo os 3 estados de cor problemáticos —
+seleção "urgente" (`signal`), Selo na Home e no Protocolo (`seal`+`stamp`),
+hover-invert do botão "Copiar código" — e o gate completo (`typecheck`,
+`lint`, `vitest` 20 testes, `vite build`) verde.
+
+**Fonte `--seal-foreground`:** passou a `var(--paper)` (referência direta em
+vez de valor duplicado) — mesmo valor funcional de antes, só menos redundante
+de manter.
+
+**Correção pós-print — "cara de IA" (mesmo dia, logo depois do print acima).**
+O dono viu as telas renderizadas e resumiu em uma frase: "está muito com cara
+de IA". Causas concretas apontadas, não feeling vago:
+1. Botão pílula full-width empilhado (ver acima — revertido).
+2. Bloco de abertura da Home centralizado (selo + rótulo "Canal
+   confidencial" + título + parágrafo, tudo `items-center text-center`) — é
+   o template mais repetido de hero de onboarding gerado por IA.
+3. Rótulo mono maiúsculo repetido acima de valor óbvio ("CATEGORIA" acima do
+   nome da categoria, em `Relato.tsx` e `Revisao.tsx`) — assinatura de
+   "design system sintético" tela a tela, não de alguém desenhando cada uma.
+4. Tudo centralizado, mesmo respiro em todo canto — zero assimetria.
+
+Aplicado (só isso, sem reabrir o resto do redesign):
+- `Home.tsx`: bloco de abertura virou `text-left`, sem `items-center`; selo
+  reduzido de 52px pra 38px, sem o rótulo "Canal confidencial" (redundante
+  com o próprio `<h1>` duas linhas abaixo).
+- `Relato.tsx` e `Revisao.tsx`: a legenda mono "Categoria" saiu; o nome da
+  categoria fica sozinho, em `font-semibold`, sem rótulo — o usuário acabou
+  de escolher aquele valor numa tela de botões, não precisa de legenda pra
+  reconhecer o que é.
+- `Consulta.tsx` (rótulo de campo "Código do protocolo") e o rótulo "Seu
+  relato"/"Seu protocolo" nas telas de revisão/confirmação **ficaram** — ali
+  o rótulo resolve ambiguidade real (o campo está vazio antes do
+  preenchimento; o texto livre do relato não se identifica sozinho como tal).
+
+Gate rodado de novo depois da correção: `typecheck`/`lint` limpos (mesmos 6
+warnings pré-existentes, 0 erros); as 8 telas reconferidas visualmente.
+
+---
+
+## 2026-09-03 — Home vira hero de 2 colunas (referência canalescutahomev3.html)
+
+Pedido do dono, com arquivo de referência completo (HTML/CSS/JS,
+`canalescutahomev3.html`, salvo na raiz do repo — mesmo padrão de
+`designsystemescuta.html`). Ao contrário dos dois redesigns anteriores desta
+data (pele Matcha), este é **só a Home** — as outras 7 telas do fluxo não
+mudam nada.
+
+**Por que não reaproveita `ink/paper/seal/stamp`:** a referência usa outra
+paleta (creme `#F6F1E4` + verde escuro `#141D0E–#2C3E20` + dourado `#D89A4C`)
+e outra tipografia (Fraunces/Source Sans 3/IBM Plex Mono) — não é uma
+variação da pele Matcha, é uma terceira linguagem visual, só para a porta de
+entrada. Criei um namespace `mahe.*` isolado em `tailwind.config.ts`
+(`font-mahe-display/body/mono`, `bg-mahe-cream`, etc.) em vez de sobrescrever
+os tokens do fluxo — Categoria/Urgência/Relato/etc. continuam exatamente como
+estavam. Fontes novas self-hosted via `@fontsource` (mesma regra de
+zero-request-externo).
+
+**Layout:** grid de 2 colunas (`1.15fr 0.85fr`) acima de 921px (breakpoint
+próprio, `mahe-2col` em `tailwind.config.ts` — não bate com nenhum breakpoint
+padrão do Tailwind), colapsa pra 1 coluna abaixo disso. Painel esquerdo
+(creme) com o conteúdo; painel direito (verde escuro com 2 glow-orbs
+animados) com a marca — usa o SVG exato da Clínica Mahê (casa + galho),
+extraído da referência pro componente `LogoMahe.tsx` (mesmo padrão do
+`Selo.tsx`: vetor único, reutilizável, nunca redesenhado).
+
+**Conteúdo trocado (só texto/visual, nenhuma rota/lógica mudou):**
+- Removido: os 3 pilares de confiança e a barra de alerta de risco imediato.
+- Selo/eyebrow novo, título mantido (`config?.nome_canal`), parágrafo novo
+  (continua vindo de `config?.mensagem_boas_vindas` com o novo texto como
+  fallback — não virou hardcoded, só troquei o padrão).
+- Botão primário → mesma rota de antes (`/relatar/categoria`), texto novo.
+  Botão secundário → mesma rota de antes (`/consulta`), texto novo.
+- Mantido: timbre (nome da empresa + "Sigilo garantido"), os 3 passos
+  (Relato/Código/Retorno, mesmo conteúdo, só separei `num`/`título`/`desc`
+  pra bater com a estrutura da referência), link de acesso da equipe.
+- O chip da logo TIS que ficava no rodapé da Home **saiu** — a referência não
+  tem esse elemento e a identidade da TIS já está toda no timbre do topo; o
+  componente `LogoTIS.tsx` continua existindo e sendo usado no Login/sidebar
+  do painel (fora de escopo deste prompt).
+
+**Glass effect — correção pós-print.** Portei os valores exatos de
+`backdrop-filter`/gradiente/sombra da referência (confirmado via
+`getComputedStyle` no navegador: `blur(14px) saturate(1.6)`, idêntico ao
+arquivo-fonte). O dono viu renderizado e perguntou "cadê o efeito glass" — o
+motivo real: o painel esquerdo da própria referência é fundo liso
+(`background:var(--cream)`, sem gradiente/textura atrás), e blur sobre cor
+lisa não produz nada visível — a mesma limitação já existe no
+`canalescutahomev3.html` original, não foi erro de porte. Corrigido
+adicionando um glow radial dourado sutil atrás do hero (`.mahe-glow-warm` em
+`index.css`, reusando a animação `mahe-orb-breathe` já criada pro painel
+direito) — não está na referência, é acréscimo meu pra dar ao blur algo de
+verdade pra desfocar. Com isso o botão secundário (mais translúcido, 42% de
+opacidade branca) passa a mostrar o tingimento dourado desfocado atrás dele.
+
+**Banner "Modo demonstração" removido do app inteiro** (`DemoBanner.tsx`
+deletado, referência tirada de `App.tsx`) — pedido explícito do dono ao ver
+o preview, escolhendo a opção "remover de vez" entre as alternativas
+apresentadas (só nesta sessão / flag desligada por padrão / remover de vez).
+Existia desde a fundação do projeto pra avisar que dado não persiste em
+modo local (`MODO_DADOS==="local"`, antes da migração pro Supabase) — o
+dono decidiu que não precisa mais disso.
+
+Gate: `typecheck`/`lint` (mesmos 6 warnings de sempre, 0 erros)/`vitest` (20
+testes)/`vite build` verdes. Testado no navegador em desktop (>921px, 2
+colunas) e mobile (1 coluna), texto conferido palavra a palavra contra a
+referência via `get_page_text`.
+
+---
+
 ## 2026-09-02 — Novo sistema de design ("Documento, não spa")
 
 Fonte de verdade: `designsystemescuta.html` (na raiz do projeto). Executando

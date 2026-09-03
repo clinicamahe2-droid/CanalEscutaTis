@@ -59,12 +59,7 @@ export default function Relato() {
       }
     >
       {categoria && (
-        <div className="mb-4">
-          <span className="font-mono text-[0.65rem] uppercase tracking-wide text-record">
-            Categoria
-          </span>
-          <div className="text-sm font-semibold text-ink mt-0.5">{rotuloCategoria(categoria)}</div>
-        </div>
+        <div className="mb-4 text-sm font-semibold text-ink">{rotuloCategoria(categoria)}</div>
       )}
 
       <label className="text-xs uppercase tracking-wide text-record font-mono mb-1.5 block">

@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Canal de Escuta — Proposta de Home</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Source+Sans+3:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --cream:#F6F1E4; --cream-2:#EEE5CD; --border-warm:#E1D6B8;
+  --ink:#212F1B; --ink-soft:#535E48; --muted:#8B9278;
+  --green-900:#141D0E; --green-800:#1F2C16; --green-700:#2C3E20;
+  --gold:#D89A4C; --gold-dark:#B87F36; --gold-soft:#F1E1BF;
+  --alert:#B45A2C; --alert-soft:#F3DFC9;
+  --font-display:'Fraunces',Georgia,serif;
+  --font-body:'Source Sans 3',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  --font-mono:'IBM Plex Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+*{box-sizing:border-box;}
+html{background:var(--green-900);}
+body{margin:0;font-family:var(--font-body);color:var(--ink);background:var(--cream);}
+h1,h2{font-family:var(--font-display);margin:0;text-wrap:balance;}
+button,a.btn{font-family:inherit;cursor:pointer;text-decoration:none;}
+.mono{font-family:var(--font-mono);}
+@media (prefers-reduced-motion: reduce){ *{animation-duration:0.01ms !important; animation-iteration-count:1 !important; transition-duration:0.01ms !important;} }
+
+.hero-grid{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,0.85fr);min-height:100vh;}
+@media (max-width:920px){ .hero-grid{grid-template-columns:1fr;} }
+
+/* -------- LEFT: content panel -------- */
+.panel-content{background:var(--cream);padding:28px clamp(24px,5vw,72px) 48px;display:flex;flex-direction:column;}
+.topbar{display:flex;justify-content:space-between;align-items:center;font-family:var(--font-mono);font-size:0.72rem;letter-spacing:0.06em;color:var(--ink-soft);padding-bottom:20px;border-bottom:1px solid var(--border-warm);margin-bottom:auto;}
+.topbar .co{text-transform:uppercase;}
+.topbar .seal{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,0.45);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,0.7);box-shadow:inset 0 1px 0 rgba(255,255,255,0.6);padding:5px 11px;border-radius:99px;text-transform:uppercase;color:var(--ink);}
+.topbar .seal svg{width:11px;height:11px;stroke:var(--ink);}
+
+.hero-core{max-width:520px;margin:44px 0 40px;opacity:0;animation:fadeUp .6s ease-out forwards;}
+.icon-ring{width:56px;height:56px;border-radius:50%;background:var(--gold-soft);display:flex;align-items:center;justify-content:center;margin-bottom:18px;position:relative;}
+.icon-ring::after{content:"";position:absolute;inset:-6px;border-radius:50%;border:1px solid var(--gold);opacity:.4;animation:ring-pulse 2.8s ease-in-out infinite;}
+.icon-ring svg{width:24px;height:24px;stroke:var(--gold-dark);}
+.eyebrow{font-family:var(--font-mono);font-size:0.72rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--gold-dark);margin-bottom:10px;display:block;}
+h1.title{font-size:clamp(2.4rem,5vw,3.3rem);font-weight:700;color:var(--ink);line-height:1.04;margin-bottom:18px;}
+.lede{font-size:1.08rem;color:var(--ink-soft);line-height:1.55;margin-bottom:30px;max-width:46ch;}
+
+.btn-row{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:38px;}
+.btn-primary{position:relative;display:inline-flex;align-items:center;gap:8px;overflow:hidden;
+  background:linear-gradient(135deg, rgba(233,175,102,0.95) 0%, rgba(184,127,54,0.88) 100%);
+  -webkit-backdrop-filter:blur(14px) saturate(160%); backdrop-filter:blur(14px) saturate(160%);
+  color:#2B1B06;font-weight:700;font-size:0.98rem;padding:15px 26px;border-radius:12px;
+  border:1px solid rgba(255,255,255,0.45);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.55), inset 0 -1px 6px rgba(120,70,10,0.18), 0 10px 24px -8px rgba(184,127,54,0.55);
+  transition:transform .18s ease, box-shadow .18s ease;}
+.btn-primary::before{content:"";position:absolute;inset:-10px;border-radius:20px;background:radial-gradient(circle,var(--gold) 0%,transparent 70%);opacity:.3;z-index:-1;filter:blur(12px);animation:glow-breathe 3.4s ease-in-out infinite;}
+.btn-primary::after{content:"";position:absolute;top:0;left:-60%;width:40%;height:100%;background:linear-gradient(115deg, transparent, rgba(255,255,255,0.55), transparent);transform:skewX(-20deg);transition:left .55s ease;}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:inset 0 1px 0 rgba(255,255,255,0.65), inset 0 -1px 6px rgba(120,70,10,0.2), 0 14px 30px -8px rgba(184,127,54,0.65);}
+.btn-primary:hover::after{left:130%;}
+.btn-secondary{position:relative;display:inline-flex;align-items:center;
+  background:rgba(255,255,255,0.42);
+  -webkit-backdrop-filter:blur(10px) saturate(140%); backdrop-filter:blur(10px) saturate(140%);
+  color:var(--ink);font-weight:600;font-size:0.96rem;padding:15px 24px;border-radius:12px;
+  border:1px solid rgba(255,255,255,0.65);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.6), 0 6px 16px -8px rgba(33,47,27,0.18);
+  transition:border-color .18s ease, background .18s ease, transform .18s ease, box-shadow .18s ease;}
+.btn-secondary:hover{background:rgba(255,255,255,0.66);border-color:var(--gold);transform:translateY(-2px);box-shadow:inset 0 1px 0 rgba(255,255,255,0.75), 0 10px 22px -8px rgba(33,47,27,0.22);}
+
+.trust-list{display:flex;flex-direction:column;border-top:1px solid var(--border-warm);margin-bottom:34px;}
+.trust-item{display:flex;gap:16px;padding:15px 4px;border-bottom:1px solid var(--border-warm);align-items:flex-start;border-radius:10px;transition:background .18s ease, padding-left .18s ease, box-shadow .18s ease;}
+.trust-item:hover{background:rgba(255,255,255,0.5);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);box-shadow:inset 0 1px 0 rgba(255,255,255,0.6), 0 4px 14px -8px rgba(33,47,27,0.15);padding-left:12px;}
+.trust-item .n{font-family:var(--font-mono);font-size:0.78rem;color:var(--gold-dark);font-weight:600;padding-top:2px;}
+.trust-item h4{font-size:0.94rem;margin:0 0 2px;color:var(--ink);font-weight:700;}
+.trust-item p{font-size:0.85rem;margin:0;color:var(--muted);}
+
+.steps{display:flex;gap:0;margin-bottom:30px;position:relative;}
+.steps::before{content:"";position:absolute;top:15px;left:26px;right:26px;height:1px;background:var(--border-warm);z-index:0;}
+.step{flex:1;text-align:center;position:relative;z-index:1;padding:0 6px;}
+.step .dot{width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,0.5);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);border:1.5px solid var(--gold);box-shadow:inset 0 1px 0 rgba(255,255,255,0.6);color:var(--gold-dark);font-family:var(--font-mono);font-size:0.72rem;font-weight:700;display:flex;align-items:center;justify-content:center;margin:0 auto 8px;}
+.step h5{font-size:0.78rem;text-transform:uppercase;letter-spacing:0.04em;color:var(--ink);margin:0 0 3px;}
+.step p{font-size:0.76rem;color:var(--muted);margin:0;}
+
+.crisis{display:flex;align-items:center;gap:10px;background:rgba(243,223,201,0.62);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border:1px solid color-mix(in srgb, var(--alert) 35%, transparent);box-shadow:inset 0 1px 0 rgba(255,255,255,0.5);color:var(--alert);border-radius:10px;padding:12px 16px;font-size:0.86rem;font-weight:600;margin-bottom:20px;transition:transform .15s ease, box-shadow .15s ease;}
+.crisis:hover{box-shadow:inset 0 1px 0 rgba(255,255,255,0.6), 0 6px 16px -8px rgba(180,90,44,0.3);}
+.crisis:hover{transform:translateX(2px);}
+.crisis .pulse{width:7px;height:7px;border-radius:50%;background:var(--alert);flex:0 0 auto;animation:dot-pulse 1.6s ease-in-out infinite;}
+
+.footer-access{margin-top:auto;padding-top:20px;border-top:1px solid var(--border-warm);text-align:center;}
+.footer-access a{font-family:var(--font-mono);font-size:0.72rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);}
+.footer-access a:hover{color:var(--ink);}
+
+/* -------- RIGHT: brand panel -------- */
+.panel-brand{position:relative;background:radial-gradient(120% 100% at 30% 20%, var(--green-700) 0%, var(--green-800) 45%, var(--green-900) 100%);overflow:hidden;display:flex;align-items:center;justify-content:center;padding:48px 32px;min-height:320px;}
+.glow-orb{position:absolute;width:420px;height:420px;border-radius:50%;background:radial-gradient(circle, rgba(216,154,76,0.28) 0%, rgba(216,154,76,0) 70%);top:12%;right:-10%;animation:orb-breathe 6s ease-in-out infinite;}
+.glow-orb.two{background:radial-gradient(circle, rgba(140,168,96,0.22) 0%, rgba(140,168,96,0) 70%);width:340px;height:340px;bottom:-6%;left:-8%;top:auto;right:auto;animation-delay:1.4s;}
+.brand-core{position:relative;z-index:2;text-align:center;color:#EFE9D6;opacity:0;animation:fadeUp .7s ease-out .15s forwards;}
+.status-pill{display:inline-flex;align-items:center;gap:7px;background:rgba(255,255,255,0.1);border:1px solid rgba(216,154,76,0.45);box-shadow:inset 0 1px 0 rgba(255,255,255,0.18);color:var(--gold);font-family:var(--font-mono);font-size:0.68rem;text-transform:uppercase;letter-spacing:0.06em;padding:6px 14px;border-radius:99px;margin-bottom:28px;-webkit-backdrop-filter:blur(10px) saturate(160%);backdrop-filter:blur(10px) saturate(160%);}
+.status-pill .dot{width:6px;height:6px;border-radius:50%;background:var(--gold);animation:dot-pulse 1.6s ease-in-out infinite;}
+.brand-tile{position:relative;overflow:hidden;width:96px;height:96px;border-radius:22px;background:linear-gradient(155deg, rgba(255,255,255,0.14), rgba(255,255,255,0.04));border:1px solid rgba(255,255,255,0.22);-webkit-backdrop-filter:blur(12px) saturate(160%);backdrop-filter:blur(12px) saturate(160%);display:flex;align-items:center;justify-content:center;margin:0 auto 24px;box-shadow:inset 0 1px 0 rgba(255,255,255,0.3), 0 20px 50px -20px rgba(0,0,0,0.6);}
+.brand-tile::after{content:"";position:absolute;top:-40%;left:-20%;width:60%;height:180%;background:linear-gradient(115deg, transparent, rgba(255,255,255,0.25), transparent);transform:rotate(20deg);}
+.brand-tile svg{width:42px;height:42px;stroke:var(--gold);}
+.brand-core h2{font-size:1.9rem;color:#F7F2E2;margin-bottom:6px;}
+.brand-core .sub{font-family:var(--font-mono);font-size:0.68rem;text-transform:uppercase;letter-spacing:0.09em;color:#A9B39A;margin-bottom:38px;}
+.brand-foot{font-size:0.8rem;color:#A9B39A;border-top:1px solid rgba(255,255,255,0.12);padding-top:16px;max-width:280px;margin:0 auto;}
+.brand-foot b{color:#EFE9D6;font-weight:600;}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+@keyframes glow-breathe{0%,100%{opacity:.28;}50%{opacity:.5;}}
+@keyframes ring-pulse{0%{transform:scale(1);opacity:.5;}70%{transform:scale(1.25);opacity:0;}100%{opacity:0;}}
+@keyframes dot-pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.4;transform:scale(0.75);}}
+@keyframes orb-breathe{0%,100%{opacity:.7;transform:scale(1);}50%{opacity:1;transform:scale(1.12);}}
+
+.note-bar{background:var(--green-900);color:#B9C2A9;font-family:var(--font-mono);font-size:0.72rem;text-align:center;padding:8px;letter-spacing:0.03em;}
+</style>
+</head>
+<body>
+
+<div class="note-bar">Proposta de home — layout responsivo real, não é mockup em moldura de celular. Redimensione a janela para ver o comportamento mobile.</div>
+
+<div class="hero-grid">
+
+  <div class="panel-content">
+    <div class="topbar">
+      <span class="co">TIS · Terminal Intermodal Sul</span>
+      <span class="seal"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Sigilo garantido</span>
+    </div>
+
+    <div class="hero-core">
+      <div class="icon-ring"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div>
+      <span class="eyebrow">Um espaço para você ser ouvido</span>
+      <h1 class="title">Canal de Escuta</h1>
+      <p class="lede">Aqui você pode contar o que está vivendo, do seu jeito e no seu tempo. Não pedimos seu nome nem guardamos nada que possa te identificar — só queremos ouvir, com cuidado.</p>
+      <div class="btn-row">
+        <button class="btn-primary">Quero contar o que aconteceu →</button>
+        <button class="btn-secondary">Já contei — quero saber como está</button>
+      </div>
+    </div>
+
+    <div class="steps">
+      <div class="step"><div class="dot">01</div><h5>Relato</h5><p>Você conta o que houver</p></div>
+      <div class="step"><div class="dot">02</div><h5>Código</h5><p>Recebe um código de acompanhamento</p></div>
+      <div class="step"><div class="dot">03</div><h5>Retorno</h5><p>Equipe analisa e responde</p></div>
+    </div>
+
+    <div class="footer-access"><a href="#">Acesso da equipe de escuta →</a></div>
+  </div>
+
+  <div class="panel-brand">
+    <div class="glow-orb"></div>
+    <div class="glow-orb two"></div>
+    <div class="brand-core">
+      <div class="status-pill"><span class="dot"></span>Canal ativo · sigilo garantido</div>
+      <div class="brand-tile">
+        <svg viewBox="0 0 100 100" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <defs>
+            <linearGradient id="mahe-gold" x1="10" y1="90" x2="90" y2="5">
+              <stop offset="0" stop-color="#8B6239"/>
+              <stop offset="1" stop-color="#E7C48F"/>
+            </linearGradient>
+          </defs>
+          <path d="M16,44 L44,18" stroke="url(#mahe-gold)" stroke-width="4"/>
+          <path d="M60,20 L86,44" stroke="url(#mahe-gold)" stroke-width="4"/>
+          <path d="M16,44 L16,70 L28,70" stroke="url(#mahe-gold)" stroke-width="4"/>
+          <path d="M86,44 L86,70 L74,70" stroke="url(#mahe-gold)" stroke-width="4"/>
+          <path d="M50,76 C49,58 47,46 52,32 C55,23 62,16 72,10" stroke="url(#mahe-gold)" stroke-width="3.2"/>
+          <g fill="url(#mahe-gold)" stroke="none">
+            <path d="M50,65 C44,61 40,55 41,49 C47,51 51,56 50,65 Z"/>
+            <path d="M50,53 C56,50 61,45 61,39 C55,40 50,45 50,53 Z"/>
+            <path d="M51,43 C45,40 41,34 42,28 C48,30 52,35 51,43 Z"/>
+            <path d="M53,31 C59,28 64,23 64,17 C58,18 53,23 53,31 Z"/>
+            <path d="M60,19 C66,17 71,13 72,8 C66,8 61,13 60,19 Z"/>
+          </g>
+        </svg>
+      </div>
+      <h2>Canal de Escuta</h2>
+      <div class="sub">Psicologia organizacional</div>
+      <div class="brand-foot">Conduzido por <b>Clínica Mahé</b><br>Márcia Helena Bússolo — CRP 02959</div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

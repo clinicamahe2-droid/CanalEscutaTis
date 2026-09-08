@@ -94,4 +94,46 @@ describe("DataProvider (contrato)", () => {
     const pub = await p.getConfigPublica();
     expect(pub.nome_canal).toBe("Canal X");
   });
+
+  it("Atendimento Psicológico fica fora de `casos` — nunca vaza um nome pro fluxo anônimo", async () => {
+    await p.criarCaso(rascunhoBase);
+    await p.criarSolicitacaoAtendimento({
+      nome: "Ana Teste",
+      setor: "Comercial",
+      necessidade: "Gostaria de conversar sobre uma situação pessoal.",
+    });
+
+    const painel = await p.getDadosPainel();
+    // nenhum objeto Caso tem chave `nome` (o tipo nem declara isso — este
+    // teste prova em runtime, não só em compile-time).
+    for (const caso of painel.casos) {
+      expect(caso).not.toHaveProperty("nome");
+    }
+
+    const solicitacoes = await p.listarSolicitacoesAtendimento();
+    expect(solicitacoes.some((s) => s.nome === "Ana Teste")).toBe(true);
+    // a solicitação não aparece na lista de casos (entidades separadas)
+    expect(painel.casos.some((c: any) => c.nome === "Ana Teste")).toBe(false);
+  });
+
+  it("mudarStatusSolicitacao avança o status e marca atendido_em ao concluir", async () => {
+    await p.criarSolicitacaoAtendimento({
+      nome: "Bruno Teste",
+      setor: "Operacional",
+      necessidade: "Preciso de ajuda com ansiedade no trabalho.",
+    });
+    const [sol] = await p.listarSolicitacoesAtendimento();
+    expect(sol.status).toBe("nova");
+    expect(sol.atendido_em).toBeNull();
+
+    await p.mudarStatusSolicitacao(sol.id, "em_contato");
+    const atualizada = (await p.listarSolicitacoesAtendimento()).find((s) => s.id === sol.id)!;
+    expect(atualizada.status).toBe("em_contato");
+    expect(atualizada.atendido_em).toBeNull();
+
+    await p.mudarStatusSolicitacao(sol.id, "concluida");
+    const concluida = (await p.listarSolicitacoesAtendimento()).find((s) => s.id === sol.id)!;
+    expect(concluida.status).toBe("concluida");
+    expect(concluida.atendido_em).toBeTruthy();
+  });
 });

@@ -137,7 +137,7 @@ export default function Consulta() {
 
       {!consulta.isLoading && !consulta.data && (
         <div className="rounded-xl border border-line-2 bg-card p-5 text-sm text-ink-2">
-          Protocolo não encontrado. Verifique se digitou exatamente como recebeu — maiúsculas,
+          Protocolo não encontrado. Verifique se digitou exatamente como recebeu: maiúsculas,
           números e hífens. Por segurança, não informamos se um código existe ou não.
         </div>
       )}
@@ -229,14 +229,14 @@ function ConsultaStatus({
 
       {dados.pesquisaRespondida && (
         <div className="mt-5 border-l-2 border-seal pl-4 py-1 text-sm text-ink-2">
-          Obrigada — sua avaliação sobre este caso já foi registrada.
+          Obrigada, sua avaliação sobre este caso já foi registrada.
         </div>
       )}
 
       {dados.pesquisaLiberada && !dados.pesquisaRespondida && (
         <div className="mt-6 border-t border-line pt-4">
           <span className="text-xs uppercase tracking-wide text-record font-mono">
-            Antes de sair — como foi essa experiência?
+            Antes de sair, como foi essa experiência?
           </span>
           <div className="flex gap-2 mt-3">
             {OPCOES_PESQUISA.map((o) => (

@@ -5,9 +5,12 @@ import type {
   MensagemCaso,
   NotaInterna,
   NotificacaoFila,
+  RascunhoAtendimento,
   RascunhoRelato,
   ResultadoCriacaoCaso,
+  SolicitacaoAtendimento,
   StatusCaso,
+  StatusSolicitacao,
   AvaliacaoEncerramento,
   CategoriaId,
   Gravidade,
@@ -50,6 +53,22 @@ export const supabaseProvider: DataProvider = {
     // A Edge Function gera o protocolo (crypto no servidor, retry em colisao),
     // insere em `casos` e enfileira a notificacao conforme a regra de alerta.
     return invoke<ResultadoCriacaoCaso>("criar-caso", { empresa_id: EMPRESA_ID, rascunho });
+  },
+
+  async criarSolicitacaoAtendimento(rascunho: RascunhoAtendimento): Promise<void> {
+    // Insert direto (RLS: anon so pode INSERT nesta tabela, nunca SELECT/UPDATE —
+    // ver supabase/migrations/0004_atendimento_psicologico.sql). Sem Edge
+    // Function porque nao ha protocolo pra gerar nem notificacao a enfileirar
+    // aqui (ver DECISOES.md).
+    const sb = getSupabase();
+    const { error } = await sb.from("solicitacoes_atendimento").insert({
+      empresa_id: EMPRESA_ID,
+      nome: rascunho.nome.trim(),
+      setor: rascunho.setor.trim(),
+      necessidade: rascunho.necessidade.trim(),
+      status: "nova",
+    });
+    if (error) throw error;
   },
 
   async consultarCaso(protocolo: string): Promise<CasoPublico | null> {
@@ -198,6 +217,34 @@ export const supabaseProvider: DataProvider = {
       .single();
     if (error) throw error;
     return data as ConfiguracoesCanal;
+  },
+
+  async listarSolicitacoesAtendimento(): Promise<SolicitacaoAtendimento[]> {
+    const sb = getSupabase();
+    const { data, error } = await sb
+      .from("solicitacoes_atendimento")
+      .select("*")
+      .eq("empresa_id", EMPRESA_ID)
+      .order("criado_em", { ascending: false });
+    if (error) throw error;
+    return (data ?? []) as SolicitacaoAtendimento[];
+  },
+
+  async mudarStatusSolicitacao(id: string, status: StatusSolicitacao): Promise<SolicitacaoAtendimento> {
+    const sb = getSupabase();
+    const atualizado_em = new Date().toISOString();
+    const { data, error } = await sb
+      .from("solicitacoes_atendimento")
+      .update({
+        status,
+        atualizado_em,
+        ...(status === "concluida" ? { atendido_em: atualizado_em } : {}),
+      })
+      .eq("id", id)
+      .select()
+      .single();
+    if (error) throw error;
+    return data as SolicitacaoAtendimento;
   },
 
   async getAnexoUrl(anexo: Anexo): Promise<string | null> {

@@ -9,10 +9,13 @@ import type {
   NotaInterna,
   NotificacaoFila,
   PesquisaEncerramento,
+  RascunhoAtendimento,
   RascunhoRelato,
   RemetenteMensagem,
   ResultadoCriacaoCaso,
+  SolicitacaoAtendimento,
   StatusCaso,
+  StatusSolicitacao,
   AvaliacaoEncerramento,
 } from "@/dominio/tipos";
 
@@ -61,6 +64,8 @@ export interface DataProvider {
   // ---- colaborador (anonimo) ----
   getConfigPublica(): Promise<ConfigPublica>;
   criarCaso(rascunho: RascunhoRelato): Promise<ResultadoCriacaoCaso>;
+  /** Pedido de Atendimento Psicológico — identificado, sem protocolo (ver tipos.ts). */
+  criarSolicitacaoAtendimento(rascunho: RascunhoAtendimento): Promise<void>;
   consultarCaso(protocolo: string): Promise<CasoPublico | null>;
   enviarMensagemAnonima(protocolo: string, conteudo: string): Promise<void>;
   responderPesquisa(
@@ -84,6 +89,10 @@ export interface DataProvider {
   encerrarCaso(casoId: string, responsavel: string): Promise<Caso>;
 
   listarNotificacoes(): Promise<NotificacaoFila[]>;
+
+  // ---- Atendimento Psicológico (identificado, tela dedicada no painel) ----
+  listarSolicitacoesAtendimento(): Promise<SolicitacaoAtendimento[]>;
+  mudarStatusSolicitacao(id: string, status: StatusSolicitacao): Promise<SolicitacaoAtendimento>;
 
   getConfiguracoes(): Promise<ConfiguracoesCanal>;
   salvarConfiguracoes(patch: Partial<ConfiguracoesCanal>): Promise<ConfiguracoesCanal>;

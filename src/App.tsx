@@ -1,13 +1,16 @@
+import { useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { SplashScreen } from "@/components/SplashScreen";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { RotaProtegida } from "@/components/RotaProtegida";
 
 import Home from "@/pages/colaborador/Home";
 import ApoioImediato from "@/pages/colaborador/ApoioImediato";
+import AtendimentoPsicologico from "@/pages/colaborador/AtendimentoPsicologico";
 import PublicoLayout from "@/pages/colaborador/PublicoLayout";
 import Categoria from "@/pages/colaborador/Categoria";
 import Urgencia from "@/pages/colaborador/Urgencia";
@@ -20,6 +23,7 @@ import Login from "@/pages/equipe/Login";
 import PainelLayout from "@/pages/equipe/PainelLayout";
 import VisaoGeral from "@/pages/equipe/VisaoGeral";
 import CaixaDeCasos from "@/pages/equipe/CaixaDeCasos";
+import Atendimentos from "@/pages/equipe/Atendimentos";
 import CasoDetalhe from "@/pages/equipe/CasoDetalhe";
 import Relatorios from "@/pages/equipe/Relatorios";
 import Alertas from "@/pages/equipe/Alertas";
@@ -37,8 +41,11 @@ const queryClient = new QueryClient({
 });
 
 export default function App() {
+  const [mostrarSplash, setMostrarSplash] = useState(true);
+
   return (
     <ErrorBoundary>
+      {mostrarSplash && <SplashScreen onDone={() => setMostrarSplash(false)} />}
       <QueryClientProvider client={queryClient}>
         <TooltipProvider delayDuration={200}>
           <BrowserRouter>
@@ -48,6 +55,7 @@ export default function App() {
                 <Route element={<PublicoLayout />}>
                   <Route path="/" element={<Home />} />
                   <Route path="/apoio" element={<ApoioImediato />} />
+                  <Route path="/atendimento" element={<AtendimentoPsicologico />} />
                   <Route path="/relatar">
                     <Route index element={<Navigate to="/relatar/categoria" replace />} />
                     <Route path="categoria" element={<Categoria />} />
@@ -72,6 +80,7 @@ export default function App() {
                   <Route index element={<VisaoGeral />} />
                   <Route path="casos" element={<CaixaDeCasos />} />
                   <Route path="casos/:id" element={<CasoDetalhe />} />
+                  <Route path="atendimentos" element={<Atendimentos />} />
                   <Route path="relatorios" element={<Relatorios />} />
                   <Route path="alertas" element={<Alertas />} />
                   <Route path="config" element={<Configuracoes />} />

@@ -10,15 +10,15 @@ const fmtDataHora = new Intl.DateTimeFormat("pt-BR", {
 });
 
 export function formatarData(iso: string | null | undefined): string {
-  if (!iso) return "—";
+  if (!iso) return "-";
   const d = new Date(iso);
-  return isNaN(d.getTime()) ? "—" : fmtData.format(d);
+  return isNaN(d.getTime()) ? "-" : fmtData.format(d);
 }
 
 export function formatarDataHora(iso: string | null | undefined): string {
-  if (!iso) return "—";
+  if (!iso) return "-";
   const d = new Date(iso);
-  return isNaN(d.getTime()) ? "—" : fmtDataHora.format(d);
+  return isNaN(d.getTime()) ? "-" : fmtDataHora.format(d);
 }
 
 export function tempoRelativo(iso: string): string {

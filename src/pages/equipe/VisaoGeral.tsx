@@ -68,13 +68,13 @@ export default function VisaoGeral() {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-px bg-border border border-border rounded-xl overflow-hidden mb-6">
         <Stat n={String(ind.casosAbertos)} rot="Casos abertos" />
         <Stat
-          n={ind.tempoMedioPrimeiraRespostaDias == null ? "—" : `${ind.tempoMedioPrimeiraRespostaDias} d`}
+          n={ind.tempoMedioPrimeiraRespostaDias == null ? "-" : `${ind.tempoMedioPrimeiraRespostaDias} d`}
           rot="Tempo médio até 1ª resposta"
           tom="ok"
         />
         <Stat n={String(ind.casosForaDoPrazo)} rot="Fora do prazo" tom={ind.casosForaDoPrazo > 0 ? "crit" : undefined} />
         <Stat
-          n={ind.percentualOuvido == null ? "—" : `${ind.percentualOuvido}%`}
+          n={ind.percentualOuvido == null ? "-" : `${ind.percentualOuvido}%`}
           rot="Sentiram-se ouvidos*"
         />
       </div>
@@ -125,7 +125,7 @@ export default function VisaoGeral() {
       </div>
 
       <p className="text-xs text-muted-foreground">
-        *Com base nas pesquisas de encerramento respondidas — ver a aba Relatórios.
+        *Com base nas pesquisas de encerramento respondidas. Ver a aba Relatórios.
       </p>
     </div>
   );

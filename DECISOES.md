@@ -6,6 +6,100 @@ cronológica, mais recente no topo.
 
 ---
 
+## 2026-09-08 — Descrições de categoria, Atendimento Psicológico, glass no fluxo inteiro
+
+Pedido do dono, lista de itens numa mensagem só. Consultei o gerente Opus
+antes de mexer no dado (ver prompt/resposta completos no histórico da sessão)
+porque o item novo — Atendimento Psicológico — tensiona direto com o
+invariante central do produto (anonimato). Decisões abaixo seguem a
+recomendação dele.
+
+**Atendimento Psicológico — entidade separada, não uma 9ª categoria.** Criei
+`SolicitacaoAtendimento` (tipo em `tipos.ts`, tabela `solicitacoes_atendimento`
+em `supabase/migrations/0004_atendimento_psicologico.sql`, ainda não aplicada
+— dono aplica à mão) em vez de adicionar `categoria: "atendimento_psicologico"`
+a `Caso` com um campo `nome`. Motivo: `CategoriaId` é consumido por
+`categoriaMeta` (gravidade/regra de alerta), `calcularPrazoSla`,
+`mapaDeRisco`/`resumoMensal` (relatório PGR) e pelo dropdown de
+reclassificar — um pedido identificado não tem gravidade nem SLA nem sentido
+nesse relatório, e reclassificar um caso anônimo *para* essa categoria (ou
+vice-versa) teria virado um jeito acidental de vazar nome pro corpus
+anônimo. Com tabela separada o invariante "casos não tem coluna nome" é
+estrutural, não uma condição que alguém pode esquecer de checar depois.
+
+Consequências dessa escolha:
+- Estado local só na tela (`AtendimentoPsicologico.tsx`, `useState` próprio)
+  — nunca entra no `RelatoContext`/rascunho do relato anônimo.
+- **Sem protocolo.** Ao contrário do relato, aqui a pessoa já deu nome e
+  setor pra ser procurada — um código de acompanhamento seria um segundo
+  caminho, mais fraco, até um registro que contém identidade. Fire-and-forget:
+  confirmação na hora ("A equipe vai te procurar"), sem rota `/consulta`.
+- **Tela dedicada no painel** (`/painel/atendimentos`, item "Atendimento" na
+  sidebar, entre Caixa de Casos e Relatórios, com badge de "novas" igual ao
+  badge de atrasados). Não entra na Caixa de Casos — colunas
+  Protocolo/Gravidade/SLA não fazem sentido pra um pedido identificado, e
+  qualquer filtro/contagem ali teria que ganhar uma exceção pra não misturar.
+- `DataProvider` ganhou 3 métodos (`criarSolicitacaoAtendimento`,
+  `listarSolicitacoesAtendimento`, `mudarStatusSolicitacao`) implementados
+  nos dois providers. No Supabase, INSERT anônimo direto (RLS: `anon` só
+  insere, nunca lê) — sem Edge Function, porque não há protocolo pra gerar
+  nem notificação condicional pra decidir (diferente de `criar-caso`).
+- Teste novo em `providerContrato.test.ts`: prova em runtime (não só em
+  compile-time) que nenhum objeto de `getDadosPainel().casos` tem a chave
+  `nome`, e que uma solicitação não aparece nessa lista.
+
+**Categoria vira lista de cards com descrição.** Grid 2×N de botões pequenos
+virou lista de 1 coluna (`space-y-2.5`, mesma estrutura de card já usada em
+`Urgencia.tsx` — reaproveitamento, não um padrão novo). Cada categoria ganhou
+`descricao` (uma linha, mesmo registro calmo do resto do texto) em
+`categorias.ts`. Depois de um `border-t` com o rótulo mono "Outro caminho",
+o card de Atendimento Psicológico usa `stamp`/dourado em vez de
+`seal`/jade — é a única cor do sistema que ainda não tinha função de
+destaque de conteúdo, então marca visualmente "isso é outro caminho, não
+mais uma opção de categoria" sem inventar um token novo. Não participa da
+seleção (`setCategoria`) nem do botão "Continuar" — navega direto pra
+`/atendimento` no clique, com seta à direita reforçando que é link de saída.
+
+**Glass effect em todo o fluxo, não só a Home.** `Button` (usado em
+Categoria/Urgencia/Relato/Revisao/Protocolo/Consulta/Apoio/Atendimento e no
+painel) ganhou duas classes novas em `index.css` — `.glass-btn-primary`
+(gradiente jade translúcido + blur + sweep de brilho no hover, variante
+`default`) e `.glass-btn-glass` (branco translúcido + blur + brilho de
+borda, variantes `outline`/`secondary`). É a mesma linguagem visual dos
+botões da Home (`mahe-btn-*`), só que com os valores rgba do `seal`/`paper`
+deste sistema em vez da paleta cream/dourado — não trouxe a paleta da Home
+pro resto do app, só a técnica. `ghost`/`link`/`destructive` ficaram como
+estavam (intencionalmente minimalistas, sem glass).
+
+**Travessão (—) removido de todo texto renderizado** (colaborador e painel):
+trocado por vírgula, dois-pontos, ponto-final ou "·" (o separador que o app
+já usa em rótulos tipo "TIS · Terminal Intermodal Sul"), dependendo do que
+soa mais natural na frase — nunca um caractere por outro sem reler a frase.
+Placeholders de "valor ausente" (`Revisao.tsx`, `VisaoGeral.tsx`,
+`lib/datas.ts`) viraram hífen simples `-`. Comentários de código (nunca
+renderizados) não foram tocados — o pedido era sobre o texto que aparece pra
+alguém, não sobre a documentação interna.
+
+**Splash de abertura com a marca da TIS.** `SplashScreen.tsx`, ~1.4s,
+mostrada uma vez por carregamento do app (não por navegação entre telas),
+overlay que não bloqueia o app por baixo carregando, respeita
+`prefers-reduced-motion` (pula direto, sem fade). **Usa o asset atual
+`src/assets/tis-logo.jpg` como placeholder** — o dono colou uma logo nova
+(fundo diferente, sem o ícone de navio) na conversa, mas uma imagem colada
+no chat não vira arquivo acessível no disco pra mim (mesma limitação já
+registrada pro logo da Clínica Mahê, resolvida na sessão seguinte quando o
+dono me deu o caminho do arquivo de verdade). **Pendente:** dono precisa
+salvar o arquivo em algum lugar e passar o caminho pra eu trocar o asset —
+aí a splash e o `LogoTIS.tsx` (usado no rodapé do Login e na sidebar do
+painel) atualizam sozinhos, é um `src/assets/tis-logo.jpg` só.
+
+Gate verde (`typecheck`/`lint`/`vitest` 22 testes, 2 novos/`build`).
+Verificado no navegador: fluxo completo Categoria → Atendimento Psicológico →
+confirmação (sem protocolo) → painel → `/painel/atendimentos` mostrando o
+pedido, mudança de status funcionando, badge da sidebar atualizando.
+
+---
+
 ## 2026-09-03 — Repele: pele "Matcha" sobre o sistema "documento, não spa"
 
 Pedido direto do dono no chat (sem prompt formal), com duas referências

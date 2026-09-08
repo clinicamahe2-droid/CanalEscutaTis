@@ -148,7 +148,7 @@ function NotasInternas({ casoId, notas }: { casoId: string; notas: { id: string;
   const add = useAdicionarNota(casoId);
   return (
     <section>
-      <RotuloCampo>Nota interna — só a equipe vê</RotuloCampo>
+      <RotuloCampo>Nota interna: só a equipe vê</RotuloCampo>
       <div className="rounded-xl bg-warning-soft/60 p-3 space-y-2">
         {notas.length === 0 && <p className="text-sm text-muted-foreground">Nenhuma nota ainda.</p>}
         {notas.map((n) => (
@@ -198,7 +198,7 @@ function Conversa({
   const responder = useResponderCaso(casoId);
   return (
     <section>
-      <RotuloCampo>Conversa por protocolo — sem identidade</RotuloCampo>
+      <RotuloCampo>Conversa por protocolo: sem identidade</RotuloCampo>
       <div className="rounded-xl border border-border p-3 space-y-2 max-h-72 overflow-y-auto">
         {mensagens.length === 0 && (
           <p className="text-sm text-muted-foreground">Nenhuma mensagem trocada ainda.</p>

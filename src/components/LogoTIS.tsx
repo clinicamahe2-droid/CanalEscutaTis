@@ -24,7 +24,7 @@ export function LogoTIS({
     >
       <img
         src={tisLogo}
-        alt="TIS — Terminal Intermodal Sul"
+        alt="TIS · Terminal Intermodal Sul"
         width={height * 1.07}
         height={height}
         loading="lazy"

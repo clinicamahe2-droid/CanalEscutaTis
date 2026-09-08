@@ -7,8 +7,10 @@ import type {
   CategoriaId,
   ConfiguracoesCanal,
   Gravidade,
+  RascunhoAtendimento,
   RascunhoRelato,
   StatusCaso,
+  StatusSolicitacao,
 } from "@/dominio/tipos";
 
 // ---------------- queries ----------------
@@ -60,6 +62,13 @@ export function useConfiguracoes() {
   });
 }
 
+export function useSolicitacoes() {
+  return useQuery({
+    queryKey: qk.solicitacoes,
+    queryFn: async () => (await getProvider()).listarSolicitacoesAtendimento(),
+  });
+}
+
 // ---------------- mutations (colaborador) ----------------
 
 export function useCriarCaso() {
@@ -82,6 +91,15 @@ export function useEnviarMensagemAnonima(protocolo: string) {
       qc.invalidateQueries({ queryKey: qk.consulta(protocolo) });
       qc.invalidateQueries({ queryKey: qk.painel });
     },
+  });
+}
+
+export function useCriarSolicitacaoAtendimento() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (rascunho: RascunhoAtendimento) =>
+      (await getProvider()).criarSolicitacaoAtendimento(rascunho),
+    onSuccess: () => qc.invalidateQueries({ queryKey: qk.solicitacoes }),
   });
 }
 
@@ -170,6 +188,15 @@ export function useEncerrar(casoId: string) {
       qc.invalidateQueries({ queryKey: qk.caso(casoId) });
       qc.invalidateQueries({ queryKey: qk.painel });
     },
+  });
+}
+
+export function useMudarStatusSolicitacao() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (v: { id: string; status: StatusSolicitacao }) =>
+      (await getProvider()).mudarStatusSolicitacao(v.id, v.status),
+    onSuccess: () => qc.invalidateQueries({ queryKey: qk.solicitacoes }),
   });
 }
 

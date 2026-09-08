@@ -42,7 +42,7 @@ export default function Revisao() {
       }
     >
       <div className="rounded-xl border border-line-2 bg-paper-2 p-4 mb-3">
-        <div className="text-sm font-semibold text-ink">{categoria ? rotuloCategoria(categoria) : "—"}</div>
+        <div className="text-sm font-semibold text-ink">{categoria ? rotuloCategoria(categoria) : "-"}</div>
       </div>
       <div className="rounded-xl border border-line-2 bg-paper-2 p-4 mb-3">
         <div className="text-[0.68rem] font-mono uppercase text-record">Seu relato</div>

@@ -3,6 +3,8 @@ import type { CategoriaId, Gravidade, RegraAlerta } from "./tipos";
 export interface CategoriaMeta {
   id: CategoriaId;
   rotulo: string;
+  /** Uma linha explicando o que cobre — mostrada no seletor (Bloco categoria). */
+  descricao: string;
   /** Gravidade sugerida na triagem automatica (a equipe pode reclassificar). */
   gravidadePadrao: Gravidade;
   /** Regra de aviso a equipe (ver aba Alertas). */
@@ -10,14 +12,62 @@ export interface CategoriaMeta {
 }
 
 export const CATEGORIAS: CategoriaMeta[] = [
-  { id: "assedio_moral", rotulo: "Assédio moral", gravidadePadrao: "media", regra: "resumo_diario" },
-  { id: "assedio_sexual", rotulo: "Assédio sexual", gravidadePadrao: "critica", regra: "imediato" },
-  { id: "discriminacao", rotulo: "Discriminação", gravidadePadrao: "critica", regra: "imediato" },
-  { id: "sobrecarga", rotulo: "Sobrecarga / jornada", gravidadePadrao: "media", regra: "resumo_semanal" },
-  { id: "conflito_colega", rotulo: "Conflito com colega", gravidadePadrao: "media", regra: "resumo_diario" },
-  { id: "falta_reconhecimento", rotulo: "Falta de reconhecimento", gravidadePadrao: "baixa", regra: "resumo_semanal" },
-  { id: "seguranca_trabalho", rotulo: "Segurança no trabalho", gravidadePadrao: "critica", regra: "imediato" },
-  { id: "sugestao_melhoria", rotulo: "Sugestão de melhoria", gravidadePadrao: "baixa", regra: "resumo_semanal" },
+  {
+    id: "assedio_moral",
+    rotulo: "Assédio moral",
+    descricao: "Humilhação, gritos, ameaças ou pressão que se repetem.",
+    gravidadePadrao: "media",
+    regra: "resumo_diario",
+  },
+  {
+    id: "assedio_sexual",
+    rotulo: "Assédio sexual",
+    descricao: "Cantada, insinuação ou toque que você não quis.",
+    gravidadePadrao: "critica",
+    regra: "imediato",
+  },
+  {
+    id: "discriminacao",
+    rotulo: "Discriminação",
+    descricao: "Tratamento diferente por quem você é.",
+    gravidadePadrao: "critica",
+    regra: "imediato",
+  },
+  {
+    id: "sobrecarga",
+    rotulo: "Sobrecarga / jornada",
+    descricao: "Trabalho demais, descanso de menos, horário que não fecha.",
+    gravidadePadrao: "media",
+    regra: "resumo_semanal",
+  },
+  {
+    id: "conflito_colega",
+    rotulo: "Conflito com colega",
+    descricao: "Uma relação difícil que já atrapalha o trabalho.",
+    gravidadePadrao: "media",
+    regra: "resumo_diario",
+  },
+  {
+    id: "falta_reconhecimento",
+    rotulo: "Falta de reconhecimento",
+    descricao: "Seu esforço não aparece pra ninguém.",
+    gravidadePadrao: "baixa",
+    regra: "resumo_semanal",
+  },
+  {
+    id: "seguranca_trabalho",
+    rotulo: "Segurança no trabalho",
+    descricao: "Risco físico, equipamento faltando, algo perigoso.",
+    gravidadePadrao: "critica",
+    regra: "imediato",
+  },
+  {
+    id: "sugestao_melhoria",
+    rotulo: "Sugestão de melhoria",
+    descricao: "Uma ideia pra alguma coisa funcionar melhor aqui.",
+    gravidadePadrao: "baixa",
+    regra: "resumo_semanal",
+  },
 ];
 
 const POR_ID = new Map(CATEGORIAS.map((c) => [c.id, c]));

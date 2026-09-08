@@ -3,6 +3,7 @@ import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard,
   Inbox,
+  HeartHandshake,
   FileBarChart,
   BellRing,
   Settings,
@@ -14,18 +15,42 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { LogoTIS } from "@/components/LogoTIS";
 import { useAuth } from "@/contexts/AuthContext";
-import { useDadosPainel } from "@/hooks/dados";
+import { useDadosPainel, useSolicitacoes } from "@/hooks/dados";
 import { situacaoSla } from "@/dominio/sla";
 
-const ITENS = [
+type Contagens = { atrasados: number; novasSolicitacoes: number };
+
+const ITENS: {
+  to: string;
+  fim: boolean;
+  rot: string;
+  icone: typeof LayoutDashboard;
+  badge?: keyof Contagens;
+}[] = [
   { to: "/painel", fim: true, rot: "Visão Geral", icone: LayoutDashboard },
-  { to: "/painel/casos", fim: false, rot: "Caixa de Casos", icone: Inbox, comBadge: true },
+  { to: "/painel/casos", fim: false, rot: "Caixa de Casos", icone: Inbox, badge: "atrasados" },
+  {
+    to: "/painel/atendimentos",
+    fim: false,
+    rot: "Atendimento",
+    icone: HeartHandshake,
+    badge: "novasSolicitacoes",
+  },
   { to: "/painel/relatorios", fim: false, rot: "Relatórios", icone: FileBarChart },
   { to: "/painel/alertas", fim: false, rot: "Alertas", icone: BellRing },
   { to: "/painel/config", fim: false, rot: "Configurações", icone: Settings },
 ];
 
-function Navegacao({ atrasados, aoNavegar }: { atrasados: number; aoNavegar?: () => void }) {
+function Navegacao({
+  atrasados,
+  novasSolicitacoes,
+  aoNavegar,
+}: {
+  atrasados: number;
+  novasSolicitacoes: number;
+  aoNavegar?: () => void;
+}) {
+  const contagens: Contagens = { atrasados, novasSolicitacoes };
   const { sessao, sair } = useAuth();
   const nav = useNavigate();
   return (
@@ -55,9 +80,9 @@ function Navegacao({ atrasados, aoNavegar }: { atrasados: number; aoNavegar?: ()
           >
             <it.icone className="w-4 h-4 shrink-0" />
             <span className="flex-1">{it.rot}</span>
-            {it.comBadge && atrasados > 0 && (
+            {it.badge && contagens[it.badge] > 0 && (
               <span className="rounded-full bg-critical text-white text-[0.62rem] font-mono px-1.5 py-0.5">
-                {atrasados}
+                {contagens[it.badge]}
               </span>
             )}
           </NavLink>
@@ -88,15 +113,17 @@ function Navegacao({ atrasados, aoNavegar }: { atrasados: number; aoNavegar?: ()
 export default function PainelLayout() {
   const [aberto, setAberto] = useState(false);
   const { data } = useDadosPainel();
+  const { data: solicitacoes } = useSolicitacoes();
   const atrasados = (data?.casos ?? []).filter(
     (c) => situacaoSla(c.sla_prazo, c.status).vencido,
   ).length;
+  const novasSolicitacoes = (solicitacoes ?? []).filter((s) => s.status === "nova").length;
 
   return (
     <div className="min-h-[100dvh] bg-background md:grid md:grid-cols-[232px_1fr]">
       {/* sidebar desktop */}
       <aside className="hidden md:flex flex-col bg-card border-r border-border p-4">
-        <Navegacao atrasados={atrasados} />
+        <Navegacao atrasados={atrasados} novasSolicitacoes={novasSolicitacoes} />
       </aside>
 
       {/* topbar mobile */}
@@ -108,7 +135,11 @@ export default function PainelLayout() {
             </Button>
           </SheetTrigger>
           <SheetContent side="left" className="w-64 bg-card p-4">
-            <Navegacao atrasados={atrasados} aoNavegar={() => setAberto(false)} />
+            <Navegacao
+              atrasados={atrasados}
+              novasSolicitacoes={novasSolicitacoes}
+              aoNavegar={() => setAberto(false)}
+            />
           </SheetContent>
         </Sheet>
         <span className="font-display font-semibold text-primary-dark">Canal de Escuta</span>

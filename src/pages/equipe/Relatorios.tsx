@@ -37,7 +37,7 @@ export default function Relatorios() {
             Alimentam o PGR / plano de ação de riscos psicossociais.
           </p>
         </div>
-        <Button className="no-print" onClick={() => exportarComoPdf(`Canal de Escuta — ${resumo.mesRotulo}`)}>
+        <Button className="no-print" onClick={() => exportarComoPdf(`Canal de Escuta · ${resumo.mesRotulo}`)}>
           <Printer className="w-4 h-4" />
           Exportar PDF
         </Button>
@@ -45,7 +45,7 @@ export default function Relatorios() {
 
       <article className="rounded-xl border border-border p-6">
         <h2 className="text-lg font-display font-semibold">
-          Relatório de Riscos Psicossociais — {resumo.mesRotulo}
+          Relatório de Riscos Psicossociais · {resumo.mesRotulo}
         </h2>
         <p className="text-xs text-muted-foreground mb-4">
           Gerado a partir dos casos criados no mês corrente.

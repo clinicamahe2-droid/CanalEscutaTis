@@ -69,7 +69,7 @@ export default function Protocolo() {
           (ver DECISOES.md Bloco 4-d). Callout no mesmo estilo da Home/Revisao. */}
       <div className="mt-4 border-l-2 border-seal pl-4 py-1 text-sm text-ink-2 text-left">
         <b className="text-ink">Guarde este código agora.</b> É a única forma de acompanhar seu
-        caso — não pedimos e-mail nem login, e não há como recuperá-lo depois.
+        caso. Não pedimos e-mail nem login, e não há como recuperá-lo depois.
       </div>
     </Tela>
   );

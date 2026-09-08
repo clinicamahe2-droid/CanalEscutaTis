@@ -3,7 +3,7 @@ import { Tela } from "@/components/colaborador/Tela";
 
 const CONTATOS = [
   {
-    nome: "CVV — Centro de Valorização da Vida",
+    nome: "CVV · Centro de Valorização da Vida",
     numero: "188",
     desc: "Apoio emocional, 24h, gratuito e sigiloso",
   },
@@ -20,7 +20,7 @@ export default function ApoioImediato() {
   return (
     <Tela titulo="Apoio imediato" onVoltar={() => nav(-1)}>
       <p className="text-sm text-ink-2 mb-5">
-        Se você corre risco agora, ligue direto — não é preciso esperar o retorno pelo canal.
+        Se você corre risco agora, ligue direto. Não é preciso esperar o retorno pelo canal.
       </p>
       <div className="stagger space-y-3">
         {CONTATOS.map((c) => (

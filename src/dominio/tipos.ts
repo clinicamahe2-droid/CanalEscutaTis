@@ -165,3 +165,31 @@ export interface ResultadoCriacaoCaso {
   protocolo: string;
   caso_id: string;
 }
+
+export type StatusSolicitacao = "nova" | "em_contato" | "concluida";
+
+/**
+ * Pedido de Atendimento Psicológico — entidade DELIBERADAMENTE separada de
+ * `Caso`. Ao contrário do fluxo de relato (sempre anônimo), aqui a pessoa se
+ * identifica porque quer ser procurada. Nunca deve entrar em `casos`, no
+ * `RelatoContext`, nem em nenhuma tela/relatório que trata dados como
+ * anônimos (ver DECISOES.md). Sem protocolo/código de acompanhamento — é a
+ * equipe quem entra em contato, não a pessoa quem consulta status.
+ */
+export interface SolicitacaoAtendimento {
+  id: string;
+  empresa_id: string;
+  nome: string;
+  setor: string;
+  necessidade: string;
+  status: StatusSolicitacao;
+  criado_em: string;
+  atualizado_em: string;
+  atendido_em: string | null;
+}
+
+export interface RascunhoAtendimento {
+  nome: string;
+  setor: string;
+  necessidade: string;
+}

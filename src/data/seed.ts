@@ -9,6 +9,7 @@ import type {
   NotaInterna,
   NotificacaoFila,
   PesquisaEncerramento,
+  SolicitacaoAtendimento,
   StatusCaso,
 } from "@/dominio/tipos";
 import { CATEGORIAS, categoriaMeta } from "@/dominio/categorias";
@@ -26,6 +27,7 @@ export interface BancoLocal {
   anexos: Anexo[];
   pesquisas: PesquisaEncerramento[];
   notificacoes: NotificacaoFila[];
+  solicitacoes: SolicitacaoAtendimento[];
 }
 
 const AGORA = Date.now();
@@ -43,7 +45,7 @@ const id = (p: string) => `${p}_${(++n).toString(36)}_seed`;
 export const PROTOCOLO_DEMO = "CE-2026-7F3K-M2QD";
 
 const MENSAGEM_BOAS_VINDAS =
-  "Você pode relatar sem se identificar. Não registramos seu nome, seu IP ou o aparelho que você está usando — só o que você quiser contar.";
+  "Você pode relatar sem se identificar. Não registramos seu nome, seu IP ou o aparelho que você está usando, só o que você quiser contar.";
 
 function novoHistorico(casoId: string, de: StatusCaso | null, para: StatusCaso, quando: string, quem: string): HistoricoStatus {
   return {
@@ -61,7 +63,7 @@ export function criarBancoInicial(): BancoLocal {
   n = 0;
   const empresa: Empresa = {
     id: EMPRESA_ID,
-    nome: "TIS — Terminal Intermodal Sul",
+    nome: "TIS · Terminal Intermodal Sul",
     dominio: "escuta.tis.com.br",
     criado_em: iso(240),
   };
@@ -291,7 +293,7 @@ export function criarBancoInicial(): BancoLocal {
       protocolo: caso.protocolo,
       canal: "email",
       destinatario: "equipe-escuta@tis.com.br",
-      assunto: `[Canal de Escuta] Novo caso ${meta.rotulo} — ${caso.protocolo}`,
+      assunto: `[Canal de Escuta] Novo caso ${meta.rotulo} · ${caso.protocolo}`,
       corpo:
         `Um novo relato entrou e se enquadra na regra de aviso imediato.\n\n` +
         `Protocolo: ${caso.protocolo}\nCategoria: ${meta.rotulo}\nGravidade: ${caso.gravidade}\n` +
@@ -302,5 +304,32 @@ export function criarBancoInicial(): BancoLocal {
     });
   }
 
-  return { empresa, config, casos, mensagens, notas, historico, anexos, pesquisas, notificacoes };
+  // ---------- pedidos de Atendimento Psicológico (identificados, fora de `casos`) ----------
+  const solicitacoes: SolicitacaoAtendimento[] = [
+    {
+      id: id("sol"),
+      empresa_id: EMPRESA_ID,
+      nome: "Fernanda Alves",
+      setor: "Operacional",
+      necessidade:
+        "Estou tendo dificuldade pra dormir por causa de uma situação em casa e acho que está afetando meu trabalho. Gostaria de conversar com alguém.",
+      status: "nova",
+      criado_em: iso(1),
+      atualizado_em: iso(1),
+      atendido_em: null,
+    },
+    {
+      id: id("sol"),
+      empresa_id: EMPRESA_ID,
+      nome: "Ricardo Nunes",
+      setor: "Comercial",
+      necessidade: "Queria marcar uma conversa sobre ansiedade antes de apresentações.",
+      status: "em_contato",
+      criado_em: iso(4),
+      atualizado_em: iso(2),
+      atendido_em: null,
+    },
+  ];
+
+  return { empresa, config, casos, mensagens, notas, historico, anexos, pesquisas, notificacoes, solicitacoes };
 }

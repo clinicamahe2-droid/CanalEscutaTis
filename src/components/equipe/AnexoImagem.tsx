@@ -31,7 +31,7 @@ export function AnexoImagem({ anexo }: { anexo: Anexo }) {
   if (erro) {
     return (
       <div className="rounded-lg border border-border p-3 text-xs text-muted-foreground">
-        {anexo.nome} — pré-visualização indisponível ({Math.round(anexo.tamanho / 1024)} KB)
+        {anexo.nome}: pré-visualização indisponível ({Math.round(anexo.tamanho / 1024)} KB)
       </div>
     );
   }

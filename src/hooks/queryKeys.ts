@@ -6,4 +6,5 @@ export const qk = {
   consulta: (protocolo: string) => ["consulta", protocolo] as const,
   notificacoes: ["notificacoes"] as const,
   configuracoes: ["configuracoes"] as const,
+  solicitacoes: ["solicitacoes-atendimento"] as const,
 };

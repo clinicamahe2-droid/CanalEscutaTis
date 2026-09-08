@@ -6,9 +6,12 @@ import type {
   NotaInterna,
   NotificacaoFila,
   PesquisaEncerramento,
+  RascunhoAtendimento,
   RascunhoRelato,
   ResultadoCriacaoCaso,
+  SolicitacaoAtendimento,
   StatusCaso,
+  StatusSolicitacao,
   AvaliacaoEncerramento,
   CategoriaId,
   Gravidade,
@@ -32,7 +35,11 @@ const CHAVE_BANCO = "banco";
 
 function carregar(): BancoLocal {
   const existente = ler<BancoLocal | null>(CHAVE_BANCO, null);
-  if (existente && Array.isArray(existente.casos) && existente.config) return existente;
+  if (existente && Array.isArray(existente.casos) && existente.config) {
+    // Banco salvo antes do Atendimento Psicológico existir (Bloco 2026-09-08) — não tem o campo ainda.
+    if (!Array.isArray(existente.solicitacoes)) existente.solicitacoes = [];
+    return existente;
+  }
   const novo = criarBancoInicial();
   gravar(CHAVE_BANCO, novo);
   return novo;
@@ -90,7 +97,7 @@ function registrarNotificacao(banco: BancoLocal, caso: Caso) {
     protocolo: caso.protocolo,
     canal: "email",
     destinatario: "equipe-escuta@tis.com.br",
-    assunto: `[Canal de Escuta] Novo caso ${meta.rotulo} — ${caso.protocolo}`,
+    assunto: `[Canal de Escuta] Novo caso ${meta.rotulo} · ${caso.protocolo}`,
     corpo:
       `Um novo relato entrou pelo canal.\n\n` +
       `Protocolo: ${caso.protocolo}\nCategoria: ${meta.rotulo}\nGravidade: ${caso.gravidade}\n` +
@@ -187,6 +194,30 @@ export const localProvider: DataProvider = {
     registrarNotificacao(banco, caso);
     salvar(banco);
     return { protocolo, caso_id: caso.id };
+  },
+
+  async criarSolicitacaoAtendimento(rascunho: RascunhoAtendimento): Promise<void> {
+    const nome = rascunho.nome.trim();
+    const setor = rascunho.setor.trim();
+    const necessidade = rascunho.necessidade.trim();
+    if (!nome) throw new Error("Nome obrigatório.");
+    if (!setor) throw new Error("Setor obrigatório.");
+    if (!necessidade) throw new Error("Conte um pouco do que você precisa.");
+    const banco = carregar();
+    const criado_em = agoraIso();
+    const solicitacao: SolicitacaoAtendimento = {
+      id: uid("sol"),
+      empresa_id: EMPRESA_ID,
+      nome,
+      setor,
+      necessidade,
+      status: "nova",
+      criado_em,
+      atualizado_em: criado_em,
+      atendido_em: null,
+    };
+    banco.solicitacoes.unshift(solicitacao);
+    salvar(banco);
   },
 
   async consultarCaso(protocolo: string): Promise<CasoPublico | null> {
@@ -353,6 +384,22 @@ export const localProvider: DataProvider = {
   async listarNotificacoes(): Promise<NotificacaoFila[]> {
     const banco = carregar();
     return [...banco.notificacoes].sort((a, b) => b.criado_em.localeCompare(a.criado_em));
+  },
+
+  async listarSolicitacoesAtendimento(): Promise<SolicitacaoAtendimento[]> {
+    const banco = carregar();
+    return [...banco.solicitacoes].sort((a, b) => b.criado_em.localeCompare(a.criado_em));
+  },
+
+  async mudarStatusSolicitacao(id: string, status: StatusSolicitacao): Promise<SolicitacaoAtendimento> {
+    const banco = carregar();
+    const solicitacao = banco.solicitacoes.find((s) => s.id === id);
+    if (!solicitacao) throw new Error("Solicitação não encontrada.");
+    solicitacao.status = status;
+    solicitacao.atualizado_em = agoraIso();
+    if (status === "concluida") solicitacao.atendido_em = agoraIso();
+    salvar(banco);
+    return solicitacao;
   },
 
   async getConfiguracoes(): Promise<ConfiguracoesCanal> {

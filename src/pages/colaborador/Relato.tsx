@@ -111,7 +111,7 @@ export default function Relato() {
             // link de apoio, ver DECISOES.md Bloco 4-d). A enfase e tipografica.
             <p className="mt-2 flex gap-1.5 text-xs text-ink-2">
               <AlertTriangle className="w-3.5 h-3.5 shrink-0 mt-0.5" />
-              Revise a imagem antes de enviar — crachás, nomes e rostos podem identificar você.
+              Revise a imagem antes de enviar: crachás, nomes e rostos podem identificar você.
             </p>
           )}
         </div>

@@ -50,7 +50,7 @@ export default function Home() {
           </h1>
           <p className="mb-[30px] max-w-[46ch] text-[1.08rem] leading-[1.55] text-mahe-ink-soft">
             {config?.mensagem_boas_vindas ??
-              "Aqui você pode contar o que está vivendo, do seu jeito e no seu tempo. Não pedimos seu nome nem guardamos nada que possa te identificar — só queremos ouvir, com cuidado."}
+              "Aqui você pode contar o que está vivendo, do seu jeito e no seu tempo. Não pedimos seu nome nem guardamos nada que possa te identificar, só queremos ouvir, com cuidado."}
           </p>
 
           <div className="mb-9 flex flex-wrap gap-3.5">
@@ -64,7 +64,7 @@ export default function Home() {
               onClick={() => nav("/consulta")}
               className="mahe-btn-secondary relative inline-flex items-center rounded-xl border border-white/65 px-6 py-[15px] text-[0.96rem] font-semibold text-mahe-ink backdrop-blur-[10px] backdrop-saturate-[1.4] transition-all duration-200 hover:-translate-y-0.5"
             >
-              Já contei — quero saber como está
+              Já contei, quero saber como está
             </button>
           </div>
         </div>
@@ -113,7 +113,7 @@ export default function Home() {
           <div className="mx-auto max-w-[280px] border-t border-white/10 pt-4 text-[0.8rem] text-[#A9B39A]">
             Conduzido por <b className="font-semibold text-[#EFE9D6]">Clínica Mahê</b>
             <br />
-            Márcia Helena Bússolo — CRP 02959
+            Márcia Helena Bússolo · CRP 02959
           </div>
         </div>
       </div>

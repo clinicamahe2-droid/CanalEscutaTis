@@ -6,6 +6,34 @@ cronológica, mais recente no topo.
 
 ---
 
+## 2026-09-08 (2) — Elementos emprestados de um 3º DS ("Digital Architect")
+
+Dono trouxe outro DS (`53e39366-designsystem.html`, salvo em
+`.claude/uploads/`, não versionado) — tom editorial monocromático
+(cinza-pedra `#EAEAE5`/stone-900, Inter, grid de 12 colunas, marquee,
+carrossel com parallax). Perguntei o escopo antes de tocar em código: a
+resposta foi **só alguns elementos**, não um reskin — esse DS é frio/mono e
+colidiria direto com o jade/creme/dourado que a gente vem construindo (e com
+a correção "cara de IA" de alguns commits atrás). Peguei duas coisas
+pontuais, sem trazer a paleta nem os padrões de landing page (marquee,
+carrossel, grid guides — nada disso cabe num formulário curto):
+
+- **Seta que desliza no hover** (`group-hover:translate-x-0.5` no ícone) —
+  aplicada no card "Atendimento Psicológico" da tela de Categoria.
+- **Rótulo numerado com friso** (`Eyebrow.tsx`, componente novo em
+  `components/colaborador/`: número mono + linha de 1px + rótulo mono
+  maiúsculo) — inspirado no "01 — Category" dos cards de projeto do DS
+  original, com os tokens `record`/`line-2` deste sistema em vez do
+  cinza-pedra. Aplicado nas duas seções da tela de Consulta ("01 Conversa
+  com a equipe", "02 Antes de sair..."). Não usei em telas onde eu tinha
+  acabado de remover rótulo por redundância (Revisao) — esse motivo continua
+  valendo, um friso decorativo não muda isso.
+
+Gate verde (`typecheck`/`lint`/`vitest` 22 testes/`build`), conferido no
+navegador.
+
+---
+
 ## 2026-09-08 — Descrições de categoria, Atendimento Psicológico, glass no fluxo inteiro
 
 Pedido do dono, lista de itens numa mensagem só. Consultei o gerente Opus

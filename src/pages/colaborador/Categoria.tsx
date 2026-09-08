@@ -55,7 +55,7 @@ export default function Categoria() {
         </span>
         <button
           onClick={() => nav("/atendimento")}
-          className="mt-2.5 w-full text-left rounded-xl border border-stamp/40 bg-stamp-tint p-4 flex items-center gap-3 transition-[color,background-color,border-color,transform] duration-200 ease-smooth hover:border-stamp active:scale-[0.98]"
+          className="group mt-2.5 w-full text-left rounded-xl border border-stamp/40 bg-stamp-tint p-4 flex items-center gap-3 transition-[color,background-color,border-color,transform] duration-200 ease-smooth hover:border-stamp active:scale-[0.98]"
         >
           <div className="flex-1">
             <div className="font-semibold text-sm text-ink">Atendimento Psicológico</div>
@@ -63,7 +63,7 @@ export default function Categoria() {
               Aqui você se identifica: precisamos do seu nome pra te procurar.
             </div>
           </div>
-          <ArrowRight className="w-4 h-4 text-stamp shrink-0" />
+          <ArrowRight className="w-4 h-4 text-stamp shrink-0 transition-transform duration-200 ease-smooth group-hover:translate-x-0.5" />
         </button>
       </div>
     </Tela>

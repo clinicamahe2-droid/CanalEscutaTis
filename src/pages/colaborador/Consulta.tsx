@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Loader2, Send, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tela } from "@/components/colaborador/Tela";
+import { Eyebrow } from "@/components/colaborador/Eyebrow";
 import { cn } from "@/lib/utils";
 import { normalizarProtocolo, protocoloValido } from "@/dominio/protocolo";
 import { formatarDataHora } from "@/lib/datas";
@@ -184,9 +185,7 @@ function ConsultaStatus({
     <>
       <Timeline status={dados.status} />
 
-      <span className="text-xs uppercase tracking-wide text-record font-mono">
-        Conversa com a equipe
-      </span>
+      <Eyebrow n="01">Conversa com a equipe</Eyebrow>
       <div className="mt-2 space-y-2">
         {dados.mensagens.length === 0 && (
           <p className="text-sm text-ink-2">
@@ -235,9 +234,7 @@ function ConsultaStatus({
 
       {dados.pesquisaLiberada && !dados.pesquisaRespondida && (
         <div className="mt-6 border-t border-line pt-4">
-          <span className="text-xs uppercase tracking-wide text-record font-mono">
-            Antes de sair, como foi essa experiência?
-          </span>
+          <Eyebrow n="02">Antes de sair, como foi essa experiência?</Eyebrow>
           <div className="flex gap-2 mt-3">
             {OPCOES_PESQUISA.map((o) => (
               <button

@@ -1,8 +1,10 @@
+import { useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { SplashScreen } from "@/components/SplashScreen";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { RotaProtegida } from "@/components/RotaProtegida";
 
@@ -39,8 +41,11 @@ const queryClient = new QueryClient({
 });
 
 export default function App() {
+  const [mostrarSplash, setMostrarSplash] = useState(true);
+
   return (
     <ErrorBoundary>
+      {mostrarSplash && <SplashScreen onDone={() => setMostrarSplash(false)} />}
       <QueryClientProvider client={queryClient}>
         <TooltipProvider delayDuration={200}>
           <BrowserRouter>

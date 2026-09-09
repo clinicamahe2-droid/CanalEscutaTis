@@ -6,30 +6,48 @@ cronológica, mais recente no topo.
 
 ---
 
-## 2026-09-08 (7) — Splash de abertura desligada temporariamente
+## 2026-09-08 (7) — Splash com vídeo da marca + mais cor no vídeo da Home
 
-Dono pediu pra trocar a imagem da splash (marca TIS + fundo de pôr do sol,
-enviada no chat) — mas a imagem só chegava colada direto na conversa, nunca
-como arquivo em disco. Tentei achar de várias formas (busca por nome em
-Downloads/Desktop/Pictures/OneDrive, busca por qualquer imagem recente em
-todo o perfil do usuário, checagem via PowerShell sem sandbox pra descartar
-problema de ambiente virtualizado) — confirmado que o arquivo não existe
-fisicamente no disco, apesar do dono achar que salvou (`tisplash2`, entre
-outras tentativas). Não encontrei uma forma confiável de extrair a imagem
-só do que aparece na conversa (cogitei ler direto do IndexedDB do app
-Claude Desktop, mas é armazenamento interno de um app rodando ao vivo —
-frágil e arriscado, abandonado).
+Dono pediu pra trocar a imagem da splash (marca TIS + fundo de pôr do sol).
+Primeiras tentativas vieram só coladas direto na conversa, nunca como
+arquivo em disco — busquei de todo jeito (nome em Downloads/Desktop/
+Pictures/OneDrive, qualquer imagem recente em todo o perfil do usuário,
+PowerShell sem sandbox pra descartar ambiente virtualizado; cogitei ler
+direto do IndexedDB do app Claude Desktop, mas é armazenamento interno de
+um app rodando ao vivo, frágil e arriscado — abandonado) e não achei nada:
+o arquivo genuinamente não existia no disco, mesmo o dono achando que tinha
+salvo. Combinamos desligar a splash temporariamente nesse meio-tempo
+(`App.tsx` sem montar `<SplashScreen>`) até chegar um arquivo de verdade.
 
-Pedido do dono então: **tirar a splash de cena por enquanto**, não reverter
-pro logo antigo. `App.tsx` não monta mais `<SplashScreen>` (estado
-`mostrarSplash` removido, app abre direto na Home). O componente
-`SplashScreen.tsx` **não foi deletado** — fica pronto, só sem uso, até a
-imagem nova chegar como arquivo de verdade (arrastada pro chat, não colada)
-e a splash voltar com ela.
+Resolvido na sequência: o dono mandou um **vídeo** (~1,3MB, 4s, loop) da
+mesma cena, dessa vez como anexo de verdade (`@caminho` na mensagem, não
+colado). Ficou melhor que a imagem estática planejada original — a marca
+"TIS · Canal de Escuta" e o cenário já vêm animados e prontos, sem precisar
+de texto sobreposto.
 
-Gate verde (22 testes — 1 flake de timeout no teste de geração de
-protocolo, não relacionado, confirmado ao rodar de novo), conferido no
-navegador (app abre direto na Home, sem tela de abertura).
+- Vídeo em `public/video/splash-bg.mp4`, mesmo padrão do vídeo da Home
+  (asset estático, fora do precache do service worker).
+- `SplashScreen.tsx` reescrito: video full-bleed (`object-cover`) no lugar
+  do logo pequeno centralizado + legenda mono; sem overlay de texto (a marca
+  já está no vídeo). Duração subiu de 1,4s pra 3,2s pra caber quase um loop
+  inteiro do vídeo (era calibrada pro logo estático, curto demais pra deixar
+  a animação aparecer). Continua pulando direto pra Home quando
+  `prefers-reduced-motion: reduce` está ativo (mesma regra de antes).
+- `App.tsx` voltou a montar `<SplashScreen>`.
+
+**Pedido junto, mesmo tema:** "mais cor" no vídeo de fundo da Home (o
+`.hero-bg-video`/`.hero-veu` calibrado no redesign "acolhedor" — ver entrada
+2026-09-08 (5)). Tirei o `opacity:.85` do vídeo (agora 100%) e aliviei os
+estágios do véu gradiente (`.2/.38/.85` → `.02/.15/.72`), deixando o
+amarelo/laranja do pôr do sol aparecer bem mais no topo do herói, mantendo
+o fundo sólido creme perto do rodapé pra não perder legibilidade dos
+botões.
+
+Gate verde (22 testes — o timeout do teste de geração de protocolo da
+entrada anterior era mesmo flake de máquina, confirmado ao rodar de novo),
+conferido no navegador (forcei `prefers-reduced-motion` pra ver o vídeo
+tocando, já que o navegador de teste roda com essa preferência ativa por
+padrão).
 
 ---
 

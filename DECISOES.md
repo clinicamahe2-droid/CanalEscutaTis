@@ -6,6 +6,33 @@ cronológica, mais recente no topo.
 
 ---
 
+## 2026-09-08 (7) — Splash de abertura desligada temporariamente
+
+Dono pediu pra trocar a imagem da splash (marca TIS + fundo de pôr do sol,
+enviada no chat) — mas a imagem só chegava colada direto na conversa, nunca
+como arquivo em disco. Tentei achar de várias formas (busca por nome em
+Downloads/Desktop/Pictures/OneDrive, busca por qualquer imagem recente em
+todo o perfil do usuário, checagem via PowerShell sem sandbox pra descartar
+problema de ambiente virtualizado) — confirmado que o arquivo não existe
+fisicamente no disco, apesar do dono achar que salvou (`tisplash2`, entre
+outras tentativas). Não encontrei uma forma confiável de extrair a imagem
+só do que aparece na conversa (cogitei ler direto do IndexedDB do app
+Claude Desktop, mas é armazenamento interno de um app rodando ao vivo —
+frágil e arriscado, abandonado).
+
+Pedido do dono então: **tirar a splash de cena por enquanto**, não reverter
+pro logo antigo. `App.tsx` não monta mais `<SplashScreen>` (estado
+`mostrarSplash` removido, app abre direto na Home). O componente
+`SplashScreen.tsx` **não foi deletado** — fica pronto, só sem uso, até a
+imagem nova chegar como arquivo de verdade (arrastada pro chat, não colada)
+e a splash voltar com ela.
+
+Gate verde (22 testes — 1 flake de timeout no teste de geração de
+protocolo, não relacionado, confirmado ao rodar de novo), conferido no
+navegador (app abre direto na Home, sem tela de abertura).
+
+---
+
 ## 2026-09-08 (6) — Categoria: grade 2 colunas, descrição só ao selecionar, texto mais simples
 
 Pedido do dono: os 8 cards de categoria ("Falta de reconhecimento",

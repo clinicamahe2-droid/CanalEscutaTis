@@ -11,22 +11,36 @@ export default {
       screens: { "2xl": "1200px" },
     },
     extend: {
-      screens: {
-        // Breakpoint proprio do hero da Home (canalescutahomev3.html usa
-        // 920px, nao bate com nenhum breakpoint padrao do Tailwind).
-        "mahe-2col": "921px",
-      },
       fontFamily: {
-        // Sistema "documento, nao spa", pele Matcha — ver DECISOES.md (2026-09-03).
-        display: ['"Instrument Serif"', "Georgia", "serif"],
-        body: ['"Hanken Grotesk"', "system-ui", "-apple-system", "sans-serif"],
-        mono: ['"JetBrains Mono"', "ui-monospace", "SFMono-Regular", "monospace"],
-        // So para o hero da Home (ver DECISOES.md, 2026-09-03 — hero "Mahe").
-        "mahe-display": ['"Fraunces"', "Georgia", "serif"],
-        "mahe-body": ['"Source Sans 3"', "-apple-system", "BlinkMacSystemFont", "sans-serif"],
-        "mahe-mono": ['"IBM Plex Mono"', "ui-monospace", "SFMono-Regular", "monospace"],
+        // Sistema "acolhedor", pele Fable — ver DECISOES.md (2026-09-08).
+        display: ['"Fraunces"', '"Palatino Linotype"', '"Book Antiqua"', "Georgia", "serif"],
+        body: ['"Figtree"', '"Segoe UI"', "system-ui", "-apple-system", "sans-serif"],
+        mono: ['"JetBrains Mono"', '"Cascadia Mono"', "Consolas", "monospace"],
       },
       colors: {
+        // --- paleta "acolhedora" crua (ver index.css) — usada pelas classes
+        // de componente novas e em utilitarios pontuais (ex.: text-broto). ---
+        oliva: "var(--oliva)",
+        creme: "var(--creme)",
+        bege: {
+          DEFAULT: "var(--bege)",
+          hover: "var(--bege-hover)",
+        },
+        papel: "var(--papel)",
+        texto: "var(--texto)",
+        salvia: {
+          DEFAULT: "var(--salvia)",
+          2: "var(--salvia-2)",
+        },
+        broto: "var(--broto)",
+        ouro: "var(--ouro)",
+        risco: {
+          DEFAULT: "var(--risco)",
+          tint: "var(--risco-tint)",
+          line: "var(--risco-line)",
+        },
+        linha: "var(--linha)",
+        "linha-2": "var(--linha-2)",
         // --- tokens do sistema novo (fonte da verdade: designsystemescuta.html) ---
         ink: {
           DEFAULT: "hsl(var(--ink))",
@@ -106,28 +120,15 @@ export default {
           DEFAULT: "hsl(var(--success))",
           soft: "hsl(var(--success-soft))",
         },
-        // Paleta so do hero da Home (ver DECISOES.md, 2026-09-03 — hero "Mahe").
-        // Nao reaproveita ink/paper/seal/stamp: e outra referencia visual
-        // (canalescutahomev3.html), usada num unico componente.
-        mahe: {
-          cream: "#F6F1E4",
-          "cream-2": "#EEE5CD",
-          "border-warm": "#E1D6B8",
-          ink: "#212F1B",
-          "ink-soft": "#535E48",
-          muted: "#8B9278",
-          "green-900": "#141D0E",
-          "green-800": "#1F2C16",
-          "green-700": "#2C3E20",
-          gold: "#D89A4C",
-          "gold-dark": "#B87F36",
-          "gold-soft": "#F1E1BF",
-        },
       },
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
+        // So o fluxo do colaborador usa `xl` — raio mais generoso da pele
+        // "acolhedora" (cards/opcoes/campos). Nao mexe em lg/md/sm (Card,
+        // Popover etc. do painel da equipe continuam com --radius).
+        xl: "16px",
       },
       transitionTimingFunction: {
         smooth: "cubic-bezier(0.2, 0.8, 0.2, 1)",
@@ -150,39 +151,12 @@ export default {
           from: { opacity: "0", transform: "translateY(12px)" },
           to: { opacity: "1", transform: "translateY(0)" },
         },
-        // So para o hero da Home (ver DECISOES.md, 2026-09-03 — hero "Mahe").
-        "mahe-fade-up": {
-          from: { opacity: "0", transform: "translateY(10px)" },
-          to: { opacity: "1", transform: "translateY(0)" },
-        },
-        "mahe-glow-breathe": {
-          "0%, 100%": { opacity: "0.28" },
-          "50%": { opacity: "0.5" },
-        },
-        "mahe-ring-pulse": {
-          "0%": { transform: "scale(1)", opacity: "0.5" },
-          "70%": { transform: "scale(1.25)", opacity: "0" },
-          "100%": { opacity: "0" },
-        },
-        "mahe-dot-pulse": {
-          "0%, 100%": { opacity: "1", transform: "scale(1)" },
-          "50%": { opacity: "0.4", transform: "scale(0.75)" },
-        },
-        "mahe-orb-breathe": {
-          "0%, 100%": { opacity: "0.7", transform: "scale(1)" },
-          "50%": { opacity: "1", transform: "scale(1.12)" },
-        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
         "fade-in": "fade-in 0.28s cubic-bezier(0.2, 0.8, 0.2, 1) both",
         "reveal-in": "reveal-in 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) both",
-        "mahe-fade-up": "mahe-fade-up 0.6s ease-out forwards",
-        "mahe-glow-breathe": "mahe-glow-breathe 3.4s ease-in-out infinite",
-        "mahe-ring-pulse": "mahe-ring-pulse 2.8s ease-in-out infinite",
-        "mahe-dot-pulse": "mahe-dot-pulse 1.6s ease-in-out infinite",
-        "mahe-orb-breathe": "mahe-orb-breathe 6s ease-in-out infinite",
       },
     },
   },

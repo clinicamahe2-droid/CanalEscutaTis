@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Tela } from "@/components/colaborador/Tela";
+import { Tela, TituloTela } from "@/components/colaborador/Tela";
 import { cn } from "@/lib/utils";
 import { useRelato } from "@/fluxo/RelatoContext";
 
@@ -15,7 +15,6 @@ export default function Urgencia() {
 
   return (
     <Tela
-      titulo="Isso está acontecendo agora?"
       onVoltar={() => nav("/relatar/categoria")}
       passo={2}
       rodape={
@@ -24,6 +23,8 @@ export default function Urgencia() {
         </Button>
       }
     >
+      <TituloTela>Isso está acontecendo agora?</TituloTela>
+
       <div className="space-y-3">
         {/* Selecionar "urgente" e o unico outro ponto (alem do link abaixo) onde
             `signal` aparece nesta tela — e o momento em que a pessoa declara

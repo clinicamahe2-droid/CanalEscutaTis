@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Loader2, Send, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Tela } from "@/components/colaborador/Tela";
+import { Tela, TituloTela } from "@/components/colaborador/Tela";
 import { Eyebrow } from "@/components/colaborador/Eyebrow";
 import { cn } from "@/lib/utils";
 import { normalizarProtocolo, protocoloValido } from "@/dominio/protocolo";
@@ -93,7 +93,6 @@ export default function Consulta() {
   if (!protocolo) {
     return (
       <Tela
-        titulo="Consultar meu relato"
         onVoltar={() => nav("/")}
         rodape={
           <Button className="w-full" onClick={buscar}>
@@ -102,9 +101,9 @@ export default function Consulta() {
           </Button>
         }
       >
-        <label className="text-xs uppercase tracking-wide text-record font-mono mb-1.5 block">
-          Código do protocolo
-        </label>
+        <TituloTela>Consultar meu relato</TituloTela>
+
+        <label className="text-sm font-semibold text-oliva mb-1.5 block">Código do protocolo</label>
         <input
           value={entrada}
           onChange={(e) => setEntrada(e.target.value)}
@@ -113,7 +112,7 @@ export default function Consulta() {
           autoCapitalize="characters"
           autoCorrect="off"
           spellCheck={false}
-          className="w-full rounded border border-input bg-card p-3 font-mono text-base text-ink focus:outline-none focus:ring-2 focus:ring-ring"
+          className="campo w-full rounded-xl border border-linha bg-papel p-3 font-mono text-base text-oliva focus:outline-none"
         />
         <p className="text-xs text-ink-2 mt-2">
           O código foi mostrado uma única vez, ao final do relato.
@@ -124,12 +123,13 @@ export default function Consulta() {
 
   return (
     <Tela
-      titulo={protocolo}
       onVoltar={() => {
         setProtocolo("");
         setEntrada("");
       }}
     >
+      <h1 className="font-mono text-lg font-semibold tracking-wide text-ink mb-4">{protocolo}</h1>
+
       {consulta.isLoading && (
         <div className="grid place-items-center py-16">
           <Loader2 className="w-6 h-6 animate-spin text-seal" />

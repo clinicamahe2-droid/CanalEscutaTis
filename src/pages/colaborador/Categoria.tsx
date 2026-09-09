@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Tela } from "@/components/colaborador/Tela";
+import { Tela, TituloTela } from "@/components/colaborador/Tela";
 import { cn } from "@/lib/utils";
 import { CATEGORIAS } from "@/dominio/categorias";
 import { useConfigPublica } from "@/hooks/dados";
@@ -16,7 +16,6 @@ export default function Categoria() {
 
   return (
     <Tela
-      titulo="Sobre o que você quer falar?"
       onVoltar={() => nav("/")}
       passo={1}
       rodape={
@@ -29,41 +28,46 @@ export default function Categoria() {
         </Button>
       }
     >
-      <div className="stagger space-y-2.5">
+      <TituloTela apoio="Escolha o que chega mais perto. A equipe pode ajustar depois.">
+        Sobre o que você quer falar?
+      </TituloTela>
+
+      <div className="stagger flex flex-col gap-2.5 mt-1">
         {lista.map((c) => (
           <button
             key={c.id}
             onClick={() => setCategoria(c.id)}
             className={cn(
-              "w-full text-left rounded-xl border p-4 transition-[color,background-color,border-color,transform] duration-200 ease-smooth active:scale-[0.98]",
-              categoria === c.id
-                ? "border-seal bg-seal-tint"
-                : "border-line-2 bg-card hover:border-seal-line",
+              "opcao flex w-full items-center gap-3 rounded-xl border border-transparent bg-bege py-[13px] pl-4 pr-3.5 text-left",
+              categoria === c.id ? "sel bg-papel border-oliva shadow-[var(--sombra-quente)]" : "hover:bg-bege-hover",
             )}
           >
-            <div className={cn("font-semibold text-sm", categoria === c.id ? "text-seal" : "text-ink")}>
-              {c.rotulo}
+            <div className="flex-1">
+              <div className="font-semibold text-[0.91rem] leading-tight text-oliva">{c.rotulo}</div>
+              <div className="text-xs text-salvia mt-0.5 leading-snug">{c.descricao}</div>
             </div>
-            <div className="text-xs text-ink-2 mt-0.5">{c.descricao}</div>
+            <div className="ck">
+              <Check />
+            </div>
           </button>
         ))}
       </div>
 
-      <div className="mt-6 pt-5 border-t border-line">
-        <span className="font-mono text-[0.65rem] uppercase tracking-wide text-record">
-          Outro caminho
-        </span>
+      <div className="outro mt-[22px] pt-[18px] border-t border-linha">
+        <p className="text-[0.81rem] text-salvia mb-2.5">Se você quer que a equipe te procure:</p>
         <button
           onClick={() => nav("/atendimento")}
-          className="group mt-2.5 w-full text-left rounded-xl border border-stamp/40 bg-stamp-tint p-4 flex items-center gap-3 transition-[color,background-color,border-color,transform] duration-200 ease-smooth hover:border-stamp active:scale-[0.98]"
+          className="opcao ouro flex w-full items-center gap-3 rounded-xl p-3.5"
         >
-          <div className="flex-1">
-            <div className="font-semibold text-sm text-ink">Atendimento Psicológico</div>
-            <div className="text-xs text-ink-2 mt-0.5">
+          <div className="flex-1 text-left">
+            <div className="font-semibold text-[0.91rem] text-oliva">Atendimento Psicológico</div>
+            <div className="text-xs text-salvia mt-0.5">
               Aqui você se identifica: precisamos do seu nome pra te procurar.
             </div>
           </div>
-          <ArrowRight className="w-4 h-4 text-stamp shrink-0 transition-transform duration-200 ease-smooth group-hover:translate-x-0.5" />
+          <div className="seta">
+            <ArrowRight className="h-3.5 w-3.5" />
+          </div>
         </button>
       </div>
     </Tela>

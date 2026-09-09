@@ -2,8 +2,8 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Tela } from "@/components/colaborador/Tela";
-import { Selo } from "@/components/Selo";
+import { Tela, TituloTela } from "@/components/colaborador/Tela";
+import { Broto } from "@/components/Broto";
 import { useCriarSolicitacaoAtendimento } from "@/hooks/dados";
 import { toast } from "sonner";
 
@@ -43,14 +43,12 @@ export default function AtendimentoPsicologico() {
           </Button>
         }
       >
-        <Selo size={64} className="mx-auto mb-4" />
-        <span className="font-mono text-[0.68rem] tracking-wide text-record uppercase">
-          Pedido recebido
-        </span>
+        <Broto size={30} className="mx-auto mb-4 text-oliva" />
+        <span className="text-[0.78rem] font-medium text-salvia">Pedido recebido</span>
         <h1 className="text-2xl font-display font-medium text-ink mt-1.5 mb-3">
           A equipe vai te procurar
         </h1>
-        <p className="text-sm text-ink-2 max-w-[36ch] mx-auto">
+        <p className="text-sm text-texto max-w-[36ch] mx-auto">
           Obrigada por pedir ajuda, {nome.trim().split(" ")[0]}. Alguém da equipe entra em contato
           em breve pelo setor que você informou.
         </p>
@@ -60,7 +58,6 @@ export default function AtendimentoPsicologico() {
 
   return (
     <Tela
-      titulo="Atendimento Psicológico"
       onVoltar={() => nav(-1)}
       rodape={
         <Button className="w-full" disabled={!valido || criar.isPending} onClick={enviar}>
@@ -69,39 +66,36 @@ export default function AtendimentoPsicologico() {
         </Button>
       }
     >
-      <p className="text-sm text-ink-2 mb-5">
+      <TituloTela>Atendimento Psicológico</TituloTela>
+      <p className="text-sm text-texto mb-5">
         Diferente do relato, aqui você se identifica: são esses dados que a equipe usa pra te
         procurar. Nada disso vai junto com relatos anônimos.
       </p>
 
-      <label className="text-xs uppercase tracking-wide text-record font-mono mb-1.5 block">
-        Nome
-      </label>
+      <label className="text-sm font-semibold text-oliva mb-1.5 block">Nome</label>
       <input
         value={nome}
         onChange={(e) => setNome(e.target.value)}
         placeholder="Seu nome"
-        className="w-full rounded border border-input bg-card p-3 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-ring"
+        className="campo w-full rounded-xl border border-linha bg-papel p-3 text-sm text-oliva focus:outline-none"
       />
 
-      <label className="text-xs uppercase tracking-wide text-record font-mono mb-1.5 mt-4 block">
-        Setor
-      </label>
+      <label className="text-sm font-semibold text-oliva mb-1.5 mt-4 block">Setor</label>
       <input
         value={setor}
         onChange={(e) => setSetor(e.target.value)}
         placeholder="Onde você trabalha"
-        className="w-full rounded border border-input bg-card p-3 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-ring"
+        className="campo w-full rounded-xl border border-linha bg-papel p-3 text-sm text-oliva focus:outline-none"
       />
 
-      <label className="text-xs uppercase tracking-wide text-record font-mono mb-1.5 mt-4 block">
+      <label className="text-sm font-semibold text-oliva mb-1.5 mt-4 block">
         Descreva sua necessidade
       </label>
       <textarea
         value={necessidade}
         onChange={(e) => setNecessidade(e.target.value)}
         placeholder="Conte um pouco do que você está precisando…"
-        className="w-full min-h-[120px] rounded-xl border border-input bg-card p-3 text-sm text-ink resize-y focus:outline-none focus:ring-2 focus:ring-ring"
+        className="campo w-full min-h-[120px] rounded-xl border border-linha bg-papel p-3 text-sm text-oliva resize-y focus:outline-none"
       />
     </Tela>
   );

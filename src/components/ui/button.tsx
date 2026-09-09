@@ -5,17 +5,14 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "relative inline-flex items-center justify-center gap-2 overflow-hidden whitespace-nowrap rounded text-sm font-semibold ring-offset-background transition-[color,background-color,border-color,transform,box-shadow] duration-300 ease-smooth active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 disabled:active:scale-100 disabled:hover:translate-y-0 disabled:hover:shadow-none [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
+  "relative inline-flex items-center justify-center gap-2 overflow-hidden whitespace-nowrap rounded-[14px] text-sm font-semibold ring-offset-background transition-[color,background-color,border-color,transform,box-shadow] duration-200 ease-smooth active:scale-[0.985] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-45 disabled:active:scale-100 disabled:hover:translate-y-0 disabled:hover:shadow-none [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
   {
     variants: {
       variant: {
-        default:
-          "glass-btn-primary text-primary-foreground shadow-sm shadow-ink/10 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-ink/15",
+        default: "bg-primary text-primary-foreground shadow-[var(--sombra-oliva)] hover:-translate-y-px",
         destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90",
-        outline:
-          "glass-btn-glass text-ink hover:bg-seal hover:text-seal-foreground hover:border-seal",
-        secondary:
-          "glass-btn-glass text-secondary-foreground hover:bg-seal hover:text-seal-foreground hover:border-seal",
+        outline: "border border-line-2 bg-transparent text-ink hover:border-primary",
+        secondary: "bg-secondary text-secondary-foreground hover:bg-bege-hover",
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
       },

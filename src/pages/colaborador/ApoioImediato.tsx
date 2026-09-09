@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { Tela } from "@/components/colaborador/Tela";
+import { Tela, TituloTela } from "@/components/colaborador/Tela";
 
 const CONTATOS = [
   {
@@ -18,8 +18,9 @@ const CONTATOS = [
 export default function ApoioImediato() {
   const nav = useNavigate();
   return (
-    <Tela titulo="Apoio imediato" onVoltar={() => nav(-1)}>
-      <p className="text-sm text-ink-2 mb-5">
+    <Tela onVoltar={() => nav(-1)}>
+      <TituloTela>Apoio imediato</TituloTela>
+      <p className="text-sm text-texto mb-5">
         Se você corre risco agora, ligue direto. Não é preciso esperar o retorno pelo canal.
       </p>
       <div className="stagger space-y-3">

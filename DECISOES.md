@@ -6,6 +6,90 @@ cronológica, mais recente no topo.
 
 ---
 
+## 2026-09-08 (4) — Sistema "acolhedor" (Fable): redesign completo, aplicado
+
+Entre esta entrada e a anterior, tentei um redesign completo ("sistema
+Registro": frio/neutro, régua de margem, raio 0-3px, `#14504B`
+predominante) — implementado, gate verde, mas **rejeitado pelo dono** ao ver
+ao vivo ("não gostei"). Revertido via `git stash` (não descartado — segue em
+`stash@{0}` se algum dia servir de referência), nunca commitado. Por isso
+não aparece uma entrada própria aqui: o stash reverteu também este arquivo.
+
+Depois disso o dono trouxe uma nova referência de cor e pediu **"algo
+acolhedor"**. Dessa vez delegado direto pro Fable (não pro Opus, que já
+tinha usado a tentativa anterior) — ver `[[delegar-para-opus-fable-quando-em-duvida]]`
+na memória. Fable produziu `redesign-proposta-fable.html` (mockup
+standalone, 4 telas: Home/Categoria/Relato/Protocolo) e o dono aprovou.
+
+**Paleta** — cada cor uma função, sem sobreposição:
+- `oliva` `#2B3624` — tinta principal + a ÚNICA cor de ação (era `seal`)
+- `bege` `#EBE6DA` / `papel` `#FCFAF5` / `creme` `#F6F3EC` — superfícies, do
+  mais neutro (fundo) ao mais claro (campo de texto/card selecionado)
+- `texto` `#4B5563` / `salvia` `#6A7165` / `salvia-2` `#8B9285` — corpo,
+  apoio/rótulo, placeholder (3 níveis de cinza-esverdeado, vs. os 2 do
+  sistema anterior)
+- `broto` `#E8EE9B` — marca-texto (highlighter), nunca fundo sólido: "Não
+  pedimos seu nome" na Home, o código do protocolo
+- `ouro` `#8A7A3C` — só o caminho nomeado (Atendimento Psicológico), era
+  `stamp`
+- `risco` `#9C5233` — **decisão própria, não vem do mockup Fable** (que só
+  cobre 4 das 9 telas). O mockup não define uma cor de risco; reaproveitar
+  `ouro` seria errado (função já reservada ao caminho nomeado). Escolhi um
+  terracota/argila que ecoa o `--critical` do painel mas dessaturado pra
+  caber na paleta quente. Usado só em Urgência (opção "risco imediato") e no
+  link "Ver contatos de apoio" — no máximo 2 lugares, mesma disciplina do
+  sistema anterior.
+
+Tipografia: Fraunces (serif, títulos) + Figtree (sans, corpo) + JetBrains
+Mono (só código/protocolo). Troquei `@fontsource/instrument-serif` +
+`hanken-grotesk` + `ibm-plex-mono` + `source-sans-3` por
+`@fontsource/figtree` — Fraunces e JetBrains Mono já estavam instalados
+(usados pelo hero "Mahe", que este redesign substitui).
+
+**Arquitetura de tokens** — os nomes de variável antigos (`--ink`, `--seal`,
+`--record`, `--paper-2`, `--line-2` etc.) continuam existindo em
+`index.css`, só apontando pros valores novos. Isso significa que a maior
+parte das 9 telas do fluxo **não precisou de reescrita de cor** — Urgencia,
+Revisao, Consulta e ApoioImediato já usavam esses tokens semânticos e
+herdaram a paleta nova automaticamente. Só as 4 telas mocadas pelo Fable
+(Home/Categoria/Relato/Protocolo) tiveram reescrita estrutural, mais
+AtendimentoPsicologico (troca pontual: `Selo`→`Broto`, rótulos de formulário
+saíram do padrão mono/uppercase "documento" pro padrão sans do mockup).
+Raio: `lg/md/sm` do Tailwind continuam presos a `--radius` (Card/Popover do
+painel da equipe, fora de escopo, não mudam); só `xl` foi ampliado pra 16px
+— é o que o fluxo do colaborador usa (cards de categoria, campo de texto).
+
+**Extensões próprias** (telas que o mockup não cobriu, ou detalhes que ele
+deixou implícitos):
+- `risco` (ver acima) — Urgencia + link de apoio.
+- Tela.tsx: o título grande (serif, `.titulo` do mockup) saiu do cabeçalho
+  pequeno e virou um componente próprio (`TituloTela`, com `apoio` opcional)
+  renderizado no corpo — o cabeçalho agora só tem voltar + "Passo N de 4",
+  igual ao mockup. Isso valia pra Categoria/Relato (mocadas) mas também
+  apliquei em Urgencia/Revisao/Consulta/ApoioImediato/AtendimentoPsicologico
+  pra não conviver duas convenções de título diferentes no mesmo app.
+- `Broto.tsx` (novo, substitui `Selo.tsx` e `LogoMahe.tsx`, ambos deletados
+  por ficarem sem uso): ícone de broto/folha do mockup (`i-broto`), usado na
+  marca da Home, abertura do Protocolo e confirmação do Atendimento
+  Psicológico.
+- Home: `config?.nome_canal` continua dinâmico (mostrado na marca do topo,
+  onde o mockup tem "Canal de Escuta" fixo). `config?.mensagem_boas_vindas`
+  **não** ficou dinâmico — o texto do mockup carrega o marca-texto "Não
+  pedimos seu nome" embutido na frase, que não dá pra aplicar num texto
+  arbitrário vindo do painel. Ficou fixo, igual ao mockup.
+- Vídeo de fundo da Home (aprovado no mockup, `.hero-video`/`.hero-bg-video`)
+  **não entrou nesta rodada** — pedido explícito do dono ("depois
+  trabalhamos no vídeo"). Fica pra uma entrada futura.
+
+Gate verde (`typecheck`/`lint` — 0 erros, 6 warnings pré-existentes de
+`react-refresh`/`vitest` 22 testes/`build`), conferido tela a tela no
+navegador (fluxo completo Home→Categoria→Urgencia→Relato→Revisao→Protocolo,
+mais Apoio/Consulta/Atendimento e uma passada pelo painel da equipe —
+Login/Visão Geral/Caixa de Casos/Atendimentos — pra confirmar que os tokens
+compartilhados não quebraram nada fora de escopo).
+
+---
+
 ## 2026-09-08 (2) — Elementos emprestados de um 3º DS ("Digital Architect")
 
 Dono trouxe outro DS (`53e39366-designsystem.html`, salvo em

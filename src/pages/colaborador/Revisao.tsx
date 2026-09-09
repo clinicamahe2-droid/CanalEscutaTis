@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { Tela } from "@/components/colaborador/Tela";
+import { Tela, TituloTela } from "@/components/colaborador/Tela";
 import { rotuloCategoria } from "@/dominio/categorias";
 import { useRelato } from "@/fluxo/RelatoContext";
 import { useCriarCaso } from "@/hooks/dados";
@@ -31,7 +31,6 @@ export default function Revisao() {
 
   return (
     <Tela
-      titulo="Revisar antes de enviar"
       onVoltar={() => nav("/relatar/relato")}
       passo={4}
       rodape={
@@ -41,11 +40,13 @@ export default function Revisao() {
         </Button>
       }
     >
+      <TituloTela>Revisar antes de enviar</TituloTela>
+
       <div className="rounded-xl border border-line-2 bg-paper-2 p-4 mb-3">
         <div className="text-sm font-semibold text-ink">{categoria ? rotuloCategoria(categoria) : "-"}</div>
       </div>
       <div className="rounded-xl border border-line-2 bg-paper-2 p-4 mb-3">
-        <div className="text-[0.68rem] font-mono uppercase text-record">Seu relato</div>
+        <div className="text-[0.78rem] font-medium text-salvia">Seu relato</div>
         <div className="text-sm text-ink mt-0.5 whitespace-pre-wrap">{relato.trim()}</div>
       </div>
 

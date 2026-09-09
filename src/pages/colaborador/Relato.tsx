@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Paperclip, Check, X, Loader2, AlertTriangle } from "lucide-react";
+import { Paperclip, Check, X, Loader2, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Tela } from "@/components/colaborador/Tela";
+import { Tela, TituloTela } from "@/components/colaborador/Tela";
 import { rotuloCategoria } from "@/dominio/categorias";
 import { useRelato } from "@/fluxo/RelatoContext";
 import { useConfigPublica } from "@/hooks/dados";
@@ -14,7 +14,7 @@ const MIN_RELATO = 10;
 
 export default function Relato() {
   const nav = useNavigate();
-  const { categoria, relato, setRelato, anexo, setAnexo } = useRelato();
+  const { categoria, urgencia, relato, setRelato, anexo, setAnexo } = useRelato();
   const { data: config } = useConfigPublica();
   const inputRef = useRef<HTMLInputElement>(null);
   const [processando, setProcessando] = useState(false);
@@ -49,7 +49,6 @@ export default function Relato() {
 
   return (
     <Tela
-      titulo="Conte o que aconteceu"
       onVoltar={() => nav("/relatar/urgencia")}
       passo={3}
       rodape={
@@ -58,21 +57,37 @@ export default function Relato() {
         </Button>
       }
     >
+      <TituloTela>Conte o que aconteceu</TituloTela>
+
       {categoria && (
-        <div className="mb-4 text-sm font-semibold text-ink">{rotuloCategoria(categoria)}</div>
+        <div className="contexto flex items-center gap-2 flex-wrap mb-4 text-[0.81rem] text-salvia">
+          <span className="chip">
+            <i />
+            {rotuloCategoria(categoria)}
+          </span>
+          {urgencia && <span>· {urgencia === "alta" ? "urgente" : "não é urgente"}</span>}
+          <button
+            type="button"
+            onClick={() => nav("/relatar/categoria")}
+            className="text-salvia underline underline-offset-[3px] decoration-line-2"
+          >
+            mudar
+          </button>
+        </div>
       )}
 
-      <label className="text-xs uppercase tracking-wide text-record font-mono mb-1.5 block">
-        Descrição
-      </label>
+      <div className="rotulo flex items-baseline justify-between gap-2.5 mb-2">
+        <b className="text-sm font-semibold text-oliva">Seu relato</b>
+        <span className="text-xs text-salvia">Do seu jeito, não precisa ser perfeito.</span>
+      </div>
       <textarea
         value={relato}
         onChange={(e) => setRelato(e.target.value)}
         placeholder="Descreva com o máximo de detalhes que puder: quando, onde, quem esteve envolvido…"
-        className="w-full min-h-[160px] rounded-xl border border-input bg-card p-3 text-sm text-ink resize-y focus:outline-none focus:ring-2 focus:ring-ring"
+        className="campo w-full min-h-[190px] rounded-xl border border-linha bg-papel p-4 text-sm leading-relaxed text-oliva resize-y focus:outline-none"
       />
-      <p className="text-xs text-ink-2 mt-1">
-        {curto ? `Escreva ao menos ${MIN_RELATO} caracteres.` : " "}
+      <p className="text-xs text-salvia-2 mt-1.5 px-0.5">
+        {curto ? `Escreva ao menos ${MIN_RELATO} caracteres.` : "Sem limite de tamanho"}
       </p>
 
       {config?.permitir_anexos !== false && (
@@ -85,8 +100,8 @@ export default function Relato() {
             onChange={aoEscolherArquivo}
           />
           {anexo ? (
-            <div className="flex items-center gap-2 rounded-xl border border-line-2 bg-paper-2 text-ink p-3 text-sm">
-              <Check className="w-4 h-4 shrink-0 text-seal" />
+            <div className="flex items-center gap-2 rounded-xl border border-linha-2 bg-bege text-oliva p-3 text-sm">
+              <Check className="w-4 h-4 shrink-0 text-oliva" />
               <span className="flex-1">1 imagem anexada ({Math.round(anexo.tamanho / 1024)} KB)</span>
               <button aria-label="Remover anexo" onClick={() => setAnexo(null)}>
                 <X className="w-4 h-4" />
@@ -96,7 +111,7 @@ export default function Relato() {
             <button
               onClick={() => inputRef.current?.click()}
               disabled={processando}
-              className="flex w-full items-center gap-2 rounded-xl border border-dashed border-line-2 p-3 text-sm text-ink-2 transition-colors duration-200 hover:border-seal-line"
+              className="anexo flex w-full items-center gap-2.5 rounded-[14px] p-[13px_15px] text-sm font-medium text-salvia"
             >
               {processando ? (
                 <Loader2 className="w-4 h-4 animate-spin" />
@@ -106,14 +121,13 @@ export default function Relato() {
               {processando ? "Processando imagem…" : "Anexar print ou foto (opcional)"}
             </button>
           )}
-          {anexo && (
-            // Aviso de privacidade — nunca `signal` aqui (reservado a Urgencia +
-            // link de apoio, ver DECISOES.md Bloco 4-d). A enfase e tipografica.
-            <p className="mt-2 flex gap-1.5 text-xs text-ink-2">
-              <AlertTriangle className="w-3.5 h-3.5 shrink-0 mt-0.5" />
-              Revise a imagem antes de enviar: crachás, nomes e rostos podem identificar você.
-            </p>
-          )}
+          {/* Aviso de privacidade — nunca `risco` aqui (reservado a Urgencia +
+              link de apoio, ver DECISOES.md Bloco 4-d). A enfase e tipografica. */}
+          <p className="flex gap-2 items-start mt-2.5 px-0.5 text-[0.78rem] leading-snug text-salvia">
+            <ShieldCheck className="w-3.5 h-3.5 shrink-0 mt-0.5 text-salvia-2" />
+            A imagem sai do seu aparelho sem data, local ou modelo do celular. Antes de enviar,
+            confira se crachás, nomes ou rostos aparecem.
+          </p>
         </div>
       )}
     </Tela>

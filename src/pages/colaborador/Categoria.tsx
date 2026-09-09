@@ -32,25 +32,39 @@ export default function Categoria() {
         Sobre o que você quer falar?
       </TituloTela>
 
-      <div className="stagger flex flex-col gap-2.5 mt-1">
-        {lista.map((c) => (
-          <button
-            key={c.id}
-            onClick={() => setCategoria(c.id)}
-            className={cn(
-              "opcao flex w-full items-center gap-3 rounded-xl border border-transparent bg-bege py-[13px] pl-4 pr-3.5 text-left",
-              categoria === c.id ? "sel bg-papel border-oliva shadow-[var(--sombra-quente)]" : "hover:bg-bege-hover",
-            )}
-          >
-            <div className="flex-1">
-              <div className="font-semibold text-[0.91rem] leading-tight text-oliva">{c.rotulo}</div>
-              <div className="text-xs text-salvia mt-0.5 leading-snug">{c.descricao}</div>
-            </div>
-            <div className="ck">
-              <Check />
-            </div>
-          </button>
-        ))}
+      <div className="stagger grid grid-cols-2 gap-2.5 mt-1">
+        {lista.map((c) => {
+          const sel = categoria === c.id;
+          return (
+            <button
+              key={c.id}
+              onClick={() => setCategoria(c.id)}
+              className={cn(
+                "text-left rounded-xl border border-transparent bg-bege p-3.5 transition-[background-color,border-color,transform] duration-150 ease-smooth active:scale-[0.985]",
+                sel ? "bg-papel border-oliva shadow-[var(--sombra-quente)]" : "hover:bg-bege-hover",
+              )}
+            >
+              <div className="flex items-start justify-between gap-2">
+                <span className="font-semibold text-[0.87rem] leading-tight text-oliva">
+                  {c.rotulo}
+                </span>
+                {sel && (
+                  <span className="grid place-items-center w-5 h-5 rounded-full bg-oliva shrink-0">
+                    <Check className="w-3 h-3 text-broto" />
+                  </span>
+                )}
+              </div>
+              <div
+                className={cn(
+                  "grid transition-[grid-template-rows] duration-200 ease-smooth",
+                  sel ? "grid-rows-[1fr] mt-1.5" : "grid-rows-[0fr]",
+                )}
+              >
+                <p className="overflow-hidden text-xs text-salvia leading-snug">{c.descricao}</p>
+              </div>
+            </button>
+          );
+        })}
       </div>
 
       <div className="outro mt-[22px] pt-[18px] border-t border-linha">

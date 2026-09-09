@@ -6,6 +6,42 @@ cronológica, mais recente no topo.
 
 ---
 
+## 2026-09-08 (6) — Categoria: grade 2 colunas, descrição só ao selecionar, texto mais simples
+
+Pedido do dono: os 8 cards de categoria ("Falta de reconhecimento",
+"Conflito com colega" etc.) em duas colunas lado a lado pra visualização
+mais rápida, com a descrição escondida até o card ser selecionado, e texto
+de descrição mais simples ("qualquer pessoa consiga entender"). Não precisei
+consultar o Opus (ofereceu, mas era um pedido concreto e mecânico, não uma
+questão de linguagem visual em aberto).
+
+- **Grade:** `flex flex-col` → `grid grid-cols-2`. A opção "Atendimento
+  Psicológico" (fora da grade, seção "outro caminho") não mudou — o pedido
+  era só sobre a lista de categorias.
+- **Revelar descrição:** reusa o estado de seleção que já existia (single-
+  select), não criei um estado novo de "aberto/fechado" separado —
+  selecionar UM card já é o único gesto que faz sentido abrir a descrição
+  dele (e fechar a do anterior, automaticamente, trocando a seleção). Truque
+  de CSS pra abrir/fechar com transição suave sem JS medindo altura:
+  `grid-rows-[0fr]` → `grid-rows-[1fr]` num wrapper `overflow-hidden`
+  (grid-template-rows anima liso, ao contrário de max-height chutado).
+- **Selo de seleção:** o círculo de check (`.ck`, sempre visível mesmo vazio
+  no sistema de 1 coluna) virou condicional — só aparece no card
+  selecionado. Numa grade 2 colunas mais estreita, um círculo vazio em todo
+  card não selecionado ficava com ruído visual sem necessidade; a cor de
+  fundo/borda já diferencia selecionado de não-selecionado.
+- **Descrições reescritas** em `dominio/categorias.ts` (campo `descricao`,
+  usado só nesta tela — conferido, não entra em `Caso`/relatório/painel):
+  todas viraram frase com sujeito claro ("alguém grita...", "você se
+  esforça mas..."), exemplos concretos em vez de linguagem abstrata
+  ("Seu esforço não aparece pra ninguém" → "Você se esforça, mas ninguém
+  elogia, agradece ou reconhece o seu trabalho"), sem jargão.
+
+Gate verde, conferido no navegador (seleção troca de card corretamente, a
+descrição do anterior fecha ao escolher outro, "Continuar" habilita).
+
+---
+
 ## 2026-09-08 (5) — Vídeo de fundo na Home + remoção do painel de Atendimento Psicológico
 
 Duas mudanças pontuais na Home, pedidas depois do redesign "acolhedor" já

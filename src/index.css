@@ -218,23 +218,48 @@
 }
 
 /* ---------- Home ---------- */
-.painel-apoio {
-  /* sangra ate a borda direita: a assimetria que tira a cara de template */
-  margin: 0 -1.25rem 26px 8px;
-  padding: 18px 1.5rem 18px 20px;
-  background: var(--bege);
-  border-radius: 18px 0 0 18px;
+/* Video de fundo, so na Home, bem sutil (ver DECISOES.md, 2026-09-08).
+   Amanhecer real (referencia do dono), full-bleed atras so do heroi, nunca
+   atras do resto da tela. Opacidade baixa + veu creme por cima pra nunca
+   competir com o texto — e clima, nao decoracao chamativa. Valores
+   calibrados no mockup (redesign-proposta-fable.html) antes de portar. */
+.hero-video {
   position: relative;
+  margin: 0 -1.25rem;
+  padding: 14px 1.25rem 24px;
+  overflow: hidden;
+  border-radius: 0 0 22px 22px;
 }
-.painel-apoio::before {
-  content: "";
+.hero-bg-video {
   position: absolute;
-  left: 0;
-  top: 18px;
-  bottom: 18px;
-  width: 3px;
-  border-radius: 3px;
-  background: var(--ouro);
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.85;
+}
+.hero-veu {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(246, 243, 236, 0.2) 0%,
+    rgba(246, 243, 236, 0.38) 55%,
+    rgba(246, 243, 236, 0.85) 88%,
+    var(--creme) 100%
+  );
+}
+.hero-conteudo {
+  position: relative;
+  z-index: 1;
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-bg-video {
+    display: none;
+  }
+  .hero-veu {
+    background: var(--creme);
+  }
 }
 
 .passos {

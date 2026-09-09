@@ -36,57 +36,53 @@ export default function Home() {
           </div>
         </div>
 
-        <div>
-          <div className="mb-2.5 text-xs font-medium text-salvia">TIS · Terminal Intermodal Sul</div>
-          <h1 className="text-[2.1rem] font-display font-medium leading-[1.08] text-ink mb-3.5">
-            Um espaço para você ser ouvido.
-          </h1>
-          <p className="max-w-[32ch] text-[0.97rem] leading-[1.55] text-texto">
-            Aqui você pode contar o que está vivendo, do seu jeito e no seu tempo.{" "}
-            <span className="marca">Não pedimos seu nome</span> nem guardamos nada que possa te
-            identificar, só queremos ouvir, com cuidado.
-          </p>
-
-          <div className="flex flex-col gap-2.5 my-5">
-            <button
-              onClick={() => nav("/relatar/categoria")}
-              className="btn-oliva flex w-full items-center justify-between gap-3 rounded-[16px] py-[15px] pl-5 pr-[18px] text-left"
-            >
-              <span>
-                <span className="block text-base font-semibold leading-tight">
-                  Quero contar o que aconteceu
-                </span>
-                <span className="mt-0.5 block text-[0.78rem] font-normal text-[#C9CFB8]">
-                  Sem nome, sem login. Só o que você quiser contar.
-                </span>
-              </span>
-              <ArrowRight className="h-[18px] w-[18px] shrink-0" />
-            </button>
-            <button
-              onClick={() => nav("/consulta")}
-              className="btn-bege flex w-full items-center justify-between gap-3 rounded-[16px] py-[15px] pl-5 pr-[18px] text-left text-[0.95rem] font-semibold"
-            >
-              Já contei, quero saber como está
-              <ArrowRight className="h-[18px] w-[18px] shrink-0" />
-            </button>
-          </div>
-        </div>
-
-        <div className="painel-apoio">
-          <h3 className="mb-1.5 text-[1.19rem] font-display font-medium leading-tight text-ink">
-            Prefere conversar com alguém?
-          </h3>
-          <p className="text-[0.84rem] text-texto">
-            O Atendimento Psicológico é um caminho separado: aqui você deixa seu nome e setor, e a
-            equipe te procura.
-          </p>
-          <Link
-            to="/atendimento"
-            className="group mt-2.5 inline-flex items-center gap-1.5 text-sm font-semibold text-ouro"
+        <div className="hero-video">
+          <video
+            className="hero-bg-video"
+            autoPlay
+            muted
+            loop
+            playsInline
+            aria-hidden="true"
           >
-            Pedir atendimento
-            <ArrowRight className="h-[15px] w-[15px] transition-transform duration-200 group-hover:translate-x-0.5" />
-          </Link>
+            <source src="/video/home-hero.mp4" type="video/mp4" />
+          </video>
+          <div className="hero-veu" />
+          <div className="hero-conteudo">
+            <div className="mb-2.5 text-xs font-medium text-salvia">TIS · Terminal Intermodal Sul</div>
+            <h1 className="text-[2.1rem] font-display font-medium leading-[1.08] text-ink mb-3.5">
+              Um espaço para você ser ouvido.
+            </h1>
+            <p className="max-w-[32ch] text-[0.97rem] leading-[1.55] text-texto">
+              Aqui você pode contar o que está vivendo, do seu jeito e no seu tempo.{" "}
+              <span className="marca">Não pedimos seu nome</span> nem guardamos nada que possa te
+              identificar, só queremos ouvir, com cuidado.
+            </p>
+
+            <div className="flex flex-col gap-2.5 my-5">
+              <button
+                onClick={() => nav("/relatar/categoria")}
+                className="btn-oliva flex w-full items-center justify-between gap-3 rounded-[16px] py-[15px] pl-5 pr-[18px] text-left"
+              >
+                <span>
+                  <span className="block text-base font-semibold leading-tight">
+                    Quero contar o que aconteceu
+                  </span>
+                  <span className="mt-0.5 block text-[0.78rem] font-normal text-[#C9CFB8]">
+                    Sem nome, sem login. Só o que você quiser contar.
+                  </span>
+                </span>
+                <ArrowRight className="h-[18px] w-[18px] shrink-0" />
+              </button>
+              <button
+                onClick={() => nav("/consulta")}
+                className="btn-bege flex w-full items-center justify-between gap-3 rounded-[16px] py-[15px] pl-5 pr-[18px] text-left text-[0.95rem] font-semibold"
+              >
+                Já contei, quero saber como está
+                <ArrowRight className="h-[18px] w-[18px] shrink-0" />
+              </button>
+            </div>
+          </div>
         </div>
 
         <div className="passos">

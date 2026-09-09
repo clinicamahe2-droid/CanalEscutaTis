@@ -6,6 +6,52 @@ cronológica, mais recente no topo.
 
 ---
 
+## 2026-09-08 (5) — Vídeo de fundo na Home + remoção do painel de Atendimento Psicológico
+
+Duas mudanças pontuais na Home, pedidas depois do redesign "acolhedor" já
+estar no ar (ver entrada abaixo).
+
+**Removido o `painel-apoio`** ("Prefere conversar com alguém?" / "Pedir
+atendimento →"): pedido direto do dono. O caminho pro Atendimento
+Psicológico continua existindo no app (Categoria e Protocolo mantêm seus
+links `ouro`), só saiu da Home. Classe `.painel-apoio` deletada de
+`index.css` por ficar sem uso.
+
+**Vídeo de fundo na Home**, a etapa que tinha ficado pra depois no redesign
+anterior. Amanhecer/colinas (referência do dono, calibrada no mockup
+`redesign-proposta-fable.html` antes desta sessão: opacidade `.85` no vídeo
++ véu gradiente creme por cima, só sutil o suficiente pra não competir com o
+texto). Diferença importante do que foi feito no mockup: lá o vídeo tinha
+sido embutido em base64 direto no HTML (~3.3MB de string) só pra resolver
+fragilidade de path ao entregar um arquivo único pro dono ver. **Isso não
+serve pra produção** — embutir base64 no bundle JS faria o vídeo entrar no
+precache do service worker e no download inicial do app. Em vez disso:
+- Arquivo em `public/video/home-hero.mp4` (~2.4MB), servido como asset
+  estático normal — não passa pelo bundler, não entra no JS.
+- `vite.config.ts` já tinha `workbox.globPatterns` restrito a
+  `{js,css,html,svg,png,woff2}` (não inclui `mp4`), então o vídeo fica FORA
+  do precache do service worker — confirmado no build (`precache 45
+  entries, 898 KiB`, igual antes do vídeo entrar). Só baixa quando o
+  `<video>` é montado, com `Range` request normal (verificado: `206 Partial
+  Content`).
+- Classes `.hero-video`/`.hero-bg-video`/`.hero-veu`/`.hero-conteudo`
+  portadas pra `index.css` com os mesmos valores calibrados no mockup,
+  incluindo o fallback `@media (prefers-reduced-motion: reduce)` (esconde o
+  vídeo, véu vira `--creme` sólido).
+
+Considerado e descartado: comprimir o vídeo antes de subir. Sem `ffmpeg`
+disponível neste ambiente pra medir/comprimir; 2.4MB é aceitável pra um
+elemento "bem sutil" carregado uma vez (cacheável depois pelo browser, fora
+do precache do SW) — se algum dia o dono notar peso em conexão ruim, revisar
+com compressão então.
+
+Gate verde, verificado no navegador (o navegador de teste roda com
+`prefers-reduced-motion: reduce` ativo por padrão — forcei o override só
+pra conferir visualmente que o vídeo toca e a calibração de opacidade
+segue igual ao mockup aprovado).
+
+---
+
 ## 2026-09-08 (4) — Sistema "acolhedor" (Fable): redesign completo, aplicado
 
 Entre esta entrada e a anterior, tentei um redesign completo ("sistema

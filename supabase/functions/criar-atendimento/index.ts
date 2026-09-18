@@ -1,5 +1,5 @@
 // POST /functions/v1/criar-atendimento
-// body: { empresa_id, rascunho: { nome, setor, necessidade, contato? } }
+// body: { empresa_id, rascunho: { nome, setor, necessidade } }
 // -> { codigo }   (codigo AP-AAAA-XXXX-XXXX-XXXX)
 //
 // Roda com service_role: o publico nunca insere em `solicitacoes_atendimento`
@@ -16,7 +16,6 @@ Deno.serve(async (req) => {
     const nome = String(rascunho?.nome ?? "").trim();
     const setor = String(rascunho?.setor ?? "").trim();
     const necessidade = String(rascunho?.necessidade ?? "").trim();
-    const contato = String(rascunho?.contato ?? "").trim();
     if (!empresa_id || !nome || !setor || !necessidade) return json({ erro: "dados incompletos" }, 400);
 
     const admin = createClient(
@@ -33,7 +32,6 @@ Deno.serve(async (req) => {
         nome,
         setor,
         necessidade,
-        contato: contato || null,
         status: "nova",
       });
       if (!error) codigo = candidato;

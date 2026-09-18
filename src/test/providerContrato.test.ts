@@ -150,22 +150,19 @@ describe("DataProvider (contrato)", () => {
       nome: "Carla Teste",
       setor: "Administrativo",
       necessidade: "Preciso conversar sobre um momento difícil.",
-      contato: "carla@exemplo.com",
     });
     expect(codigo).toMatch(/^AP-\d{4}-[0-9A-Z]{4}-[0-9A-Z]{4}-[0-9A-Z]{4}$/);
 
     const [sol] = await p.listarSolicitacoesAtendimento();
     expect(sol.codigo).toBe(codigo);
-    expect(sol.contato).toBe("carla@exemplo.com");
     expect(sol.status).toBe("nova");
 
-    // visão pública: sem mensagens ainda, e NUNCA devolve nome/setor/contato
+    // visão pública: sem mensagens ainda, e NUNCA devolve nome/setor
     const pub = await p.consultarAtendimento(codigo.toLowerCase().replace(/-/g, " "));
     expect(pub).not.toBeNull();
     expect(pub!.mensagens).toHaveLength(0);
     expect(pub).not.toHaveProperty("nome");
     expect(pub).not.toHaveProperty("setor");
-    expect(pub).not.toHaveProperty("contato");
 
     // equipe responde: nova -> em_contato automático
     await p.responderAtendimento(sol.id, "Oi, Carla. Podemos conversar amanhã às 10h?");

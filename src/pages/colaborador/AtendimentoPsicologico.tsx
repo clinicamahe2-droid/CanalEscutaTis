@@ -20,7 +20,6 @@ export default function AtendimentoPsicologico() {
   const [nome, setNome] = useState("");
   const [setor, setSetor] = useState("");
   const [necessidade, setNecessidade] = useState("");
-  const [contato, setContato] = useState("");
   const [codigo, setCodigo] = useState<string | null>(null);
   const criar = useCriarSolicitacaoAtendimento();
 
@@ -28,7 +27,7 @@ export default function AtendimentoPsicologico() {
 
   async function enviar() {
     try {
-      const r = await criar.mutateAsync({ nome, setor, necessidade, contato });
+      const r = await criar.mutateAsync({ nome, setor, necessidade });
       setCodigo(r.codigo);
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Não foi possível enviar. Tente de novo.");
@@ -53,7 +52,7 @@ export default function AtendimentoPsicologico() {
         <div className="pt-2.5 pb-5">
           <Broto size={30} className="mb-3.5 text-oliva" />
           <h1 className="text-[1.85rem] font-display font-medium leading-[1.1] text-ink mb-3.5">
-            A equipe vai te procurar.
+            Recebemos o seu pedido.
           </h1>
           <p className="max-w-[34ch] text-[0.95rem] text-texto">
             Obrigada por pedir ajuda, {nome.trim().split(" ")[0]}. A equipe responde por aqui, e você
@@ -88,7 +87,7 @@ export default function AtendimentoPsicologico() {
       <TituloTela>Atendimento Psicológico</TituloTela>
       <p className="text-sm text-texto mb-5">
         Diferente do relato, aqui você se identifica: são esses dados que a equipe usa pra te
-        procurar. Nada disso vai junto com relatos anônimos.
+        responder. Nada disso vai junto com relatos anônimos.
       </p>
 
       <label className="text-sm font-semibold text-oliva mb-1.5 block">Nome</label>
@@ -117,18 +116,9 @@ export default function AtendimentoPsicologico() {
         className="campo w-full min-h-[120px] rounded-xl border border-linha bg-papel p-3 text-sm text-oliva resize-y focus:outline-none"
       />
 
-      <label className="text-sm font-semibold text-oliva mb-1.5 mt-4 block">
-        Contato <span className="font-normal text-salvia">(opcional)</span>
-      </label>
-      <input
-        value={contato}
-        onChange={(e) => setContato(e.target.value)}
-        placeholder="WhatsApp ou e-mail"
-        className="campo w-full rounded-xl border border-linha bg-papel p-3 text-sm text-oliva focus:outline-none"
-      />
-      <p className="text-xs text-salvia mt-1.5 leading-snug">
-        Só se você quiser ser procurado por fora daqui. Não é preciso: você também lê a resposta da
-        equipe com um código que vai receber ao enviar.
+      <p className="text-xs text-salvia mt-3 leading-snug">
+        A resposta da equipe chega aqui, dentro do app: ao enviar, você recebe um código pra ler a
+        resposta e escrever de volta. Não precisa deixar telefone nem e-mail.
       </p>
     </Tela>
   );

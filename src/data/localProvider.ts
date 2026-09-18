@@ -56,7 +56,6 @@ function carregar(): BancoLocal {
         sol.codigo = gerarCodigoAtendimento();
         mudou = true;
       }
-      if (sol.contato === undefined) sol.contato = null;
     }
     if (mudou) gravar(CHAVE_BANCO, existente);
     return existente;
@@ -238,7 +237,6 @@ export const localProvider: DataProvider = {
       nome,
       setor,
       necessidade,
-      contato: rascunho.contato?.trim() || null,
       status: "nova",
       criado_em,
       atualizado_em: criado_em,

@@ -34,13 +34,18 @@ só não estão mais à mostra. Login "de verdade" só existe no modo Supabase.
 **3. Canal de resposta no Atendimento Psicológico.** Pedido: "preciso de um
 canal para que possa responder a pessoa; veja a melhor opção, se é gerar um
 código ou algo do gênero". Consultei o Opus (opções: só código / só contato /
-os dois). **Escolhido: código próprio `AP-AAAA-XXXX-XXXX-XXXX` + contato
-opcional.**
-- Só contato foi descartado: obriga a expor telefone num pedido de saúde
+os dois). O Opus recomendou **código + contato opcional**; o dono corrigiu na
+revisão ("queria algo dentro do app, não entrar em contato com ela"). **Final:
+só o código próprio `AP-AAAA-XXXX-XXXX-XXXX`, sem campo de contato externo** —
+toda a conversa fica dentro do app.
+- Contato (WhatsApp/e-mail) foi descartado pelo dono e pelos mesmos motivos
+  do Opus contra "só contato": obriga a expor telefone num pedido de saúde
   mental, tira a conversa de dentro do app (sem registro/auditoria, pior pra
-  LGPD) e não acrescenta nada que o setor informado já não dê. Só código
-  resolve, mas a pessoa pode esquecer de voltar — daí o contato **opcional**
-  pra quem prefere ser procurado por fora.
+  LGPD) e não acrescenta nada que o setor informado já não dê. O risco que o
+  contato cobria (a pessoa esquecer de voltar ao código) fica aceito; a
+  confirmação do envio insiste em guardar o código. Uma versão do campo
+  chegou a ser implementada e commitada localmente antes da correção; foi
+  removida por inteiro (tipos, provider, painel, migration, Edge Function).
 - **Reverte conscientemente o "sem protocolo"** da entrada de 2026-09-08.
   Continua valendo a separação estrutural: `AP-` nunca é um protocolo `CE-`,
   e as mensagens vivem em tabela/array próprios (`mensagens_atendimento` /
@@ -57,16 +62,16 @@ opcional.**
   a mesma de sempre (`/consulta`, "Já contei, quero saber como está"), que
   agora roteia **pelo prefixo** (`CE-` → tela de relato; `AP-` →
   `ConsultaAtendimento`, sem linha do tempo de 4 etapas nem pesquisa). A visão
-  pública **nunca devolve nome/setor/contato**. Pessoa pode responder de
+  pública **nunca devolve nome/setor**. Pessoa pode responder de
   volta; encerrado, não.
-- Equipe: dentro de cada pedido em `Atendimentos.tsx` — vê contato e código,
+- Equipe: dentro de cada pedido em `Atendimentos.tsx` — vê o código,
   conversa e responde; a primeira resposta move `nova → em_contato`
   automático (espelha `recebido → em_andamento` nos casos).
 - Pedidos gravados no navegador antes desta mudança não têm código: o
   `carregar()` do provider local dá um a cada um, senão a equipe não teria
   como responder.
 - **Supabase (não aplicado, como sempre — só o dono aplica):** migration
-  `0005_atendimento_canal_resposta.sql` (colunas `codigo`/`contato`, tabela
+  `0005_atendimento_canal_resposta.sql` (coluna `codigo`, tabela
   `mensagens_atendimento`, remove a policy anon de INSERT em
   `solicitacoes_atendimento` — anon fica com acesso zero às duas tabelas, mais
   fechado que `casos`) e 3 Edge Functions novas: `criar-atendimento` (gera o

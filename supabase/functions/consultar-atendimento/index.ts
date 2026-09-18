@@ -2,7 +2,7 @@
 //   { empresa_id, codigo } -> AtendimentoPublico | { nao_encontrado: true }
 //
 // Unico caminho pelo qual a pessoa "ve" o proprio atendimento. Devolve so o
-// necessario — nunca nome, setor, contato ou a necessidade (ela ja sabe quem e).
+// necessario — nunca nome, setor ou a necessidade (ela ja sabe quem e).
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { corsHeaders, json } from "../_shared/cors.ts";
 import { normalizarCodigoAtendimento } from "../_shared/protocolo.ts";

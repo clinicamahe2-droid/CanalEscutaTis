@@ -68,7 +68,7 @@ export default function Categoria() {
       </div>
 
       <div className="outro mt-[22px] pt-[18px] border-t border-linha">
-        <p className="text-[0.81rem] text-salvia mb-2.5">Se você quer que a equipe te procure:</p>
+        <p className="text-[0.81rem] text-salvia mb-2.5">Se você quer conversar com a equipe:</p>
         <button
           onClick={() => nav("/atendimento")}
           className="opcao ouro flex w-full items-center gap-3 rounded-xl p-3.5"
@@ -76,7 +76,7 @@ export default function Categoria() {
           <div className="flex-1 text-left">
             <div className="font-semibold text-[0.91rem] text-oliva">Atendimento Psicológico</div>
             <div className="text-xs text-salvia mt-0.5">
-              Aqui você se identifica: precisamos do seu nome pra te procurar.
+              Aqui você se identifica: precisamos do seu nome pra te responder.
             </div>
           </div>
           <div className="seta">

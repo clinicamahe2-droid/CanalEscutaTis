@@ -185,8 +185,6 @@ export interface SolicitacaoAtendimento {
   nome: string;
   setor: string;
   necessidade: string;
-  /** Contato opcional (WhatsApp/e-mail) que a pessoa quis deixar. */
-  contato: string | null;
   status: StatusSolicitacao;
   criado_em: string;
   atualizado_em: string;
@@ -197,7 +195,6 @@ export interface RascunhoAtendimento {
   nome: string;
   setor: string;
   necessidade: string;
-  contato?: string;
 }
 
 export interface ResultadoAtendimento {

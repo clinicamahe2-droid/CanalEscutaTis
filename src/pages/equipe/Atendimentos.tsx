@@ -122,7 +122,7 @@ export default function Atendimentos() {
       </header>
 
       <p className="text-xs text-muted-foreground mb-4 max-w-prose">
-        Pedidos identificados: a pessoa quer ser procurada. Nunca aparecem na Caixa de Casos
+        Pedidos identificados: a pessoa acompanha a resposta pelo código, dentro do app. Nunca aparecem na Caixa de Casos
         (fluxo anônimo) nem em relatórios agregados.
       </p>
 
@@ -155,8 +155,7 @@ export default function Atendimentos() {
                     {s.necessidade}
                   </p>
                   <p className="text-xs text-muted-foreground mt-2">
-                    Contato deixado: {s.contato ? <b className="text-foreground">{s.contato}</b> : "nenhum (a resposta vai pelo código)"}
-                    {" · "}Código: <span className="font-mono">{s.codigo}</span>
+                    Código de acompanhamento: <span className="font-mono">{s.codigo}</span>
                   </p>
                   <ConversaAtendimento solicitacaoId={s.id} encerrado={s.status === "concluida"} />
                   <div className="flex flex-wrap gap-2 mt-3">

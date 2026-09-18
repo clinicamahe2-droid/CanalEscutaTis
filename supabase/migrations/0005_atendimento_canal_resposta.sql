@@ -9,8 +9,7 @@
 -- conversa de pessoa identificada nunca entre no corpus/indicadores anônimos.
 
 alter table public.solicitacoes_atendimento
-  add column if not exists codigo  text,
-  add column if not exists contato text;
+  add column if not exists codigo text;
 
 -- `codigo` fica nullable só porque linhas antigas (anteriores a esta migration)
 -- não têm código; toda linha nova é criada pela Edge Function `criar-atendimento`,

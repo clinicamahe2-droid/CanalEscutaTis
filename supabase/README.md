@@ -9,6 +9,8 @@ Rode, na ordem:
 1. `migrations/0001_schema.sql` — tabelas, índices, triggers, `eh_equipe()`.
 2. `migrations/0002_rls.sql` — Row Level Security e policies.
 3. `migrations/0003_seed_exemplo.sql` — 1 empresa + configuração inicial. **Troque o UUID** para bater com `VITE_EMPRESA_ID`.
+4. `migrations/0004_atendimento_psicologico.sql` — tabela de pedidos de Atendimento Psicológico.
+5. `migrations/0005_atendimento_canal_resposta.sql` — código `AP-` de acompanhamento, contato opcional e mensagens da equipe/pessoa.
 
 ## 2. Storage
 
@@ -21,7 +23,7 @@ Rode, na ordem:
 
 ## 4. Edge Functions
 
-Publique as 5 funções de `functions/` (`criar-caso`, `consultar-caso`, `responder-caso`, `responder-pesquisa`, `enviar-alerta`).
+Publique as 8 funções de `functions/` (`criar-caso`, `consultar-caso`, `responder-caso`, `responder-pesquisa`, `enviar-alerta` e, do Atendimento Psicológico, `criar-atendimento`, `consultar-atendimento`, `responder-atendimento`). As três últimas dependem da migration `0005`.
 
 Secrets necessários:
 

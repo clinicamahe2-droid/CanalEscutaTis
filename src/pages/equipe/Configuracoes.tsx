@@ -132,13 +132,19 @@ export default function Configuracoes() {
               variant="outline"
               disabled={resetar.isPending}
               onClick={async () => {
+                if (
+                  !window.confirm(
+                    "Apagar TODOS os casos, mensagens e pedidos guardados neste navegador? Isso não pode ser desfeito.",
+                  )
+                )
+                  return;
                 await resetar.mutateAsync();
                 setForm(null);
-                toast.success("Dados de demonstração restaurados.");
+                toast.success("Dados deste navegador apagados.");
               }}
             >
               {resetar.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <RotateCcw className="w-4 h-4" />}
-              Restaurar dados de demonstração
+              Apagar dados deste navegador
             </Button>
           )}
         </div>

@@ -48,6 +48,24 @@ export function useConsultaCaso(protocolo: string, enabled: boolean) {
   });
 }
 
+export function useConsultaAtendimento(codigo: string, enabled: boolean) {
+  return useQuery({
+    queryKey: qk.consultaAtendimento(codigo),
+    queryFn: async () => (await getProvider()).consultarAtendimento(codigo),
+    enabled: enabled && !!codigo,
+    retry: false,
+    staleTime: 0,
+  });
+}
+
+export function useMensagensAtendimento(solicitacaoId: string, enabled: boolean) {
+  return useQuery({
+    queryKey: qk.mensagensAtendimento(solicitacaoId),
+    queryFn: async () => (await getProvider()).listarMensagensAtendimento(solicitacaoId),
+    enabled,
+  });
+}
+
 export function useNotificacoes() {
   return useQuery({
     queryKey: qk.notificacoes,
@@ -103,6 +121,18 @@ export function useCriarSolicitacaoAtendimento() {
   });
 }
 
+export function useEnviarMensagemAtendimento(codigo: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (conteudo: string) =>
+      (await getProvider()).enviarMensagemAtendimento(codigo, conteudo),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: qk.consultaAtendimento(codigo) });
+      qc.invalidateQueries({ queryKey: qk.solicitacoes });
+    },
+  });
+}
+
 export function useResponderPesquisa(protocolo: string) {
   const qc = useQueryClient();
   return useMutation({
@@ -120,6 +150,18 @@ export function useResponderPesquisa(protocolo: string) {
 function useResponsavel() {
   const { sessao } = useAuth();
   return sessao?.nome ?? "Equipe";
+}
+
+export function useResponderAtendimento(solicitacaoId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (conteudo: string) =>
+      (await getProvider()).responderAtendimento(solicitacaoId, conteudo),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: qk.mensagensAtendimento(solicitacaoId) });
+      qc.invalidateQueries({ queryKey: qk.solicitacoes });
+    },
+  });
 }
 
 export function useResponderCaso(casoId: string) {

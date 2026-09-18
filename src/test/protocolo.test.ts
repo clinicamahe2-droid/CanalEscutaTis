@@ -1,6 +1,11 @@
 import { describe, it, expect } from "vitest";
 import {
+  CODIGO_ATENDIMENTO_REGEX,
+  codigoAtendimentoValido,
+  ehCodigoAtendimento,
+  gerarCodigoAtendimento,
   gerarProtocolo,
+  normalizarCodigoAtendimento,
   normalizarProtocolo,
   protocoloValido,
   PROTOCOLO_REGEX,
@@ -42,5 +47,29 @@ describe("protocolo", () => {
     expect(protocoloValido("lixo")).toBe(false);
     expect(protocoloValido("")).toBe(false);
     expect(protocoloValido(gerarProtocolo(2026))).toBe(true);
+  });
+});
+
+describe("código de atendimento (AP-)", () => {
+  it("gera no formato AP-AAAA-XXXX-XXXX-XXXX, sem caracteres ambíguos", () => {
+    for (let i = 0; i < 300; i++) {
+      const c = gerarCodigoAtendimento(2026);
+      expect(c).toMatch(CODIGO_ATENDIMENTO_REGEX);
+      expect(c.slice(8)).not.toMatch(/[01ILOU]/);
+    }
+  });
+
+  it("normaliza entrada suja e valida", () => {
+    expect(normalizarCodigoAtendimento("ap 2026 7f3k m2qd 9xab")).toBe("AP-2026-7F3K-M2QD-9XAB");
+    expect(normalizarCodigoAtendimento("AP-2026-7F3KM2QD9XAB")).toBe("AP-2026-7F3K-M2QD-9XAB");
+    expect(codigoAtendimentoValido("AP-2026-7F3K-M2QD")).toBe(false);
+    expect(codigoAtendimentoValido(gerarCodigoAtendimento(2026))).toBe(true);
+  });
+
+  it("nunca confunde relato (CE) com atendimento (AP)", () => {
+    expect(ehCodigoAtendimento("ap-2026-7f3k-m2qd-9xab")).toBe(true);
+    expect(ehCodigoAtendimento("CE-2026-7F3K-M2QD")).toBe(false);
+    expect(codigoAtendimentoValido(gerarProtocolo(2026))).toBe(false);
+    expect(protocoloValido(gerarCodigoAtendimento(2026))).toBe(false);
   });
 });

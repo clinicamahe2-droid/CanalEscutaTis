@@ -17,6 +17,9 @@ import type {
   StatusCaso,
   StatusSolicitacao,
   AvaliacaoEncerramento,
+  MensagemAtendimento,
+  RemetenteAtendimento,
+  ResultadoAtendimento,
 } from "@/dominio/tipos";
 
 export const MODO_DADOS: "local" | "supabase" =
@@ -36,6 +39,15 @@ export interface CasoPublico {
   permiteResponder: boolean;
   pesquisaLiberada: boolean;
   pesquisaRespondida: boolean;
+}
+
+/** Visao publica do atendimento — nunca devolve nome/setor (a pessoa ja sabe quem e). */
+export interface AtendimentoPublico {
+  codigo: string;
+  status: StatusSolicitacao;
+  criado_em: string;
+  mensagens: Array<{ remetente: RemetenteAtendimento; conteudo: string; criado_em: string }>;
+  permiteResponder: boolean;
 }
 
 export interface ConfigPublica {
@@ -64,8 +76,10 @@ export interface DataProvider {
   // ---- colaborador (anonimo) ----
   getConfigPublica(): Promise<ConfigPublica>;
   criarCaso(rascunho: RascunhoRelato): Promise<ResultadoCriacaoCaso>;
-  /** Pedido de Atendimento Psicológico — identificado, sem protocolo (ver tipos.ts). */
-  criarSolicitacaoAtendimento(rascunho: RascunhoAtendimento): Promise<void>;
+  /** Pedido de Atendimento Psicológico — identificado, devolve o código AP- de acompanhamento (ver tipos.ts). */
+  criarSolicitacaoAtendimento(rascunho: RascunhoAtendimento): Promise<ResultadoAtendimento>;
+  consultarAtendimento(codigo: string): Promise<AtendimentoPublico | null>;
+  enviarMensagemAtendimento(codigo: string, conteudo: string): Promise<void>;
   consultarCaso(protocolo: string): Promise<CasoPublico | null>;
   enviarMensagemAnonima(protocolo: string, conteudo: string): Promise<void>;
   responderPesquisa(
@@ -93,6 +107,9 @@ export interface DataProvider {
   // ---- Atendimento Psicológico (identificado, tela dedicada no painel) ----
   listarSolicitacoesAtendimento(): Promise<SolicitacaoAtendimento[]>;
   mudarStatusSolicitacao(id: string, status: StatusSolicitacao): Promise<SolicitacaoAtendimento>;
+  listarMensagensAtendimento(solicitacaoId: string): Promise<MensagemAtendimento[]>;
+  /** Resposta da equipe; move a solicitação de "nova" para "em_contato". */
+  responderAtendimento(solicitacaoId: string, conteudo: string): Promise<MensagemAtendimento>;
 
   getConfiguracoes(): Promise<ConfiguracoesCanal>;
   salvarConfiguracoes(patch: Partial<ConfiguracoesCanal>): Promise<ConfiguracoesCanal>;
@@ -100,6 +117,6 @@ export interface DataProvider {
   /** URL exibivel para um anexo (objectURL no local, signed URL no supabase). */
   getAnexoUrl(anexo: Anexo): Promise<string | null>;
 
-  /** Reseta os dados de exemplo (so faz algo no modo local). */
+  /** Apaga os dados guardados no navegador e volta ao banco vazio (so faz algo no modo local). */
   resetarDemo?(): Promise<void>;
 }

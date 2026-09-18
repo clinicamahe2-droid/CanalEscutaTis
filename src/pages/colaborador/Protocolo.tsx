@@ -1,33 +1,21 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { Check, Copy, Phone, ArrowRight } from "lucide-react";
+import { Check, Phone, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tela } from "@/components/colaborador/Tela";
 import { Broto } from "@/components/Broto";
+import { CartaoCodigo } from "@/components/colaborador/CartaoCodigo";
 import { useRelato } from "@/fluxo/RelatoContext";
-import { toast } from "sonner";
 
 export default function Protocolo() {
   const nav = useNavigate();
   const { protocoloGerado, reiniciar } = useRelato();
-  const [copiado, setCopiado] = useState(false);
 
   useEffect(() => {
     if (!protocoloGerado) nav("/", { replace: true });
   }, [protocoloGerado, nav]);
 
   if (!protocoloGerado) return null;
-
-  async function copiar() {
-    try {
-      await navigator.clipboard.writeText(protocoloGerado!);
-      setCopiado(true);
-      toast.success("Protocolo copiado.");
-      setTimeout(() => setCopiado(false), 2500);
-    } catch {
-      toast.error("Não foi possível copiar. Anote o código manualmente.");
-    }
-  }
 
   return (
     <Tela
@@ -56,21 +44,7 @@ export default function Protocolo() {
         </p>
       </div>
 
-      <div className="rounded-[18px] bg-bege p-[18px_18px_16px] shadow-[var(--sombra-quente)]">
-        <div className="text-[0.78rem] font-medium text-salvia mb-2.5">Seu protocolo</div>
-        <span className="codigo font-mono font-semibold text-[1.4rem] tracking-wide text-oliva break-all">
-          {protocoloGerado}
-        </span>
-        <div className="mt-3.5">
-          <button
-            onClick={copiar}
-            className="btn-oco inline-flex items-center gap-2 rounded-xl px-4 py-[11px] text-sm font-semibold"
-          >
-            {copiado ? <Check className="w-[15px] h-[15px]" /> : <Copy className="w-[15px] h-[15px]" />}
-            {copiado ? "Copiado" : "Copiar código"}
-          </button>
-        </div>
-      </div>
+      <CartaoCodigo rotulo="Seu protocolo" codigo={protocoloGerado} />
 
       <div className="guarde mt-3.5">
         <i />

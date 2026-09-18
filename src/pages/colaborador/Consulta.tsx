@@ -1,11 +1,18 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Loader2, Send, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tela, TituloTela } from "@/components/colaborador/Tela";
 import { Eyebrow } from "@/components/colaborador/Eyebrow";
+import { ConsultaAtendimento } from "@/components/colaborador/ConsultaAtendimento";
 import { cn } from "@/lib/utils";
-import { normalizarProtocolo, protocoloValido } from "@/dominio/protocolo";
+import {
+  codigoAtendimentoValido,
+  ehCodigoAtendimento,
+  normalizarCodigoAtendimento,
+  normalizarProtocolo,
+  protocoloValido,
+} from "@/dominio/protocolo";
 import { formatarDataHora } from "@/lib/datas";
 import { useConsultaCaso, useEnviarMensagemAnonima, useResponderPesquisa } from "@/hooks/dados";
 import type { StatusCaso, AvaliacaoEncerramento } from "@/dominio/tipos";
@@ -56,15 +63,21 @@ const OPCOES_PESQUISA: { v: AvaliacaoEncerramento; emoji: string; rot: string }[
 
 export default function Consulta() {
   const nav = useNavigate();
+  const location = useLocation();
   const [entrada, setEntrada] = useState("");
+  // Guarda o codigo (protocolo `CE-` do relato OU codigo `AP-` do atendimento); o prefixo decide a tela.
   const [protocolo, setProtocolo] = useState<string>(() => {
+    // Vindo da confirmacao do Atendimento Psicologico: ja abre a conversa.
+    const doAtendimento = (location.state as { codigo?: string } | null)?.codigo;
+    if (doAtendimento) return doAtendimento;
     try {
       return sessionStorage.getItem(CHAVE_SESSAO) || "";
     } catch {
       return "";
     }
   });
-  const consulta = useConsultaCaso(protocolo, !!protocolo);
+  const atendimento = ehCodigoAtendimento(protocolo);
+  const consulta = useConsultaCaso(protocolo, !!protocolo && !atendimento);
 
   useEffect(() => {
     return () => {
@@ -77,9 +90,10 @@ export default function Consulta() {
   }, []);
 
   function buscar() {
-    const norm = normalizarProtocolo(entrada);
-    if (!protocoloValido(norm)) {
-      toast.error("Código incompleto. Confira o protocolo (formato CE-AAAA-XXXX-XXXX).");
+    const norm = ehCodigoAtendimento(entrada) ? normalizarCodigoAtendimento(entrada) : normalizarProtocolo(entrada);
+    const valido = ehCodigoAtendimento(entrada) ? codigoAtendimentoValido(norm) : protocoloValido(norm);
+    if (!valido) {
+      toast.error("Código incompleto. Confira o código (CE-AAAA-XXXX-XXXX ou AP-AAAA-XXXX-XXXX-XXXX).");
       return;
     }
     setProtocolo(norm);
@@ -101,9 +115,9 @@ export default function Consulta() {
           </Button>
         }
       >
-        <TituloTela>Consultar meu relato</TituloTela>
+        <TituloTela>Acompanhar meu caso</TituloTela>
 
-        <label className="text-sm font-semibold text-oliva mb-1.5 block">Código do protocolo</label>
+        <label className="text-sm font-semibold text-oliva mb-1.5 block">Seu código</label>
         <input
           value={entrada}
           onChange={(e) => setEntrada(e.target.value)}
@@ -115,9 +129,22 @@ export default function Consulta() {
           className="campo w-full rounded-xl border border-linha bg-papel p-3 font-mono text-base text-oliva focus:outline-none"
         />
         <p className="text-xs text-ink-2 mt-2">
-          O código foi mostrado uma única vez, ao final do relato.
+          Vale o protocolo do relato (começa com CE) ou o código do Atendimento Psicológico (começa
+          com AP). Ele foi mostrado uma única vez, ao final do envio.
         </p>
       </Tela>
+    );
+  }
+
+  if (atendimento) {
+    return (
+      <ConsultaAtendimento
+        codigo={protocolo}
+        onVoltar={() => {
+          setProtocolo("");
+          setEntrada("");
+        }}
+      />
     );
   }
 

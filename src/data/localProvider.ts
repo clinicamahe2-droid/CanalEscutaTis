@@ -8,7 +8,9 @@ import type {
   PesquisaEncerramento,
   RascunhoAtendimento,
   RascunhoRelato,
+  ResultadoAtendimento,
   ResultadoCriacaoCaso,
+  MensagemAtendimento,
   SolicitacaoAtendimento,
   StatusCaso,
   StatusSolicitacao,
@@ -18,9 +20,15 @@ import type {
 } from "@/dominio/tipos";
 import { categoriaMeta, rotuloCategoria } from "@/dominio/categorias";
 import { calcularPrazoSla } from "@/dominio/sla";
-import { gerarProtocolo, normalizarProtocolo } from "@/dominio/protocolo";
+import {
+  gerarCodigoAtendimento,
+  gerarProtocolo,
+  normalizarCodigoAtendimento,
+  normalizarProtocolo,
+} from "@/dominio/protocolo";
 import {
   EMPRESA_ID,
+  type AtendimentoPublico,
   type CasoDetalheEquipe,
   type CasoPublico,
   type ConfigPublica,
@@ -29,7 +37,7 @@ import {
 } from "./DataProvider";
 import { ler, gravar } from "./armazenamento";
 import { lerAnexoBlob } from "./anexosDb";
-import { criarBancoInicial, type BancoLocal } from "./seed";
+import { criarBancoInicial, removerDadosDemo, type BancoLocal } from "./seed";
 
 const CHAVE_BANCO = "banco";
 
@@ -38,6 +46,19 @@ function carregar(): BancoLocal {
   if (existente && Array.isArray(existente.casos) && existente.config) {
     // Banco salvo antes do Atendimento Psicológico existir (Bloco 2026-09-08) — não tem o campo ainda.
     if (!Array.isArray(existente.solicitacoes)) existente.solicitacoes = [];
+    // Idem para as mensagens do Atendimento (canal de resposta, 2026-09-18).
+    if (!Array.isArray(existente.mensagensAtendimento)) existente.mensagensAtendimento = [];
+    // Versões antigas gravavam casos/pedidos de exemplo no navegador — some com eles.
+    let mudou = removerDadosDemo(existente);
+    // Pedidos feitos antes do canal de resposta nao tem codigo — ganham um, senao a equipe nao teria como responder.
+    for (const sol of existente.solicitacoes) {
+      if (!sol.codigo) {
+        sol.codigo = gerarCodigoAtendimento();
+        mudou = true;
+      }
+      if (sol.contato === undefined) sol.contato = null;
+    }
+    if (mudou) gravar(CHAVE_BANCO, existente);
     return existente;
   }
   const novo = criarBancoInicial();
@@ -85,6 +106,11 @@ function protocoloPublico(banco: BancoLocal, caso: Caso, config: ConfiguracoesCa
 function acharPorProtocolo(banco: BancoLocal, protocolo: string): Caso | undefined {
   const alvo = normalizarProtocolo(protocolo);
   return banco.casos.find((c) => c.protocolo === alvo && c.empresa_id === EMPRESA_ID);
+}
+
+function acharAtendimentoPorCodigo(banco: BancoLocal, codigo: string): SolicitacaoAtendimento | undefined {
+  const alvo = normalizarCodigoAtendimento(codigo);
+  return banco.solicitacoes.find((s) => s.codigo === alvo && s.empresa_id === EMPRESA_ID);
 }
 
 function registrarNotificacao(banco: BancoLocal, caso: Caso) {
@@ -196,7 +222,7 @@ export const localProvider: DataProvider = {
     return { protocolo, caso_id: caso.id };
   },
 
-  async criarSolicitacaoAtendimento(rascunho: RascunhoAtendimento): Promise<void> {
+  async criarSolicitacaoAtendimento(rascunho: RascunhoAtendimento): Promise<ResultadoAtendimento> {
     const nome = rascunho.nome.trim();
     const setor = rascunho.setor.trim();
     const necessidade = rascunho.necessidade.trim();
@@ -208,15 +234,52 @@ export const localProvider: DataProvider = {
     const solicitacao: SolicitacaoAtendimento = {
       id: uid("sol"),
       empresa_id: EMPRESA_ID,
+      codigo: gerarCodigoAtendimento(),
       nome,
       setor,
       necessidade,
+      contato: rascunho.contato?.trim() || null,
       status: "nova",
       criado_em,
       atualizado_em: criado_em,
       atendido_em: null,
     };
     banco.solicitacoes.unshift(solicitacao);
+    salvar(banco);
+    return { codigo: solicitacao.codigo };
+  },
+
+  async consultarAtendimento(codigo: string): Promise<AtendimentoPublico | null> {
+    const banco = carregar();
+    const sol = acharAtendimentoPorCodigo(banco, codigo);
+    if (!sol) return null;
+    return {
+      codigo: sol.codigo,
+      status: sol.status,
+      criado_em: sol.criado_em,
+      mensagens: banco.mensagensAtendimento
+        .filter((m) => m.solicitacao_id === sol.id)
+        .sort((a, b) => a.criado_em.localeCompare(b.criado_em))
+        .map(({ remetente, conteudo, criado_em }) => ({ remetente, conteudo, criado_em })),
+      permiteResponder: sol.status !== "concluida",
+    };
+  },
+
+  async enviarMensagemAtendimento(codigo: string, conteudo: string): Promise<void> {
+    const texto = (conteudo || "").trim();
+    if (!texto) throw new Error("Mensagem vazia.");
+    const banco = carregar();
+    const sol = acharAtendimentoPorCodigo(banco, codigo);
+    if (!sol) throw new Error("Código não encontrado.");
+    if (sol.status === "concluida") throw new Error("Este atendimento está encerrado e não aceita novas mensagens.");
+    banco.mensagensAtendimento.push({
+      id: uid("msga"),
+      solicitacao_id: sol.id,
+      empresa_id: EMPRESA_ID,
+      remetente: "pessoa",
+      conteudo: texto,
+      criado_em: agoraIso(),
+    });
     salvar(banco);
   },
 
@@ -400,6 +463,36 @@ export const localProvider: DataProvider = {
     if (status === "concluida") solicitacao.atendido_em = agoraIso();
     salvar(banco);
     return solicitacao;
+  },
+
+  async listarMensagensAtendimento(solicitacaoId: string): Promise<MensagemAtendimento[]> {
+    const banco = carregar();
+    return banco.mensagensAtendimento
+      .filter((m) => m.solicitacao_id === solicitacaoId)
+      .sort((a, b) => a.criado_em.localeCompare(b.criado_em));
+  },
+
+  async responderAtendimento(solicitacaoId: string, conteudo: string): Promise<MensagemAtendimento> {
+    const texto = (conteudo || "").trim();
+    if (!texto) throw new Error("Mensagem vazia.");
+    const banco = carregar();
+    const solicitacao = banco.solicitacoes.find((s) => s.id === solicitacaoId);
+    if (!solicitacao) throw new Error("Solicitação não encontrada.");
+    const msg: MensagemAtendimento = {
+      id: uid("msga"),
+      solicitacao_id: solicitacao.id,
+      empresa_id: EMPRESA_ID,
+      remetente: "equipe",
+      conteudo: texto,
+      criado_em: agoraIso(),
+    };
+    banco.mensagensAtendimento.push(msg);
+    if (solicitacao.status === "nova") {
+      solicitacao.status = "em_contato";
+      solicitacao.atualizado_em = msg.criado_em;
+    }
+    salvar(banco);
+    return msg;
   },
 
   async getConfiguracoes(): Promise<ConfiguracoesCanal> {

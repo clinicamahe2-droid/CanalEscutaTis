@@ -1,6 +1,13 @@
 import { useState } from "react";
-import { Loader2 } from "lucide-react";
-import { useSolicitacoes, useMudarStatusSolicitacao } from "@/hooks/dados";
+import { Loader2, Send } from "lucide-react";
+import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import {
+  useSolicitacoes,
+  useMudarStatusSolicitacao,
+  useMensagensAtendimento,
+  useResponderAtendimento,
+} from "@/hooks/dados";
 import { formatarDataHora } from "@/lib/datas";
 import type { StatusSolicitacao } from "@/dominio/tipos";
 import { cn } from "@/lib/utils";
@@ -29,6 +36,61 @@ function PillStatus({ s }: { s: StatusSolicitacao }) {
     >
       {STATUS_ROTULO[s]}
     </span>
+  );
+}
+
+function ConversaAtendimento({ solicitacaoId, encerrado }: { solicitacaoId: string; encerrado: boolean }) {
+  const { data: mensagens, isLoading } = useMensagensAtendimento(solicitacaoId, true);
+  const responder = useResponderAtendimento(solicitacaoId);
+  const [texto, setTexto] = useState("");
+
+  async function enviar() {
+    if (!texto.trim()) return;
+    try {
+      await responder.mutateAsync(texto.trim());
+      setTexto("");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Não foi possível enviar.");
+    }
+  }
+
+  return (
+    <div className="mt-4">
+      <div className="text-xs font-semibold text-muted-foreground mb-2">Conversa com a pessoa</div>
+      {isLoading && <Loader2 className="w-4 h-4 animate-spin text-primary" />}
+      <div className="space-y-2">
+        {!isLoading && (mensagens?.length ?? 0) === 0 && (
+          <p className="text-xs text-muted-foreground">Nenhuma mensagem ainda.</p>
+        )}
+        {mensagens?.map((m) => (
+          <div
+            key={m.id}
+            className={cn(
+              "rounded-lg p-2.5 text-sm max-w-[90%]",
+              m.remetente === "equipe" ? "bg-primary-soft ml-auto" : "bg-surface2",
+            )}
+          >
+            <div className="text-[0.62rem] font-mono uppercase text-muted-foreground mb-0.5">
+              {m.remetente === "equipe" ? "Equipe" : "Pessoa"} · {formatarDataHora(m.criado_em)}
+            </div>
+            <span className="whitespace-pre-wrap">{m.conteudo}</span>
+          </div>
+        ))}
+      </div>
+      {!encerrado && (
+        <div className="flex gap-2 mt-3">
+          <textarea
+            value={texto}
+            onChange={(e) => setTexto(e.target.value)}
+            placeholder="Escrever uma resposta pra pessoa…"
+            className="flex-1 min-h-[44px] rounded-lg border border-input bg-card p-2.5 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-ring"
+          />
+          <Button size="icon" onClick={enviar} disabled={responder.isPending || !texto.trim()} aria-label="Enviar resposta">
+            {responder.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+          </Button>
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -92,6 +154,11 @@ export default function Atendimentos() {
                   <p className="text-sm text-foreground whitespace-pre-wrap bg-surface2 rounded-lg p-3">
                     {s.necessidade}
                   </p>
+                  <p className="text-xs text-muted-foreground mt-2">
+                    Contato deixado: {s.contato ? <b className="text-foreground">{s.contato}</b> : "nenhum (a resposta vai pelo código)"}
+                    {" · "}Código: <span className="font-mono">{s.codigo}</span>
+                  </p>
+                  <ConversaAtendimento solicitacaoId={s.id} encerrado={s.status === "concluida"} />
                   <div className="flex flex-wrap gap-2 mt-3">
                     {(Object.keys(STATUS_ROTULO) as StatusSolicitacao[]).map((st) => (
                       <button

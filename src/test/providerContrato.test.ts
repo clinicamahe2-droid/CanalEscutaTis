@@ -136,4 +136,67 @@ describe("DataProvider (contrato)", () => {
     expect(concluida.status).toBe("concluida");
     expect(concluida.atendido_em).toBeTruthy();
   });
+
+  it("banco novo começa vazio: sem casos, mensagens nem pedidos de exemplo", async () => {
+    const painel = await p.getDadosPainel();
+    expect(painel.casos).toHaveLength(0);
+    expect(painel.mensagens).toHaveLength(0);
+    expect(await p.listarSolicitacoesAtendimento()).toHaveLength(0);
+    expect(await p.listarNotificacoes()).toHaveLength(0);
+  });
+
+  it("Atendimento: código AP-, conversa nos dois sentidos e status automático", async () => {
+    const { codigo } = await p.criarSolicitacaoAtendimento({
+      nome: "Carla Teste",
+      setor: "Administrativo",
+      necessidade: "Preciso conversar sobre um momento difícil.",
+      contato: "carla@exemplo.com",
+    });
+    expect(codigo).toMatch(/^AP-\d{4}-[0-9A-Z]{4}-[0-9A-Z]{4}-[0-9A-Z]{4}$/);
+
+    const [sol] = await p.listarSolicitacoesAtendimento();
+    expect(sol.codigo).toBe(codigo);
+    expect(sol.contato).toBe("carla@exemplo.com");
+    expect(sol.status).toBe("nova");
+
+    // visão pública: sem mensagens ainda, e NUNCA devolve nome/setor/contato
+    const pub = await p.consultarAtendimento(codigo.toLowerCase().replace(/-/g, " "));
+    expect(pub).not.toBeNull();
+    expect(pub!.mensagens).toHaveLength(0);
+    expect(pub).not.toHaveProperty("nome");
+    expect(pub).not.toHaveProperty("setor");
+    expect(pub).not.toHaveProperty("contato");
+
+    // equipe responde: nova -> em_contato automático
+    await p.responderAtendimento(sol.id, "Oi, Carla. Podemos conversar amanhã às 10h?");
+    const depois = (await p.listarSolicitacoesAtendimento()).find((s) => s.id === sol.id)!;
+    expect(depois.status).toBe("em_contato");
+
+    // pessoa lê e responde só com o código
+    const pub2 = await p.consultarAtendimento(codigo);
+    expect(pub2!.mensagens.map((m) => m.remetente)).toEqual(["equipe"]);
+    await p.enviarMensagemAtendimento(codigo, "Pode ser, obrigada.");
+    const msgs = await p.listarMensagensAtendimento(sol.id);
+    expect(msgs.map((m) => m.remetente)).toEqual(["equipe", "pessoa"]);
+
+    // código inexistente ou de relato (CE-) não abre atendimento
+    expect(await p.consultarAtendimento("AP-2026-ZZZZ-ZZZZ-ZZZZ")).toBeNull();
+    expect(await p.consultarAtendimento("CE-2026-ZZZZ-ZZZZ")).toBeNull();
+
+    // encerrado: pessoa não consegue mais escrever
+    await p.mudarStatusSolicitacao(sol.id, "concluida");
+    expect((await p.consultarAtendimento(codigo))!.permiteResponder).toBe(false);
+    await expect(p.enviarMensagemAtendimento(codigo, "Mais uma coisa")).rejects.toThrow();
+  });
+
+  it("mensagens de Atendimento não entram no corpus anônimo (mensagens de casos)", async () => {
+    const { codigo } = await p.criarSolicitacaoAtendimento({
+      nome: "Dora Teste",
+      setor: "Comercial",
+      necessidade: "Quero apoio psicológico, por favor.",
+    });
+    await p.enviarMensagemAtendimento(codigo, "Mensagem da pessoa identificada.");
+    const painel = await p.getDadosPainel();
+    expect(painel.mensagens).toHaveLength(0);
+  });
 });

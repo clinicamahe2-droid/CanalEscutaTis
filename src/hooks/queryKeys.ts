@@ -7,4 +7,6 @@ export const qk = {
   notificacoes: ["notificacoes"] as const,
   configuracoes: ["configuracoes"] as const,
   solicitacoes: ["solicitacoes-atendimento"] as const,
+  mensagensAtendimento: (id: string) => ["mensagens-atendimento", id] as const,
+  consultaAtendimento: (codigo: string) => ["consulta-atendimento", codigo] as const,
 };

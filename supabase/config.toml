@@ -14,5 +14,14 @@ verify_jwt = false
 [functions.responder-pesquisa]
 verify_jwt = false
 
+[functions.criar-atendimento]
+verify_jwt = false
+
+[functions.consultar-atendimento]
+verify_jwt = false
+
+[functions.responder-atendimento]
+verify_jwt = false
+
 [functions.enviar-alerta]
 verify_jwt = true

@@ -7,7 +7,9 @@ import type {
   NotificacaoFila,
   RascunhoAtendimento,
   RascunhoRelato,
+  ResultadoAtendimento,
   ResultadoCriacaoCaso,
+  MensagemAtendimento,
   SolicitacaoAtendimento,
   StatusCaso,
   StatusSolicitacao,
@@ -17,6 +19,7 @@ import type {
 } from "@/dominio/tipos";
 import {
   EMPRESA_ID,
+  type AtendimentoPublico,
   type CasoDetalheEquipe,
   type CasoPublico,
   type ConfigPublica,
@@ -55,20 +58,23 @@ export const supabaseProvider: DataProvider = {
     return invoke<ResultadoCriacaoCaso>("criar-caso", { empresa_id: EMPRESA_ID, rascunho });
   },
 
-  async criarSolicitacaoAtendimento(rascunho: RascunhoAtendimento): Promise<void> {
-    // Insert direto (RLS: anon so pode INSERT nesta tabela, nunca SELECT/UPDATE —
-    // ver supabase/migrations/0004_atendimento_psicologico.sql). Sem Edge
-    // Function porque nao ha protocolo pra gerar nem notificacao a enfileirar
-    // aqui (ver DECISOES.md).
-    const sb = getSupabase();
-    const { error } = await sb.from("solicitacoes_atendimento").insert({
+  async criarSolicitacaoAtendimento(rascunho: RascunhoAtendimento): Promise<ResultadoAtendimento> {
+    // Via Edge Function (nao mais INSERT direto): o codigo AP- e gerado no
+    // servidor com retry em colisao, e o anon nao tem policy nenhuma nas
+    // tabelas de atendimento (migration 0005, ver DECISOES.md 2026-09-18).
+    return invoke<ResultadoAtendimento>("criar-atendimento", { empresa_id: EMPRESA_ID, rascunho });
+  },
+
+  async consultarAtendimento(codigo: string): Promise<AtendimentoPublico | null> {
+    const r = await invoke<AtendimentoPublico | { nao_encontrado: true }>("consultar-atendimento", {
       empresa_id: EMPRESA_ID,
-      nome: rascunho.nome.trim(),
-      setor: rascunho.setor.trim(),
-      necessidade: rascunho.necessidade.trim(),
-      status: "nova",
+      codigo,
     });
-    if (error) throw error;
+    return r && !("nao_encontrado" in r) ? r : null;
+  },
+
+  async enviarMensagemAtendimento(codigo: string, conteudo: string): Promise<void> {
+    await invoke("responder-atendimento", { origem: "pessoa", empresa_id: EMPRESA_ID, codigo, conteudo });
   },
 
   async consultarCaso(protocolo: string): Promise<CasoPublico | null> {
@@ -245,6 +251,26 @@ export const supabaseProvider: DataProvider = {
       .single();
     if (error) throw error;
     return data as SolicitacaoAtendimento;
+  },
+
+  async listarMensagensAtendimento(solicitacaoId: string): Promise<MensagemAtendimento[]> {
+    const sb = getSupabase();
+    const { data, error } = await sb
+      .from("mensagens_atendimento")
+      .select("*")
+      .eq("solicitacao_id", solicitacaoId)
+      .order("criado_em");
+    if (error) throw error;
+    return (data ?? []) as MensagemAtendimento[];
+  },
+
+  async responderAtendimento(solicitacaoId: string, conteudo: string): Promise<MensagemAtendimento> {
+    return invoke<MensagemAtendimento>("responder-atendimento", {
+      origem: "equipe",
+      empresa_id: EMPRESA_ID,
+      solicitacao_id: solicitacaoId,
+      conteudo,
+    });
   },
 
   async getAnexoUrl(anexo: Anexo): Promise<string | null> {

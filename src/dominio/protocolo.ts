@@ -49,6 +49,42 @@ export function gerarProtocolo(ano: number = new Date().getUTCFullYear()): strin
 }
 
 /**
+ * Codigo de acompanhamento do Atendimento Psicologico: `AP-AAAA-XXXX-XXXX-XXXX`.
+ * Tres blocos (~59 bits), nao dois: aqui quem acerta o codigo ve uma conversa
+ * de pessoa IDENTIFICADA, entao o custo de um acerto e maior que no relato
+ * anonimo. Prefixo proprio para nunca ser confundido com um protocolo `CE-`.
+ */
+const BLOCOS_ATENDIMENTO = 3;
+const ALFABETO_CLASSE = "[23456789ABCDEFGHJKMNPQRSTVWXYZ]";
+
+export const CODIGO_ATENDIMENTO_REGEX = new RegExp(
+  `^AP-(\\d{4})-${ALFABETO_CLASSE}{4}-${ALFABETO_CLASSE}{4}-${ALFABETO_CLASSE}{4}$`,
+);
+
+export function gerarCodigoAtendimento(ano: number = new Date().getUTCFullYear()): string {
+  const blocos = Array.from({ length: BLOCOS_ATENDIMENTO }, () => blocoAleatorio());
+  return `AP-${ano}-${blocos.join("-")}`;
+}
+
+/** Igual a `normalizarProtocolo`, para o codigo `AP-AAAA-XXXX-XXXX-XXXX`. */
+export function normalizarCodigoAtendimento(bruto: string): string {
+  const limpo = (bruto || "").toUpperCase().replace(/[^0-9A-Z]/g, "");
+  const m = /^AP(\d{4})([0-9A-Z]{12})$/.exec(limpo);
+  if (!m) return (bruto || "").trim().toUpperCase();
+  const c = m[2];
+  return `AP-${m[1]}-${c.slice(0, 4)}-${c.slice(4, 8)}-${c.slice(8, 12)}`;
+}
+
+export function codigoAtendimentoValido(valor: string): boolean {
+  return CODIGO_ATENDIMENTO_REGEX.test(normalizarCodigoAtendimento(valor));
+}
+
+/** Decide, pelo prefixo, se o texto digitado e um codigo de atendimento (`AP`) ou de relato. */
+export function ehCodigoAtendimento(bruto: string): boolean {
+  return /^AP/.test((bruto || "").toUpperCase().replace(/[^0-9A-Z]/g, ""));
+}
+
+/**
  * Aceita o codigo com espacos, minusculas ou sem hifens e devolve na forma
  * canonica `CE-AAAA-XXXX-XXXX`. Nao "adivinha" caracteres: se o que sobrar nao
  * casar com o formato, devolve o texto como veio (a consulta responde com o

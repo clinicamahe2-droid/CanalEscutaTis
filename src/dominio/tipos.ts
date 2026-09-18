@@ -173,15 +173,20 @@ export type StatusSolicitacao = "nova" | "em_contato" | "concluida";
  * `Caso`. Ao contrário do fluxo de relato (sempre anônimo), aqui a pessoa se
  * identifica porque quer ser procurada. Nunca deve entrar em `casos`, no
  * `RelatoContext`, nem em nenhuma tela/relatório que trata dados como
- * anônimos (ver DECISOES.md). Sem protocolo/código de acompanhamento — é a
- * equipe quem entra em contato, não a pessoa quem consulta status.
+ * anônimos (ver DECISOES.md). Tem código de acompanhamento PRÓPRIO (`AP-...`,
+ * nunca um protocolo `CE-...`) e mensagens próprias — a equipe responde por
+ * aqui e a pessoa consulta com o código (ver DECISOES.md, 2026-09-18).
  */
 export interface SolicitacaoAtendimento {
   id: string;
   empresa_id: string;
+  /** Código de acompanhamento `AP-AAAA-XXXX-XXXX-XXXX`. */
+  codigo: string;
   nome: string;
   setor: string;
   necessidade: string;
+  /** Contato opcional (WhatsApp/e-mail) que a pessoa quis deixar. */
+  contato: string | null;
   status: StatusSolicitacao;
   criado_em: string;
   atualizado_em: string;
@@ -192,4 +197,20 @@ export interface RascunhoAtendimento {
   nome: string;
   setor: string;
   necessidade: string;
+  contato?: string;
+}
+
+export interface ResultadoAtendimento {
+  codigo: string;
+}
+
+export type RemetenteAtendimento = "equipe" | "pessoa";
+
+export interface MensagemAtendimento {
+  id: string;
+  solicitacao_id: string;
+  empresa_id: string;
+  remetente: RemetenteAtendimento;
+  conteudo: string;
+  criado_em: string;
 }

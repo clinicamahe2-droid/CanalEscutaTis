@@ -4,9 +4,8 @@ import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useAuth, USUARIOS_DEMO } from "@/contexts/AuthContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { LogoTIS } from "@/components/LogoTIS";
-import { MODO_DADOS } from "@/data";
 
 export default function Login() {
   const { sessao, carregando, entrar } = useAuth();
@@ -71,17 +70,6 @@ export default function Login() {
             Entrar
           </Button>
         </form>
-
-        {MODO_DADOS === "local" && (
-          <div className="mt-6 rounded-xl border border-border bg-surface2 p-3 text-xs text-muted-foreground">
-            <div className="font-semibold text-foreground mb-1">Acesso de demonstração</div>
-            {USUARIOS_DEMO.map((u) => (
-              <div key={u.email} className="font-mono">
-                {u.email} · {u.senha}
-              </div>
-            ))}
-          </div>
-        )}
 
         <Link
           to="/"

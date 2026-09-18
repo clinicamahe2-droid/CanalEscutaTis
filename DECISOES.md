@@ -6,6 +6,90 @@ cronológica, mais recente no topo.
 
 ---
 
+## 2026-09-18 — Dados de exemplo zerados, login sem credencial à vista, canal de resposta no Atendimento Psicológico
+
+Três pedidos do dono na mesma rodada.
+
+**1. Limpar os dados demonstrativos.** O modo local (localStorage) semeava 5
+casos, ~9 históricos, mensagens, pesquisas, avisos e 2 pedidos de
+atendimento. Agora `criarBancoInicial()` devolve só empresa + configuração
+do canal. Dois cuidados:
+- Navegadores que **já tinham** o exemplo gravado: `carregar()` roda
+  `removerDadosDemo()` (em `seed.ts`), que tira só os registros com id
+  terminado em `_seed` (e o que pendura neles). Casos/pedidos reais, criados
+  em uso, ficam — não bumpei a versão do storage (`ce.v2`) justamente pra
+  não apagar dado real de quem já usou.
+- O botão "Restaurar dados de demonstração" (Configurações) virou **"Apagar
+  dados deste navegador"**, com confirmação (antes restaurava o exemplo; com
+  banco vazio, sem confirmar ele viraria um "apagar tudo" de um clique).
+- `0003_seed_exemplo.sql` (Supabase) já não tinha caso de exemplo — só
+  empresa/configuração — nada a mudar. Painel vazio conferido: zeros e "-",
+  sem `NaN`.
+
+**2. Tirar a caixa "Acesso de demonstração" do login** (mostrava e-mail e
+senha). Removida a caixa. **Atenção:** as credenciais continuam existindo em
+`AuthContext.USUARIOS_DEMO` porque o modo local precisa delas pra entrar —
+só não estão mais à mostra. Login "de verdade" só existe no modo Supabase.
+
+**3. Canal de resposta no Atendimento Psicológico.** Pedido: "preciso de um
+canal para que possa responder a pessoa; veja a melhor opção, se é gerar um
+código ou algo do gênero". Consultei o Opus (opções: só código / só contato /
+os dois). **Escolhido: código próprio `AP-AAAA-XXXX-XXXX-XXXX` + contato
+opcional.**
+- Só contato foi descartado: obriga a expor telefone num pedido de saúde
+  mental, tira a conversa de dentro do app (sem registro/auditoria, pior pra
+  LGPD) e não acrescenta nada que o setor informado já não dê. Só código
+  resolve, mas a pessoa pode esquecer de voltar — daí o contato **opcional**
+  pra quem prefere ser procurado por fora.
+- **Reverte conscientemente o "sem protocolo"** da entrada de 2026-09-08.
+  Continua valendo a separação estrutural: `AP-` nunca é um protocolo `CE-`,
+  e as mensagens vivem em tabela/array próprios (`mensagens_atendimento` /
+  `mensagensAtendimento`), **não** em `mensagens_caso` — `getDadosPainel()`
+  puxa as mensagens de casos inteiras pros indicadores (tempo até 1ª
+  resposta, relatório), então misturar deixaria conversa de pessoa
+  identificada distorcer o corpus anônimo (teste de contrato cobre isso).
+- Código com **3 blocos (~59 bits)**, não 2 como o `CE-` (~41): aqui um acerto
+  revela conversa de pessoa identificada. `protocolo.ts` ganhou
+  `gerarCodigoAtendimento`/`normalizarCodigoAtendimento`/`ehCodigoAtendimento`
+  reaproveitando o mesmo gerador de blocos.
+- Pessoa: ao enviar, vê o código (componente novo `CartaoCodigo`, extraído do
+  Protocolo e usado nos dois) e o botão "Acompanhar minha conversa". A porta é
+  a mesma de sempre (`/consulta`, "Já contei, quero saber como está"), que
+  agora roteia **pelo prefixo** (`CE-` → tela de relato; `AP-` →
+  `ConsultaAtendimento`, sem linha do tempo de 4 etapas nem pesquisa). A visão
+  pública **nunca devolve nome/setor/contato**. Pessoa pode responder de
+  volta; encerrado, não.
+- Equipe: dentro de cada pedido em `Atendimentos.tsx` — vê contato e código,
+  conversa e responde; a primeira resposta move `nova → em_contato`
+  automático (espelha `recebido → em_andamento` nos casos).
+- Pedidos gravados no navegador antes desta mudança não têm código: o
+  `carregar()` do provider local dá um a cada um, senão a equipe não teria
+  como responder.
+- **Supabase (não aplicado, como sempre — só o dono aplica):** migration
+  `0005_atendimento_canal_resposta.sql` (colunas `codigo`/`contato`, tabela
+  `mensagens_atendimento`, remove a policy anon de INSERT em
+  `solicitacoes_atendimento` — anon fica com acesso zero às duas tabelas, mais
+  fechado que `casos`) e 3 Edge Functions novas: `criar-atendimento` (gera o
+  código no servidor com retry em colisão — por isso o INSERT direto saiu),
+  `consultar-atendimento`, `responder-atendimento`. Registradas em
+  `config.toml` e no README. **Não testadas contra um Supabase real** (não há
+  projeto ainda); o modo local, que é o que roda hoje, está testado.
+- Não fiz limite de tentativas por IP nas consultas (as Edge Functions
+  existentes também não têm). A entropia de 59 bits mitiga, mas fica como
+  melhoria antes de ir pra produção real.
+- Armadilhas do Opus anotadas e não tratadas aqui: a policy
+  `mensagens_anon_insert` de `mensagens_caso` deixa anon inserir em qualquer
+  `caso_id` sem saber o protocolo (buraco **já existente**, não repetido no
+  atendimento), e as Edge Functions confiam no `empresa_id` do corpo.
+
+Gate verde (28 testes — 6 novos: banco vazio, ciclo completo do
+atendimento, isolamento do corpus anônimo, formato/normalização do `AP-`),
+`build` ok. Conferido no navegador: painel vazio, limpeza de banco antigo
+(exemplo some, pedido real fica e ganha código), envio → código → consulta →
+resposta da equipe → status automático.
+
+---
+
 ## 2026-09-08 (7) — Splash com vídeo da marca + mais cor no vídeo da Home
 
 Dono pediu pra trocar a imagem da splash (marca TIS + fundo de pôr do sol).

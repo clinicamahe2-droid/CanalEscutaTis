@@ -4,54 +4,73 @@ import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tela, TituloTela } from "@/components/colaborador/Tela";
 import { Broto } from "@/components/Broto";
+import { CartaoCodigo } from "@/components/colaborador/CartaoCodigo";
 import { useCriarSolicitacaoAtendimento } from "@/hooks/dados";
 import { toast } from "sonner";
 
 /**
- * Pedido de Atendimento Psicológico — DELIBERADAMENTE fora do RelatoContext
- * e sem protocolo: aqui a pessoa se identifica porque quer ser procurada
- * (ver DECISOES.md, 2026-09-08). Estado local só desta tela, nunca entra no
- * rascunho do relato anônimo.
+ * Pedido de Atendimento Psicológico — DELIBERADAMENTE fora do RelatoContext:
+ * aqui a pessoa se identifica porque quer ser procurada (ver DECISOES.md,
+ * 2026-09-08). Estado local só desta tela, nunca entra no rascunho do relato
+ * anônimo. Ao enviar, recebe um código `AP-...` próprio para ler a resposta
+ * da equipe (ver DECISOES.md, 2026-09-18).
  */
 export default function AtendimentoPsicologico() {
   const nav = useNavigate();
   const [nome, setNome] = useState("");
   const [setor, setSetor] = useState("");
   const [necessidade, setNecessidade] = useState("");
-  const [enviado, setEnviado] = useState(false);
+  const [contato, setContato] = useState("");
+  const [codigo, setCodigo] = useState<string | null>(null);
   const criar = useCriarSolicitacaoAtendimento();
 
   const valido = nome.trim().length >= 2 && setor.trim().length >= 2 && necessidade.trim().length >= 10;
 
   async function enviar() {
     try {
-      await criar.mutateAsync({ nome, setor, necessidade });
-      setEnviado(true);
+      const r = await criar.mutateAsync({ nome, setor, necessidade, contato });
+      setCodigo(r.codigo);
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Não foi possível enviar. Tente de novo.");
     }
   }
 
-  if (enviado) {
+  if (codigo) {
     return (
       <Tela
         semAnimacao
-        className="justify-center text-center"
         rodape={
-          <Button variant="secondary" className="w-full" onClick={() => nav("/", { replace: true })}>
-            Voltar ao início
-          </Button>
+          <div className="space-y-2">
+            <Button className="w-full" onClick={() => nav("/consulta", { state: { codigo } })}>
+              Acompanhar minha conversa
+            </Button>
+            <Button variant="secondary" className="w-full" onClick={() => nav("/", { replace: true })}>
+              Voltar ao início
+            </Button>
+          </div>
         }
       >
-        <Broto size={30} className="mx-auto mb-4 text-oliva" />
-        <span className="text-[0.78rem] font-medium text-salvia">Pedido recebido</span>
-        <h1 className="text-2xl font-display font-medium text-ink mt-1.5 mb-3">
-          A equipe vai te procurar
-        </h1>
-        <p className="text-sm text-texto max-w-[36ch] mx-auto">
-          Obrigada por pedir ajuda, {nome.trim().split(" ")[0]}. Alguém da equipe entra em contato
-          em breve pelo setor que você informou.
-        </p>
+        <div className="pt-2.5 pb-5">
+          <Broto size={30} className="mb-3.5 text-oliva" />
+          <h1 className="text-[1.85rem] font-display font-medium leading-[1.1] text-ink mb-3.5">
+            A equipe vai te procurar.
+          </h1>
+          <p className="max-w-[34ch] text-[0.95rem] text-texto">
+            Obrigada por pedir ajuda, {nome.trim().split(" ")[0]}. A equipe responde por aqui, e você
+            lê a resposta usando o código abaixo.
+          </p>
+        </div>
+
+        <CartaoCodigo rotulo="Seu código de acompanhamento" codigo={codigo} />
+
+        <div className="guarde mt-3.5">
+          <i />
+          <p className="text-[0.84rem] text-texto">
+            <b className="text-oliva font-semibold">Guarde este código.</b> Na tela inicial, toque em
+            "Já contei, quero saber como está" e digite o código pra ver a resposta e escrever de
+            volta. Se perder, é só enviar um novo pedido.
+          </p>
+        </div>
       </Tela>
     );
   }
@@ -97,6 +116,20 @@ export default function AtendimentoPsicologico() {
         placeholder="Conte um pouco do que você está precisando…"
         className="campo w-full min-h-[120px] rounded-xl border border-linha bg-papel p-3 text-sm text-oliva resize-y focus:outline-none"
       />
+
+      <label className="text-sm font-semibold text-oliva mb-1.5 mt-4 block">
+        Contato <span className="font-normal text-salvia">(opcional)</span>
+      </label>
+      <input
+        value={contato}
+        onChange={(e) => setContato(e.target.value)}
+        placeholder="WhatsApp ou e-mail"
+        className="campo w-full rounded-xl border border-linha bg-papel p-3 text-sm text-oliva focus:outline-none"
+      />
+      <p className="text-xs text-salvia mt-1.5 leading-snug">
+        Só se você quiser ser procurado por fora daqui. Não é preciso: você também lê a resposta da
+        equipe com um código que vai receber ao enviar.
+      </p>
     </Tela>
   );
 }

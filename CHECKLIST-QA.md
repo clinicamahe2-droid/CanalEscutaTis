@@ -74,7 +74,7 @@ Marque cada item. Nenhum botão pode ficar preso em "carregando" nem levar a tel
 - [ ] Editar nome/domínio/mensagem e "Salvar" → toast de sucesso; a Home do colaborador reflete o novo nome/mensagem.
 - [ ] Desativar uma categoria e salvar → ela some da tela de seleção do colaborador.
 - [ ] Os 3 toggles salvam.
-- [ ] "Restaurar dados de demonstração" recarrega tudo do zero.
+- [ ] "Apagar dados deste navegador" pede confirmação e deixa o painel vazio.
 
 ## Build / PWA
 
